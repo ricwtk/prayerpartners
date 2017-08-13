@@ -58,6 +58,17 @@ function showDebug(debugString) {
   }
 }
 
+// id generator
+function generateId(blacklistId) {
+  var idChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  var idLength = 10;
+  do {
+    var idResult = '';
+    for (var i = idLength; i > 0; --i) idResult += idChars[Math.floor(Math.random() * idChars.length)];
+  } while (blacklistId.includes(idResult))
+  return idResult;
+}
+
 // add mine item 
 function addMineItem() {
 
@@ -179,11 +190,13 @@ function readOrCreateData(searchResult) {
   var files = searchResult.result.files;
   showDebug(files);
   if (files.length > 0) {
-    return new Promise((resolve, reject) => {
-      return files[0].id;
-    }).then(readFileContent);
+    return readFileContent(files[0].id);
   } else {
     data = defaultData;
+    var basicProfile = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
+    data.mine.name = basicProfile.getName();
+    data.mine.email = basicProfile.getEmail();
+    data.mine.personId = generateId([]);
     return createDataFile()
       .then((res)=>{
         return {fileId: res.result.id, content: data};
