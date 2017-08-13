@@ -159,7 +159,7 @@ function handleSignoutClick() {
 // click to disconnect
 function handleDisconnectClick() {
   showDebug("handleDisconnectClick");
-  gapi.auth2.getAuthInstance().discoonect();
+  gapi.auth2.getAuthInstance().disconnect();
 }
 
 // read from saved data
