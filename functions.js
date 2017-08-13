@@ -1,4 +1,8 @@
 "use strict";
+// const GOOGLE = {
+//   CLIENT_ID: 
+// }
+
 const OWNER = {
   SELF: 'self',
   FRIEND: 'friend'
