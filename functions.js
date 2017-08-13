@@ -40,6 +40,8 @@ var newFriendItem = {
   order: null
 };
 
+var data = null;
+
 // google account authentication
 function authenticateGoogle() {
 
@@ -47,7 +49,7 @@ function authenticateGoogle() {
 
 // read from saved data
 function readSaved() {
-
+  // read from saved data, if no saved data, load default
 }
 
 // add self item 
@@ -95,8 +97,19 @@ function readFromGmail() {
 
 }
 
+// first time log in
+function firstTimeLogIn() {
+  data = defaultData;
+  // read from google account
+  // save email and name to data
+}
+
 // init function
 function initSystem() {
+  // read from google account
+  if (data == null) {
+    firstTimeLogIn();
+  }
 
 }
 
