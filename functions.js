@@ -1,21 +1,21 @@
 // "use strict";
 const DEBUG = true;
 
-const GOOGLE = {
-  // CLIENT_ID: "885265693601-e44cq3b3nu153cc8ib9c4jcq6kahvte9.apps.googleusercontent.com",
-  CLIENT_ID: "885265693601",
+var GOOGLE = {
+  CLIENT_ID: "885265693601-q38bh4n7s7rdrv6lpn4qbb6sbt065pum.apps.googleusercontent.com",
   DISCOVERY_DOCS: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
   SCOPES: "https://www.googleapis.com/auth/drive.file"
+    + " https://www.googleapis.com/auth/drive.appfolder"
 };
 
 const OWNER = {
-  SELF: 'self',
+  MINE: 'mine',
   FRIEND: 'friend'
 };
 
 var defaultData = {
   lastEmailChecked: null,
-  self: {
+  mine: {
     personId: null,
     name: null,
     email: null,
@@ -26,7 +26,7 @@ var defaultData = {
   friendRequests: []
 };
 
-var newSelfItem = {
+var newMineItem = {
   itemId: null,
   item: null,
   desc: null,
@@ -58,13 +58,13 @@ function showDebug(debugString) {
   }
 }
 
-// add self item 
-function addSelfItem() {
+// add mine item 
+function addMineItem() {
 
 }
 
-// archive item (self only)
-function archiveSelfItem() {
+// archive item (mine only)
+function archiveMineItem() {
 
 }
 
@@ -119,16 +119,17 @@ function loadApi() {
 function initApi() {
   showDebug("initApi");
   gapi.client.init({
-    discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
-    clientId: "885265693601-q38bh4n7s7rdrv6lpn4qbb6sbt065pum.apps.googleusercontent.com",
-    scope: "https://www.googleapis.com/auth/drive.file"
+    discoveryDocs: GOOGLE.DISCOVERY_DOCS,
+    clientId: GOOGLE.CLIENT_ID,
+    scope: GOOGLE.SCOPES
   }).then(function () {
     gapi.auth2.getAuthInstance().isSignedIn.listen(signedIn);
     signedIn(gapi.auth2.getAuthInstance().isSignedIn.get());
 
     document.getElementById("signin-google").onclick = handleAuthClick;
     document.getElementById("signout-google").onclick = handleSignoutClick;
-  });
+    document.getElementById("disconnect-google").onclick = handleDisconnectClick;
+  }, console.log);
 }
 
 // check signed in status, show sign in screen or direct to the main screen
@@ -155,8 +156,15 @@ function handleSignoutClick() {
   gapi.auth2.getAuthInstance().signOut();
 }
 
+// click to disconnect
+function handleDisconnectClick() {
+  showDebug("handleDisconnectClick");
+  gapi.auth2.getAuthInstance().discoonect();
+}
+
 // read from saved data
-function readSaved() {
+function getSavedFile() {
+  showDebug("getSavedFile");
   // read from saved data, if no saved data, load default
   return gapi.client.drive.files.list({
     q: 'name="data.json"',
@@ -165,10 +173,65 @@ function readSaved() {
   });
 }
 
+function readOrCreateData(searchResult) {
+  showDebug("readOrCreateData");
+  // load previous data if available, else load default
+  var files = searchResult.result.files;
+  showDebug(files);
+  if (files.length > 0) {
+    return new Promise((resolve, reject) => {
+      return files[0].id;
+    }).then(readFileContent);
+  } else {
+    data = defaultData;
+    return createDataFile()
+      .then((res)=>{
+        return {fileId: res.result.id, content: data};
+      })
+      .then(saveToFile)
+      .then((res) => {
+        return res.result.id;
+      })
+      .then(readFileContent);
+  }
+}
+
+function createDataFile() {
+  showDebug("createDataFile");
+  return gapi.client.drive.files.create({
+    resource: {
+      name: "data.json",
+      parents: ["appDataFolder"]
+    },
+    fields: "id"
+  });
+}
+
+function readFileContent(fileId) {
+  showDebug("readFileContent");
+  return gapi.client.drive.files.get({
+    fileId: fileId,
+    alt: 'media'
+  });
+}
+
+function saveToFile(newContent) {
+  showDebug("saveToFile");
+  return gapi.client.request({
+    path: '/upload/drive/v3/files/' + newContent.fileId,
+    method: 'PATCH',
+    params: {
+      uploadType: 'media'
+    },
+    body: JSON.stringify(newContent.content)
+  });
+}
+
 // init function
 function initSystem() {
   // read from google account
-
+  getSavedFile().then(readOrCreateData, showDebug).then(showDebug, showDebug);
+  // getSavedFile().then(console.log, console.log);
   if (data == null) {
     firstTimeLogIn();
   }
