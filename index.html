@@ -17,15 +17,59 @@
     <div id="menu" class="decor-menu hide">
       <span class="menu-item decor-menuitem" id="signout-google">Sign out</span>
       <span class="menu-item decor-menuitem" id="disconnect-google">Disconnect</span>
-      <span class="menu-item decor-menuitem">About Prayer Partners</span>
+      <span class="menu-item decor-menuitem" id="open-about">About Prayer Partners</span>
+      <span class="menu-item" id="section-width">
+        Width of list <br>
+        <input type="range" min="20" max="100">
+      </span>
+      <span class="menu-item" id="section-height">
+        Height of list <br>
+        <input type="range" min="200" max="1000">
+      </span>
+      <span class="menu-item friend-invite">
+        <span class="friend-invite-identity">
+          <span class="friend-invite-name">Friend's name</span><br>
+          <span class="friend-invite-email">Friend's email</span>
+        </span>
+        <span class="friend-invite-actions">
+          <span class="friend-invite-accept decor-menuitem">&#x1f7a1;</span>
+          <span class="friend-invite-reject decor-menuitem">&#x1f7a8;</span>
+        </span>
+      </span>
     </div>
 
     <div id="signin-overlay" class="signin-overlay decor-signinoverlay">
       <div class="signin-button decor-menuitem" id="signin-google">Sign in with Google</div>
     </div>
+
+    <div id="about-overlay" class="decor-aboutoverlay hide">
+      <div id="about">
+        <div id="close-about" class="decor-closeabout">&#x1f7a8;</div>
+        Prayer Partners<br>
+        Developer: Richard Wong ricwtk@gmail.com<br>
+        Source code: Github link
+      </div>
+    </div>
     
 
-    <div class="main"></div>
+    <div class="main">
+      <div class="group">
+        <div class="group-title decor-grouptitle">Mine</div>
+        <div class="section-group">
+          <div class="section decor-section"></div>
+          <div class="section decor-section"></div>
+        </div>
+      </div>
+      <div class="sep decor-sep"></div>
+      <div class="group">
+        <div class="group-title decor-grouptitle">Friends'</div>
+        <div class="section-group">
+          <div class="section decor-section"></div>
+          <div class="section decor-section"></div>
+          <div class="section decor-section"></div>
+        </div>
+      </div>
+    </div>
 
     <script async defer src="https://apis.google.com/js/api.js"
       onload="this.onload=function(){};loadApi()"

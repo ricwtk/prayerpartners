@@ -6,13 +6,14 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: 'Roboto Slab', serif;
+  text-align: center;
 }
 
 .hide {
   visibility: collapse;
 }
 
-.signin-overlay {
+.signin-overlay, #about-overlay {
   width: 100%;
   height: 100%;
   display: flex;
@@ -33,6 +34,15 @@ html, body {
 .signin-button:hover {
   background-color: #999999;
   color: #ffffff;
+}
+
+#close-about {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 10px;
+  font-size: 150%;
+  cursor: pointer;
 }
 
 #header {
@@ -70,6 +80,62 @@ html, body {
   cursor: pointer;
 }
 
+.friend-invite {
+  display: flex;
+  align-items: center
+}
+
+.friend-invite-identity {
+  flex-grow: 1;
+}
+
+.friend-invite-email {
+  font-size: 90%;
+}
+
+.friend-invite-accept, .friend-invite-reject {
+  padding: 5px;
+}
+
+.main {
+  width: calc(100% - 10px);
+  height: 1000px;
+  display: inline-block;
+  /*background-color: #e0f2f1;*/
+}
+
+.group {
+  /*width: 100%;*/
+  display: block;
+  background-color: #e0f2f1;
+  padding: 10px;
+}
+
+.group-title {
+  text-align: left;
+  /*padding: 10px;*/
+}
+
+.section-group {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.section {
+  width: 100%;
+  height: 200px;
+  padding: 10px;
+  display: inline-block;
+  margin: 10px;
+}
+
+.sep {
+  height: 1px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 .decor-header, .decor-menu {
   background-color: #009688;
   color: #e0f2f1;
@@ -85,7 +151,24 @@ html, body {
   color: #009688;
 }
 
-.decor-signinoverlay {
+.decor-signinoverlay, .decor-aboutoverlay {
   background-color: rgba(255, 255, 255, 0.8);
   color: #009688;
+}
+
+.decor-closeabout:hover {
+  background-color: #f44336;
+  color: #b2dfdb;
+}
+
+.decor-grouptitle {
+  color: #009688;
+}
+
+.decor-section {
+  background-color: #ffffff;
+}
+
+.decor-sep {
+  background-color: #b2dfdb;
 }
