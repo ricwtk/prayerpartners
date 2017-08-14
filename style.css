@@ -10,7 +10,8 @@ html, body {
 }
 
 .hide {
-  visibility: collapse;
+  visibility: hidden;
+  display: none;
 }
 
 .signin-overlay, #about-overlay {
@@ -90,14 +91,14 @@ html, body {
 }
 
 .friend-invite-email {
-  font-size: 90%;
+  font-size: 85%;
 }
 
 .friend-invite-accept, .friend-invite-reject {
   padding: 5px;
 }
 
-.main {
+#main {
   width: calc(100% - 10px);
   height: 1000px;
   display: inline-block;
@@ -111,9 +112,19 @@ html, body {
   padding: 10px;
 }
 
+.group-header {
+  display: flex;
+}
+
 .group-title {
   text-align: left;
   /*padding: 10px;*/
+  flex: 1;
+}
+
+.group-action-item {
+  padding: 10px;
+  cursor: pointer;
 }
 
 .section-group {
@@ -123,11 +134,61 @@ html, body {
 }
 
 .section {
-  width: 100%;
-  height: 200px;
-  padding: 10px;
-  display: inline-block;
+  /*width: 30%;*/
+  /*height: 200px;*/
   margin: 10px;
+  overflow: auto;
+}
+
+.section-head {
+  display: flex;
+  padding: 5px 0px 5px 5px;
+}
+
+.section-title {
+  text-align: left;
+  flex-grow: 1;
+}
+
+.section-action-item {
+  cursor: pointer;
+  padding: 5px;
+}
+
+.section-content {
+  display: block;
+  overflow: auto;
+}
+
+.item {
+  /*width: 100%;*/
+}
+
+.item-head {
+  display: flex;
+  padding: 10px 0px 10px 10px;
+}
+
+.item-short-desc {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.item-long-desc {
+  text-align: left;
+  background-color: #eeeeee;
+  padding: 10px;
+  display: none;
+}
+
+.item-head:hover + .item-long-desc {
+  visibility: visible;
+  display: block;
+}
+
+.item-menu {
+  padding: 10px;
+  cursor: pointer
 }
 
 .sep {
@@ -141,12 +202,12 @@ html, body {
   color: #e0f2f1;
 }
 
-.decor-menuitem {
+.decor-menuitem, .decor-sectionactionitem {
   background-color: #009688;
   color: #e0f2f1;
 }
 
-.decor-menuitem:hover {
+.decor-menuitem:hover, .decor-sectionactionitem:hover {
   background-color: #b2dfdb;
   color: #009688;
 }
@@ -161,12 +222,27 @@ html, body {
   color: #b2dfdb;
 }
 
-.decor-grouptitle {
+.decor-groupheader {
   color: #009688;
+}
+
+.decor-groupactionitem:hover {
+  background-color: #009688;
+  color: #e0f2f1;
 }
 
 .decor-section {
   background-color: #ffffff;
+}
+
+.decor-sectionhead {
+  background-color: #009688;
+  color: #e0f2f1;
+}
+
+.decor-itemmenu:hover {
+  background-color: #009688;
+  color: #e0f2f1;
 }
 
 .decor-sep {

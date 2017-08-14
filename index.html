@@ -4,6 +4,7 @@
   <head>
     <!-- <meta name="google-signin-client_id" content=" 885265693601-e44cq3b3nu153cc8ib9c4jcq6kahvte9.apps.googleusercontent.com ">
     <script src="https://apis.google.com/js/platform.js" async defer></script> -->
+    <script src="https://unpkg.com/vue"></script>
     <script src="functions.js"></script>
     <script src="ui.js"></script>
     <link rel = "stylesheet" type = "text/css" href = "style.css" />
@@ -19,12 +20,12 @@
       <span class="menu-item decor-menuitem" id="disconnect-google">Disconnect</span>
       <span class="menu-item decor-menuitem" id="open-about">About Prayer Partners</span>
       <span class="menu-item" id="section-width">
-        Width of list <br>
-        <input type="range" min="20" max="100">
+        Width of list ({{ widthOfSection }})<br>
+        <input id="input-section-width" type="range" min="20" max="100">
       </span>
       <span class="menu-item" id="section-height">
-        Height of list <br>
-        <input type="range" min="200" max="1000">
+        Height of list ({{ heightOfSection }})<br>
+        <input id="input-section-height" type="range" min="200" max="500">
       </span>
       <span class="menu-item friend-invite">
         <span class="friend-invite-identity">
@@ -47,26 +48,127 @@
         <div id="close-about" class="decor-closeabout">&#x1f7a8;</div>
         Prayer Partners<br>
         Developer: Richard Wong ricwtk@gmail.com<br>
-        Source code: Github link
+        Source code: Github link<br>
+        Use Github tracker or email me to report any issue or suggest any enhancement
       </div>
     </div>
     
 
-    <div class="main">
+    <div id="main">
       <div class="group">
-        <div class="group-title decor-grouptitle">Mine</div>
+        <div class="group-header decor-groupheader">
+          <div class="group-title decor-grouptitle">Mine</div>
+          <div class="group-action decor-groupaction">
+            <span class="group-action-item decor-groupactionitem" title="Show as friends list">&#x1f46a;</span>
+            <span class="group-action-item decor-groupactionitem" title="Show as single list">&#x2254;</span>
+          </div>
+        </div>
         <div class="section-group">
-          <div class="section decor-section"></div>
-          <div class="section decor-section"></div>
+          <div class="section decor-section" v-bind:style="sectionStyle">
+            <div class="section-head decor-sectionhead">
+              <div class="section-title decor-sectiontitle">Active</div>
+              <div class="section-action decor-sectionaction">
+                <span class="section-action-item decor-sectionactionitem" title="Cancel">&#x21b6;</span>
+                <span class="section-action-item decor-sectionactionitem" title="Update">&#x1f4be;</span>
+              </div>
+            </div>
+            <div class="section-content decor-sectioncontent">
+              <div class="item">
+                <div class="item-head">
+                  <span class="item-short-desc">Item title</span>
+                  <span class="item-actions">
+                    <span class="item-archive item-menu decor-itemmenu" title="Archive">&#x21aa;</span>
+                    <span class="item-delete item-menu decor-itemmenu" title="Delete">&#x1f7a8;</span>
+                    <span class="item-share item-menu decor-itemmenu" title="Share">&#x21cc;</span>
+                  </span>
+                </div>
+                <div class="item-long-desc hide">This is the long description for this item</div>
+              </div>
+              <div class="item">
+                <div class="item-head">
+                  <span class="item-short-desc">Item title</span>
+                  <span class="item-actions">
+                    <span class="item-archive item-menu decor-itemmenu" title="Archive">&#x21aa;</span>
+                    <span class="item-delete item-menu decor-itemmenu" title="Delete">&#x1f7a8;</span>
+                    <span class="item-share item-menu decor-itemmenu" title="Share">&#x21cc;</span>
+                  </span>
+                </div>
+                <div class="item-long-desc hide">This is the long description for this item</div>
+              </div>
+            </div>
+          </div>
+          <div class="section decor-section" v-bind:style="sectionStyle">
+            <div class="section-head decor-sectionhead">
+              <div class="section-title decor-sectiontitle">Archive</div>
+              <div class="section-action decor-sectionaction">
+                <span class="section-action-item decor-sectionactionitem" title="Cancel">&#x21b6;</span>
+                <span class="section-action-item decor-sectionactionitem" title="Update">&#x1f4be;</span>
+              </div>
+            </div>
+            <div class="section-content decor-sectioncontent">
+              <div class="item">
+                <div class="item-head">
+                  <span class="item-short-desc">Item title</span>
+                  <span class="item-actions">
+                    <span class="item-delete item-menu decor-itemmenu" title="Delete">&#x1f7a8;</span>
+                  </span>
+                </div>
+                <div class="item-long-desc hide">This is the long description for this item</div>
+              </div>
+            </div>
+          </div>
+          <div class="section decor-section" v-bind:style="sectionStyle">
+            <div class="section-head decor-sectionhead" title="friend's email">
+              <div class="section-title decor-sectiontitle">Shared with Friend</div>
+              <div class="section-action decor-sectionaction">
+                <span class="section-action-item decor-sectionactionitem" title="Cancel">&#x21b6;</span>
+                <span class="section-action-item decor-sectionactionitem" title="Update">&#x1f4be;</span>
+              </div>
+            </div>
+            <div class="section-content decor-sectioncontent">
+              <div class="item">
+                <div class="item-head">
+                  <span class="item-short-desc">Item title</span>
+                  <span class="item-actions">
+                    <span class="item-archive item-menu decor-itemmenu" title="Archive">&#x21aa;</span>
+                    <span class="item-delete item-menu decor-itemmenu" title="Remove">&#x2262;</span>
+                    <span class="item-delete item-menu decor-itemmenu" title="Delete">&#x1f7a8;</span>
+                  </span>
+                </div>
+                <div class="item-long-desc hide">This is the long description for this item</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="sep decor-sep"></div>
       <div class="group">
-        <div class="group-title decor-grouptitle">Friends'</div>
+        <div class="group-header decor-groupheader">
+          <div class="group-title decor-grouptitle">Friends'</div>
+        </div>
         <div class="section-group">
-          <div class="section decor-section"></div>
-          <div class="section decor-section"></div>
-          <div class="section decor-section"></div>
+          <div class="section decor-section" v-bind:style="sectionStyle">
+            <div class="section-head decor-sectionhead" title="friend's email">
+              <div class="section-title decor-sectiontitle">Friend</div>
+              <div class="section-action decor-sectionaction">
+                <span class="section-action-item decor-sectionactionitem" title="Edit">&#x1f589;</span>
+              </div>
+            </div>
+            <div class="section-content decor-sectioncontent">
+              <div class="item">
+                <div class="item-head">
+                  <span class="item-short-desc">Item title</span>
+                  <span class="item-actions">
+                    <span class="item-archive item-menu decor-itemmenu" title="Up">&#x25b2;</span>
+                    <span class="item-delete item-menu decor-itemmenu" title="Down">&#x25bc;</span>
+                  </span>
+                </div>
+                <div class="item-long-desc hide">This is the long description for this item</div>
+              </div>
+            </div>
+          </div>
+          <div class="section decor-section" v-bind:style="sectionStyle"></div>
+          <div class="section decor-section" v-bind:style="sectionStyle"></div>
         </div>
       </div>
     </div>
@@ -74,5 +176,6 @@
     <script async defer src="https://apis.google.com/js/api.js"
       onload="this.onload=function(){};loadApi()"
       onreadystatechange="if (this.readyState === 'complete') this.onload()"></script>
+    <script src="vuefcn.js"></script>
   </body>
 </html>
