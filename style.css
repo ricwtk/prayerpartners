@@ -1,28 +1,91 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto+Slab');
+
 html, body {
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Roboto Slab', serif;
 }
 
 .hide {
-  display: none;
+  visibility: collapse;
 }
 
-/*.signin-overlay {
+.signin-overlay {
   width: 100%;
   height: 100%;
-  background-color: #123456;
-  text-align: center;
-}*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
 
-.signin-button, .signout-button {
+.signin-button {
   /*width: 100%;*/
-  padding: 1ex 0ex;
-  background-color: #ffffff;
+  padding: 10px;
   text-align: center;
   cursor: pointer;
 }
 
-.signin-button:hover, .signout-button:hover {
+.signin-button:hover {
   background-color: #999999;
   color: #ffffff;
+}
+
+#header {
+  width: 100%;
+  display: inline-block;
+  /*position: fixed;*/
+  /*left: 0;*/
+  /*top: 0;*/
+}
+
+#pagetitle, #menutoggle {
+  display: block;
+  padding: 10px;
+}
+
+#pagetitle {
+  float: left;
+}
+
+#menutoggle {
+  float: right;
+  cursor: pointer;
+}
+
+#menu {
+  position: absolute;
+  right: 5px;
+  max-width: 100%;
+}
+
+.menu-item {
+  display: block;
+  padding: 10px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.decor-header, .decor-menu {
+  background-color: #009688;
+  color: #e0f2f1;
+}
+
+.decor-menuitem {
+  background-color: #009688;
+  color: #e0f2f1;
+}
+
+.decor-menuitem:hover {
+  background-color: #b2dfdb;
+  color: #009688;
+}
+
+.decor-signinoverlay {
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #009688;
 }

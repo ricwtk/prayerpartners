@@ -5,16 +5,27 @@
     <!-- <meta name="google-signin-client_id" content=" 885265693601-e44cq3b3nu153cc8ib9c4jcq6kahvte9.apps.googleusercontent.com ">
     <script src="https://apis.google.com/js/platform.js" async defer></script> -->
     <script src="functions.js"></script>
+    <script src="ui.js"></script>
     <link rel = "stylesheet" type = "text/css" href = "style.css" />
   </head>
 
   <body>
-    <div id="signin-overlay" class="signin-overlay">
-      <div class="signin-button" id="signin-google">Sign in with Google</div>
+    <div id="header" class="decor-header">
+      <span id="pagetitle">Prayer Partners</span>
+      <span id="menutoggle" class="decor-menuitem">&#9776;</span>
+    </div>
+    <div id="menu" class="decor-menu hide">
+      <span class="menu-item decor-menuitem" id="signout-google">Sign out</span>
+      <span class="menu-item decor-menuitem" id="disconnect-google">Disconnect</span>
+      <span class="menu-item decor-menuitem">About Prayer Partners</span>
     </div>
 
-    <div class="signout-button" id="signout-google">Sign out</div>
-    <div class="signout-button" id="disconnect-google">Disconnect</div>
+    <div id="signin-overlay" class="signin-overlay decor-signinoverlay">
+      <div class="signin-button decor-menuitem" id="signin-google">Sign in with Google</div>
+    </div>
+    
+
+    <div class="main"></div>
 
     <script async defer src="https://apis.google.com/js/api.js"
       onload="this.onload=function(){};loadApi()"
