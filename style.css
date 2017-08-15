@@ -160,6 +160,21 @@ html, body {
   overflow: auto;
 }
 
+.section-add-new-wrapper {
+  display: flex;
+}
+
+.section-add-new {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+}
+
+.section-add-new-text {
+  font-size: 150%;
+  flex-grow: 1;
+}
+
 .item {
   /*width: 100%;*/
 }
@@ -178,13 +193,12 @@ html, body {
   text-align: left;
   background-color: #eeeeee;
   padding: 10px;
-  display: none;
 }
 
-.item-head:hover + .item-long-desc {
+/*.item-head:hover + .item-long-desc {
   visibility: visible;
   display: block;
-}
+}*/
 
 .item-menu {
   padding: 10px;

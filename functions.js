@@ -37,6 +37,7 @@ var newMineItem = {
 
 var newFriend = {
   friendId: null,
+  name: null,
   email: null,
   items: []
 };

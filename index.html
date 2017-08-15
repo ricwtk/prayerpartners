@@ -59,86 +59,41 @@
         <div class="group-header decor-groupheader">
           <div class="group-title decor-grouptitle">Mine</div>
           <div class="group-action decor-groupaction">
-            <span class="group-action-item decor-groupactionitem" title="Show as friends list">&#x1f46a;</span>
-            <span class="group-action-item decor-groupactionitem" title="Show as single list">&#x2254;</span>
+            <span class="group-action-item decor-groupactionitem" title="Show as friends list" @click="showAsSingleList=false">&#x1f46a;</span>
+            <span class="group-action-item decor-groupactionitem" title="Show as single list" @click="showAsSingleList=true">&#x2254;</span>
           </div>
         </div>
         <div class="section-group">
-          <div class="section decor-section" v-bind:style="sectionStyle">
-            <div class="section-head decor-sectionhead">
-              <div class="section-title decor-sectiontitle">Active</div>
-              <div class="section-action decor-sectionaction">
-                <span class="section-action-item decor-sectionactionitem" title="Cancel">&#x21b6;</span>
-                <span class="section-action-item decor-sectionactionitem" title="Update">&#x1f4be;</span>
-              </div>
-            </div>
-            <div class="section-content decor-sectioncontent">
-              <div class="item">
-                <div class="item-head">
-                  <span class="item-short-desc">Item title</span>
-                  <span class="item-actions">
-                    <span class="item-archive item-menu decor-itemmenu" title="Archive">&#x21aa;</span>
-                    <span class="item-delete item-menu decor-itemmenu" title="Delete">&#x1f7a8;</span>
-                    <span class="item-share item-menu decor-itemmenu" title="Share">&#x21cc;</span>
-                  </span>
-                </div>
-                <div class="item-long-desc hide">This is the long description for this item</div>
-              </div>
-              <div class="item">
-                <div class="item-head">
-                  <span class="item-short-desc">Item title</span>
-                  <span class="item-actions">
-                    <span class="item-archive item-menu decor-itemmenu" title="Archive">&#x21aa;</span>
-                    <span class="item-delete item-menu decor-itemmenu" title="Delete">&#x1f7a8;</span>
-                    <span class="item-share item-menu decor-itemmenu" title="Share">&#x21cc;</span>
-                  </span>
-                </div>
-                <div class="item-long-desc hide">This is the long description for this item</div>
-              </div>
-            </div>
-          </div>
-          <div class="section decor-section" v-bind:style="sectionStyle">
-            <div class="section-head decor-sectionhead">
-              <div class="section-title decor-sectiontitle">Archive</div>
-              <div class="section-action decor-sectionaction">
-                <span class="section-action-item decor-sectionactionitem" title="Cancel">&#x21b6;</span>
-                <span class="section-action-item decor-sectionactionitem" title="Update">&#x1f4be;</span>
-              </div>
-            </div>
-            <div class="section-content decor-sectioncontent">
-              <div class="item">
-                <div class="item-head">
-                  <span class="item-short-desc">Item title</span>
-                  <span class="item-actions">
-                    <span class="item-delete item-menu decor-itemmenu" title="Delete">&#x1f7a8;</span>
-                  </span>
-                </div>
-                <div class="item-long-desc hide">This is the long description for this item</div>
-              </div>
-            </div>
-          </div>
-          <div class="section decor-section" v-bind:style="sectionStyle">
-            <div class="section-head decor-sectionhead" title="friend's email">
-              <div class="section-title decor-sectiontitle">Shared with Friend</div>
-              <div class="section-action decor-sectionaction">
-                <span class="section-action-item decor-sectionactionitem" title="Cancel">&#x21b6;</span>
-                <span class="section-action-item decor-sectionactionitem" title="Update">&#x1f4be;</span>
-              </div>
-            </div>
-            <div class="section-content decor-sectioncontent">
-              <div class="item">
-                <div class="item-head">
-                  <span class="item-short-desc">Item title</span>
-                  <span class="item-actions">
-                    <span class="item-archive item-menu decor-itemmenu" title="Archive">&#x21aa;</span>
-                    <span class="item-delete item-menu decor-itemmenu" title="Remove">&#x2262;</span>
-                    <span class="item-delete item-menu decor-itemmenu" title="Delete">&#x1f7a8;</span>
-                  </span>
-                </div>
-                <div class="item-long-desc hide">This is the long description for this item</div>
-              </div>
-            </div>
-          </div>
+          <section-list 
+            v-if="showAsSingleList"
+            section-tooltip="Active list" 
+            section-title="Active" 
+            v-bind:item-list="myItems" 
+            v-bind:section-style="sectionStyle"
+            v-bind:allow-order="true"
+            v-bind:edit-actions="['e','a','d','s']"
+            v-bind:allow-new="true">
+          </section-list>
+          <template v-else v-for="friend in mySharedWithList">
+            <section-list 
+              v-bind:section-tooltip="friend.email" 
+              v-bind:section-title="friend.name" 
+              v-bind:item-list="friend.items" 
+              v-bind:section-style="sectionStyle"
+              v-bind:allow-order="false"
+              v-bind:edit-actions="['e','a','r','d','s']"
+              v-bind:allow-new="true">
+            </section-list>
+          </template>
+          <section-list 
+            section-tooltip="Archived list" 
+            section-title="Archive" 
+            v-bind:item-list="myArchived" 
+            v-bind:section-style="sectionStyle"
+            v-bind:allow-order="false"
+            v-bind:edit-actions="['u','d']"
+            v-bind:allow-new="false">
+          </section-list>
         </div>
       </div>
       <div class="sep decor-sep"></div>
@@ -147,28 +102,22 @@
           <div class="group-title decor-grouptitle">Friends'</div>
         </div>
         <div class="section-group">
-          <div class="section decor-section" v-bind:style="sectionStyle">
-            <div class="section-head decor-sectionhead" title="friend's email">
-              <div class="section-title decor-sectiontitle">Friend</div>
-              <div class="section-action decor-sectionaction">
-                <span class="section-action-item decor-sectionactionitem" title="Edit">&#x1f589;</span>
-              </div>
-            </div>
-            <div class="section-content decor-sectioncontent">
-              <div class="item">
-                <div class="item-head">
-                  <span class="item-short-desc">Item title</span>
-                  <span class="item-actions">
-                    <span class="item-archive item-menu decor-itemmenu" title="Up">&#x25b2;</span>
-                    <span class="item-delete item-menu decor-itemmenu" title="Down">&#x25bc;</span>
-                  </span>
-                </div>
-                <div class="item-long-desc hide">This is the long description for this item</div>
-              </div>
+          <template v-for="friend in savedData.friends">
+            <section-list 
+              v-bind:section-tooltip="friend.email" 
+              v-bind:section-title="friend.name" 
+              v-bind:item-list="friend.items" 
+              v-bind:section-style="sectionStyle"
+              v-bind:allow-order="true"
+              v-bind:edit-actions="['e','d']"
+              v-bind:allow-new="true">
+            </section-list>
+          </template>
+          <div class="section decor-section section-add-new-wrapper" v-bind:style="sectionStyle">
+            <div class="section-add-new item-menu decor-itemmenu" title="Add new prayer list for a friend">
+              <div class="section-add-new-text">&#x1f7a1;</div>
             </div>
           </div>
-          <div class="section decor-section" v-bind:style="sectionStyle"></div>
-          <div class="section decor-section" v-bind:style="sectionStyle"></div>
         </div>
       </div>
     </div>
