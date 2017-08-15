@@ -69,31 +69,28 @@
             v-if="showAsSingleList"
             section-tooltip="Active list" 
             section-title="Active" 
+            section-type="mine"
             v-bind:item-list="myItems" 
             v-bind:section-style="sectionStyle"
-            v-bind:allow-order="true"
-            v-bind:edit-actions="['e','a','d','s']"
-            v-bind:allow-new="true">
+            v-bind:friend-list="savedData.friends">
           </section-list>
           <template v-else v-for="friend in mySharedWithList">
             <section-list 
               v-bind:section-tooltip="friend.email" 
               v-bind:section-title="friend.name" 
+              section-type="mine-friend"
               v-bind:item-list="friend.items" 
               v-bind:section-style="sectionStyle"
-              v-bind:allow-order="false"
-              v-bind:edit-actions="['e','a','r','d','s']"
-              v-bind:allow-new="true">
+              v-bind:friend-list="savedData.friends">
             </section-list>
           </template>
           <section-list 
             section-tooltip="Archived list" 
             section-title="Archive" 
+            section-type="archive"
             v-bind:item-list="myArchived" 
             v-bind:section-style="sectionStyle"
-            v-bind:allow-order="false"
-            v-bind:edit-actions="['u','d']"
-            v-bind:allow-new="false">
+            v-bind:friend-list="savedData.friends">
           </section-list>
         </div>
       </div>
@@ -107,11 +104,10 @@
             <section-list 
               v-bind:section-tooltip="friend.email" 
               v-bind:section-title="friend.name" 
+              section-type="friend"
               v-bind:item-list="friend.items" 
               v-bind:section-style="sectionStyle"
-              v-bind:allow-order="true"
-              v-bind:edit-actions="['e','d']"
-              v-bind:allow-new="true">
+              v-bind:friend-list="savedData.friends">
             </section-list>
           </template>
           <div class="section decor-section section-add-new-wrapper" v-bind:style="sectionStyle">

@@ -206,7 +206,7 @@ html, body {
   cursor: pointer
 }
 
-.add-new-overlay {
+.add-new-overlay, .share-with-overlay {
   position: fixed;
   height: 100%;
   width: 100%;
@@ -218,7 +218,7 @@ html, body {
   flex-direction: row;
 }
 
-.add-new-wrapper {
+.add-new-wrapper, .share-with-wrapper {
   padding: 10px;
   flex-grow: 1;
   display: flex;
@@ -235,12 +235,27 @@ html, body {
   resize: vertical;
 }
 
-.add-new-overlay-label {
+.add-new-overlay-label, .share-with-overlay-label {
   text-align: left;
 }
 
-.add-new-overlay-actions {
+.add-new-overlay-actions, .share-with-overlay-actions {
   text-align: right;
+}
+
+.share-with-content {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10px;
+}
+
+.friend-item {
+  width: 30%;
+  padding: 5px;
+}
+
+.friend-item-name {
+  padding: 0px 0px 0px 5px;
 }
 
 .sep {
@@ -297,7 +312,7 @@ html, body {
   color: #e0f2f1;
 }
 
-.decor-addnewoverlay {
+.decor-addnewoverlay, .decor-sharewithoverlay {
   background-color: rgba(255, 255, 255, 0.8);
   color: #009688;
 }

@@ -1,20 +1,9 @@
-Vue.component('item-menu-button', {
-  props: ["buttonType"],
-  template: `
-    <span v-if="buttonType === 'e'" class="item-archive item-menu decor-itemmenu" title="Edit">&#x1f589;</span>
-    <span v-else-if="buttonType === 'u'" class="item-archive item-menu decor-itemmenu" title="Unarchive">&#x21a9;</span>
-    <span v-else-if="buttonType === 'a'" class="item-archive item-menu decor-itemmenu" title="Archive">&#x21aa;</span>
-    <span v-else-if="buttonType === 'r'" class="item-delete item-menu decor-itemmenu" title="Remove from list">&#x2262;</span>
-    <span v-else-if="buttonType === 'd'" class="item-delete item-menu decor-itemmenu" title="Delete">&#x1f7a8;</span>
-    <span v-else-if="buttonType === 's'" class="item-share item-menu decor-itemmenu" title="Share">&#x21cc;</span>
-  `
-});
-
 Vue.component('single-item', {
-  props: ["itemTitle", "itemLongDesc", "edit", "allowOrder", "editActions"],
+  props: ["item", "edit", "allowOrder", "editActions", "friendList"],
   data: function () {
     return {
-      showDesc: false
+      showDesc: false,
+      showShareWith: false
     }
   },
   methods: {
@@ -25,11 +14,16 @@ Vue.component('single-item', {
   template: `
     <div class="item">
       <div class="item-head">
-        <span class="item-short-desc" @click="toggleDesc">{{ itemTitle }}</span>
+        <span class="item-short-desc" @click="toggleDesc">{{ item.item }}</span>
         <span class="item-actions">
           <template v-if="edit">
             <template v-for="action in editActions">
-              <item-menu-button v-bind:buttonType="action"></item-menu-button>
+              <span v-if="action === 'e'" class="item-archive item-menu decor-itemmenu" title="Edit">&#x1f589;</span>
+              <span v-else-if="action === 'u'" class="item-archive item-menu decor-itemmenu" title="Unarchive">&#x21a9;</span>
+              <span v-else-if="action === 'a'" class="item-archive item-menu decor-itemmenu" title="Archive">&#x21aa;</span>
+              <span v-else-if="action === 'r'" class="item-delete item-menu decor-itemmenu" title="Remove from list">&#x2262;</span>
+              <span v-else-if="action === 'd'" class="item-delete item-menu decor-itemmenu" title="Delete">&#x1f7a8;</span>
+              <span v-else-if="action === 's'" class="item-share item-menu decor-itemmenu" title="Share" @click="showShareWith=true">&#x21cc;</span>
             </template>
           </template>
           <template v-else-if="allowOrder">
@@ -38,18 +32,62 @@ Vue.component('single-item', {
           </template>
         </span>
       </div>
-      <div v-if="showDesc" class="item-long-desc">{{ itemLongDesc }}</div>
+      <div v-if="showDesc" class="item-long-desc">{{ item.desc }}</div>
+      <div v-if="showShareWith" class="share-with-overlay decor-sharewithoverlay">
+        <div class="share-with-wrapper">
+          <div class="share-with-overlay-label">Friends:</div>
+          <div class="share-with-content">
+            <template v-for="friend in friendList">
+              <span class="friend-item">
+                <template v-if="item.sharedWith.includes(friend.email)">
+                  <input type="checkbox" checked><span class="friend-item-name">{{ friend.name }}</span>
+                </template>
+                <template v-else>
+                  <input type="checkbox"><span class="friend-item-name">{{ friend.name }}</span>
+                </template>
+              </span>
+            </template>
+          </div>
+          <div class="share-with-overlay-actions">
+            <button type="button" @click="showShareWith=false">&#x1f4be; Save</button>
+            <button type="button" @click="showShareWith=false">&#x21b6; Cancel</button>
+          </div>
+        </div>
+      </div>
     </div>
   `
 });
 
 Vue.component('section-list', {
-  props: ["sectionTooltip", "sectionTitle", "itemList", "sectionStyle", "allowOrder", "editActions", "allowNew"],
+  props: ["sectionTooltip", "sectionTitle", "itemList", "sectionStyle", "sectionType", "friendList"],
   data: function () {
     return {
       edit: false,
       OWNER: OWNER,
       showAddNewItem: false
+    }
+  },
+  computed: {
+    allowOrder: function() { 
+      switch(this.sectionType) {
+        case "mine": case "friend": return true;
+        case "archive": case "mine-friend": default: return false;
+      }
+    },
+    editActions: function() {
+      switch(this.sectionType) {
+        case "mine": return ['e','a','d','s'];
+        case "archive": return ['u','d'];
+        case "mine-friend": return ['e','a','r','d','s'];
+        case "friend": return ['e','d'];
+        default: return [];
+      }
+    },
+    allowNew: function() {
+      switch(this.sectionType) {
+        case "mine": case "mine-friend": case "friend": return true;
+        case "archive": default: return false;
+      }
     }
   },
   methods: {
@@ -72,11 +110,11 @@ Vue.component('section-list', {
       <div class="section-content decor-sectioncontent">
         <template v-for="item in itemList">
           <single-item 
-            v-bind:item-title="item.item" 
-            v-bind:item-long-desc="item.desc" 
+            v-bind:item="item"
             v-bind:edit="edit"
             v-bind:allow-order="allowOrder"
-            v-bind:edit-actions="item.owner ? ( (item.owner === OWNER.FRIEND) ? []: editActions) : editActions">
+            v-bind:edit-actions="item.owner ? ( (item.owner === OWNER.FRIEND) ? []: editActions) : editActions"
+            v-bind:friendList="friendList">
           </single-item>
         </template>        
         <div v-if="allowNew && edit" class="item">
@@ -173,6 +211,26 @@ var app = new Vue({
           owner: OWNER.MINE,
           order: 1
         }]
+      },{
+        friendId: "dasf098d",
+        name: "Friend Name 2",
+        email: "friend2@domain.com",
+        items: []
+      },{
+        friendId: "dsaf120",
+        name: "Friend Name 3",
+        email: "friend3@domain.com",
+        items: []
+      },{
+        friendId: "d231sf9a",
+        name: "Friend Name 4",
+        email: "friend4@domain.com",
+        items: []
+      },{
+        friendId: "fds098",
+        name: "Friend Name 5",
+        email: "friend5@domain.com",
+        items: []
       }],
       friendRequests: []
     },
