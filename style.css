@@ -37,7 +37,7 @@ html, body {
   color: #ffffff;
 }
 
-#close-about {
+.close-button, #close-about {
   position: absolute;
   right: 0;
   top: 0;
@@ -193,6 +193,7 @@ html, body {
   text-align: left;
   background-color: #eeeeee;
   padding: 10px;
+  font-size: 90%;
 }
 
 /*.item-head:hover + .item-long-desc {
@@ -203,6 +204,43 @@ html, body {
 .item-menu {
   padding: 10px;
   cursor: pointer
+}
+
+.add-new-overlay {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+
+.add-new-wrapper {
+  padding: 10px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  /*width: 100%;*/
+}
+
+.add-new-title, .add-new-content {
+  /*width: 100%;*/
+  flex-grow: 1;
+}
+
+.add-new-content {
+  resize: vertical;
+}
+
+.add-new-overlay-label {
+  text-align: left;
+}
+
+.add-new-overlay-actions {
+  text-align: right;
 }
 
 .sep {
@@ -231,7 +269,7 @@ html, body {
   color: #009688;
 }
 
-.decor-closeabout:hover {
+.decor-closebutton:hover, .decor-closeabout:hover {
   background-color: #f44336;
   color: #b2dfdb;
 }
@@ -257,6 +295,11 @@ html, body {
 .decor-itemmenu:hover {
   background-color: #009688;
   color: #e0f2f1;
+}
+
+.decor-addnewoverlay {
+  background-color: rgba(255, 255, 255, 0.8);
+  color: #009688;
 }
 
 .decor-sep {

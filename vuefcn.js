@@ -48,7 +48,8 @@ Vue.component('section-list', {
   data: function () {
     return {
       edit: false,
-      OWNER: OWNER
+      OWNER: OWNER,
+      showAddNewItem: false
     }
   },
   methods: {
@@ -78,8 +79,20 @@ Vue.component('section-list', {
             v-bind:edit-actions="item.owner ? ( (item.owner === OWNER.FRIEND) ? []: editActions) : editActions">
           </single-item>
         </template>        
-        <div v-if="allowNew" class="item">
-          <div class="item-add-new item-menu decor-itemmenu" title="Add new prayer item">&#x1f7a1;</div>
+        <div v-if="allowNew && edit" class="item">
+          <div class="item-add-new item-menu decor-itemmenu" title="Add new prayer item" @click="showAddNewItem=true">&#x1f7a1;</div>
+        </div>
+        <div v-if="showAddNewItem" class="add-new-overlay decor-addnewoverlay">
+          <div class="add-new-wrapper">
+            <div class="add-new-overlay-label">Prayer item:</div>
+            <input class="add-new-title" type="text">
+            <div class="add-new-overlay-label">Long description:</div>
+            <textarea class="add-new-content" rows="10"></textarea>
+            <div class="add-new-overlay-actions">
+              <button type="button" @click="showAddNewItem=false">&#x1f4be; Save</button>
+              <button type="button" @click="showAddNewItem=false">&#x21b6; Cancel</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
