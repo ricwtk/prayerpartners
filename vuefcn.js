@@ -1,15 +1,44 @@
+Vue.component('edit-item-overlay', {
+  props: ["item"],
+  data: function() {
+    return {
+      showThis: true
+    }
+  },
+  watch: {
+    'showThis': function() {
+      this.$emit('input', this.showThis);
+    }
+  },
+  template: `
+    <div class="edit-item-overlay decor-edititemoverlay">
+      <div class="edit-item-wrapper">
+        <div class="edit-item-overlay-label">Prayer item:</div>
+        <input class="edit-item-title" type="text" v-bind:value="item.item ? item.item:''">
+        <div class="edit-item-overlay-label">Long description:</div>
+        <textarea class="edit-item-content" rows="10">{{ item.desc ? item.desc:'' }}</textarea>
+        <div class="edit-item-overlay-actions">
+          <button type="button" @click="showThis=false">&#x1f4be; Save</button>
+          <button type="button" @click="showThis=false">&#x21b6; Cancel</button>
+        </div>
+      </div>
+    </div>
+  `
+});
+
 Vue.component('single-item', {
   props: ["item", "edit", "allowOrder", "editActions", "friendList"],
   data: function () {
     return {
       showDesc: false,
-      showShareWith: false
+      showShareWith: false,
+      showEdit: false
     }
   },
   methods: {
     toggleDesc: function() {
       this.showDesc = !this.showDesc;
-    }
+    },
   },
   template: `
     <div class="item">
@@ -18,7 +47,7 @@ Vue.component('single-item', {
         <span class="item-actions">
           <template v-if="edit">
             <template v-for="action in editActions">
-              <span v-if="action === 'e'" class="item-archive item-menu decor-itemmenu" title="Edit">&#x1f589;</span>
+              <span v-if="action === 'e'" class="item-archive item-menu decor-itemmenu" title="Edit" @click="showEdit=true">&#x1f589;</span>
               <span v-else-if="action === 'u'" class="item-archive item-menu decor-itemmenu" title="Unarchive">&#x21a9;</span>
               <span v-else-if="action === 'a'" class="item-archive item-menu decor-itemmenu" title="Archive">&#x21aa;</span>
               <span v-else-if="action === 'r'" class="item-delete item-menu decor-itemmenu" title="Remove from list">&#x2262;</span>
@@ -33,6 +62,7 @@ Vue.component('single-item', {
         </span>
       </div>
       <div v-if="showDesc" class="item-long-desc">{{ item.desc }}</div>
+      <edit-item-overlay v-if="showEdit" v-model="showEdit" v-bind:item="item"></edit-item-overlay>
       <div v-if="showShareWith" class="share-with-overlay decor-sharewithoverlay">
         <div class="share-with-wrapper">
           <div class="share-with-overlay-label">Friends:</div>
@@ -120,18 +150,7 @@ Vue.component('section-list', {
         <div v-if="allowNew && edit" class="item">
           <div class="item-add-new item-menu decor-itemmenu" title="Add new prayer item" @click="showAddNewItem=true">&#x1f7a1;</div>
         </div>
-        <div v-if="showAddNewItem" class="add-new-overlay decor-addnewoverlay">
-          <div class="add-new-wrapper">
-            <div class="add-new-overlay-label">Prayer item:</div>
-            <input class="add-new-title" type="text">
-            <div class="add-new-overlay-label">Long description:</div>
-            <textarea class="add-new-content" rows="10"></textarea>
-            <div class="add-new-overlay-actions">
-              <button type="button" @click="showAddNewItem=false">&#x1f4be; Save</button>
-              <button type="button" @click="showAddNewItem=false">&#x21b6; Cancel</button>
-            </div>
-          </div>
-        </div>
+        <edit-item-overlay v-if="showAddNewItem" v-model="showAddNewItem" v-bind:item="[]"></edit-item-overlay>
       </div>
     </div>
   `

@@ -206,7 +206,7 @@ html, body {
   cursor: pointer
 }
 
-.add-new-overlay, .share-with-overlay {
+.edit-item-overlay, .share-with-overlay {
   position: fixed;
   height: 100%;
   width: 100%;
@@ -218,7 +218,7 @@ html, body {
   flex-direction: row;
 }
 
-.add-new-wrapper, .share-with-wrapper {
+.edit-item-wrapper, .share-with-wrapper {
   padding: 10px;
   flex-grow: 1;
   display: flex;
@@ -226,20 +226,21 @@ html, body {
   /*width: 100%;*/
 }
 
-.add-new-title, .add-new-content {
+.edit-item-title, .edit-item-content {
   /*width: 100%;*/
   flex-grow: 1;
 }
 
-.add-new-content {
+.edit-item-content {
   resize: vertical;
+  padding: 10px;
 }
 
-.add-new-overlay-label, .share-with-overlay-label {
+.edit-item-overlay-label, .share-with-overlay-label {
   text-align: left;
 }
 
-.add-new-overlay-actions, .share-with-overlay-actions {
+.edit-item-overlay-actions, .share-with-overlay-actions {
   text-align: right;
 }
 
@@ -312,7 +313,7 @@ html, body {
   color: #e0f2f1;
 }
 
-.decor-addnewoverlay, .decor-sharewithoverlay {
+.decor-edititemoverlay, .decor-sharewithoverlay {
   background-color: rgba(255, 255, 255, 0.8);
   color: #009688;
 }
