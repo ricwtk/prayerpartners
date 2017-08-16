@@ -1,8 +1,41 @@
 Vue.component('add-new-friend-section', {
-  props: ["friendList", "sectionStyle"],
+  props: ["sectionStyle"],
   data: function() {
     return {
-      showOverlay: false
+      showOverlay: false,
+      newFriendEmail: '',
+      newFriendName: '',
+      addPrivateError: false,
+      addEmailError: false
+    }
+  },
+  methods: {
+    addPrivate: function() {
+      var friendList = app.savedData.friends.map(friend => friend.name);
+      if (friendList.includes(this.newFriendName)) {
+        this.addPrivateError = true;
+        showDebug(this.newFriendName + " is in existing friend list");
+      } else {
+        var friend = JSON.parse(JSON.stringify(newFriend));
+        friend.friendId = generateId(app.savedData.friends.map(friend => friend.friendId));
+        friend.name = this.newFriendName;
+        app.savedData.friends.push(friend);
+        this.newFriendName = '';
+        this.showOverlay = false;
+        showDebug("Save " + this.newFriendName + " to friend list");
+      }
+    },
+    addEmail: function() {
+      var friendEmailList = app.savedData.friends.map(friend => friend.email);
+      if (friendEmailList.includes(this.newFriendEmail)) {
+        this.addEmailError = true;
+        showDebug(this.newFriendName + " is in existing friend list");
+      } else {
+        // send invite
+        this.newFriendEmail = '';
+        this.showOverlay = false;
+        showDebug("Save " + this.newFriendName + " to friend list");
+      }
     }
   },
   template: `
@@ -14,14 +47,16 @@ Vue.component('add-new-friend-section', {
         <div class="overlay-wrapper">
           <div class="overlay-label">Invite with email (only Google account is supported, require response)</div>
           <div class="overlay-row">
-            <input class="overlay-input" type="text">
-            <button type="button" @click="showOverlay=false">Invite</button>
+            <input class="overlay-input" type="text" v-model="newFriendEmail">
+            <button type="button" @click="addEmail">Invite</button>
           </div>
+          <div v-if="addEmailError" class="overlay-error decor-overlayerror">Friend is already in the list. Change email.</div>
           <div class="overlay-label">Add private list for friend</div>
           <div class="overlay-row">
-            <input class="overlay-input" type="text">
-            <button type="button" @click="showOverlay=false">Add</button>
+            <input class="overlay-input" type="text" v-model="newFriendName">
+            <button type="button" @click="addPrivate">Add</button>
           </div>
+          <div v-if="addPrivateError" class="overlay-error decor-overlayerror">Friend's name exists. Change name.</div>
           <div class="overlay-actions">
             <button type="button" @click="showOverlay=false">&#x21b6; Cancel</button>
           </div>

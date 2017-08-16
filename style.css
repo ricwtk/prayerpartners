@@ -248,6 +248,11 @@ html, body {
   text-align: right;
 }
 
+.overlay-error {
+  padding: 10px;
+  margin: 0px 0px 5px 0px;
+}
+
 button {
   width: 100px;
 }
@@ -324,6 +329,11 @@ button {
 .decor-overlay, .decor-edititemoverlay, .decor-sharewithoverlay {
   background-color: rgba(255, 255, 255, 0.8);
   color: #009688;
+}
+
+.decor-overlayerror {
+  background-color: #f44336;
+  color: #ffffff;
 }
 
 .decor-sep {
