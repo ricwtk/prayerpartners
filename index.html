@@ -110,11 +110,15 @@
               v-bind:friend-list="savedData.friends">
             </section-list>
           </template>
-          <div class="section decor-section section-add-new-wrapper" v-bind:style="sectionStyle">
+          <add-new-friend-section
+            v-bind:friend-list="savedData.friends"
+            v-bind:section-style="sectionStyle">
+          </add-new-friend-section>
+          <!-- <div class="section decor-section section-add-new-wrapper" v-bind:style="sectionStyle">
             <div class="section-add-new item-menu decor-itemmenu" title="Add new prayer list for a friend">
               <div class="section-add-new-text">&#x1f7a1;</div>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>

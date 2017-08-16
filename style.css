@@ -206,7 +206,7 @@ html, body {
   cursor: pointer
 }
 
-.edit-item-overlay, .share-with-overlay {
+.overlay, .edit-item-overlay, .share-with-overlay {
   position: fixed;
   height: 100%;
   width: 100%;
@@ -218,7 +218,7 @@ html, body {
   flex-direction: row;
 }
 
-.edit-item-wrapper, .share-with-wrapper {
+.overlay-wrapper, .edit-item-wrapper, .share-with-wrapper {
   padding: 10px;
   flex-grow: 1;
   display: flex;
@@ -226,9 +226,13 @@ html, body {
   /*width: 100%;*/
 }
 
-.edit-item-title, .edit-item-content {
+.overlay-input, .edit-item-title, .edit-item-content {
   /*width: 100%;*/
   flex-grow: 1;
+}
+
+.overlay-row {
+  display: flex;
 }
 
 .edit-item-content {
@@ -236,12 +240,16 @@ html, body {
   padding: 10px;
 }
 
-.edit-item-overlay-label, .share-with-overlay-label {
+.overlay-label, .edit-item-overlay-label, .share-with-overlay-label {
   text-align: left;
 }
 
-.edit-item-overlay-actions, .share-with-overlay-actions {
+.overlay-actions, .edit-item-overlay-actions, .share-with-overlay-actions {
   text-align: right;
+}
+
+button {
+  width: 100px;
 }
 
 .share-with-content {
@@ -313,7 +321,7 @@ html, body {
   color: #e0f2f1;
 }
 
-.decor-edititemoverlay, .decor-sharewithoverlay {
+.decor-overlay, .decor-edititemoverlay, .decor-sharewithoverlay {
   background-color: rgba(255, 255, 255, 0.8);
   color: #009688;
 }

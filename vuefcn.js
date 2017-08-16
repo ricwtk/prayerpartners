@@ -1,3 +1,36 @@
+Vue.component('add-new-friend-section', {
+  props: ["friendList", "sectionStyle"],
+  data: function() {
+    return {
+      showOverlay: false
+    }
+  },
+  template: `
+    <div class="section decor-section section-add-new-wrapper" v-bind:style="sectionStyle">
+      <div class="section-add-new item-menu decor-itemmenu" title="Add new prayer list for a friend" @click="showOverlay=true">
+        <div class="section-add-new-text">&#x1f7a1;</div>
+      </div>
+      <div v-if="showOverlay" class="overlay decor-overlay">
+        <div class="overlay-wrapper">
+          <div class="overlay-label">Invite with email (only Google account is supported, require response)</div>
+          <div class="overlay-row">
+            <input class="overlay-input" type="text">
+            <button type="button" @click="showOverlay=false">Invite</button>
+          </div>
+          <div class="overlay-label">Add private list for friend</div>
+          <div class="overlay-row">
+            <input class="overlay-input" type="text">
+            <button type="button" @click="showOverlay=false">Add</button>
+          </div>
+          <div class="overlay-actions">
+            <button type="button" @click="showOverlay=false">&#x21b6; Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `
+});
+
 Vue.component('edit-item-overlay', {
   props: ["item"],
   data: function() {
