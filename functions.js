@@ -59,6 +59,10 @@ function showDebug(debugString) {
   }
 }
 
+function copyObj(object) {
+  return JSON.parse(JSON.stringify(object));
+}
+
 // id generator
 function generateId(blacklistId) {
   var idChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
