@@ -253,13 +253,13 @@ function saveToFile(newContent) {
   });
 }
 
-function updateToDatabase(newData) {
+function updateToDatabase() {
   showDebug(["updateToDatabase"]);
   getSavedFile()
     .then((res) => {
       return {
         fileId: res.result.files[0].id,
-        content: newData
+        content: savedData
       } 
     })
     .then(saveToFile);

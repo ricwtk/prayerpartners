@@ -11,19 +11,20 @@ Vue.component('add-new-friend-section', {
   },
   methods: {
     addPrivate: function() {
-      var friendList = app.savedData.friends.map(friend => friend.name);
+      var friendList = savedData.friends.map(friend => friend.name);
       if (friendList.includes(this.newFriendName)) {
         this.addPrivateError = true;
         showDebug([this.newFriendName + " is in existing friend list"]);
       } else {
         var friend = JSON.parse(JSON.stringify(newFriend));
-        friend.friendId = generateId(app.savedData.friends.map(friend => friend.friendId));
+        friend.friendId = generateId(savedData.friends.map(friend => friend.friendId));
         friend.name = this.newFriendName;
-        app.savedData.friends.push(friend);
+        savedData.friends.push(friend);
         this.newFriendName = '';
         this.showOverlay = false;
         showDebug(["Save '" + this.newFriendName + "' to friend list"]);
       }
+      updateToDatabase();
     },
     addEmail: function() {
       var friendEmailList = app.savedData.friends.map(friend => friend.email);
@@ -253,7 +254,8 @@ Vue.component('single-item', {
 });
 
 Vue.component('section-list', {
-  props: ["sectionTooltip", "sectionTitle", "itemList", "sectionStyle", "sectionType", "friendList"],
+  props: ["sectionTooltip", "sectionTitle", "itemList", "sectionStyle", "sectionTypeData", "friendList"],
+  // sectionTypeData = { sType: "", data: null }
   data: function () {
     return {
       edit: false,
@@ -265,13 +267,13 @@ Vue.component('section-list', {
   },
   computed: {
     allowOrder: function() { 
-      switch(this.sectionType) {
+      switch(this.sectionTypeData.sType) {
         case "mine": case "friend": return true;
         case "archive": case "mine-friend": default: return false;
       }
     },
     editActions: function() {
-      switch(this.sectionType) {
+      switch(this.sectionTypeData.sType) {
         case "mine": return ['e','a','d','s'];
         case "archive": return ['u','d'];
         case "mine-friend": return ['e','a','r','d','s'];
@@ -280,9 +282,16 @@ Vue.component('section-list', {
       }
     },
     allowNew: function() {
-      switch(this.sectionType) {
+      switch(this.sectionTypeData.sType) {
         case "mine": case "friend": return true;
         case "mine-friend": case "archive": default: return false;
+      }
+    },
+    allowRemove: function() {
+      switch(this.sectionTypeData.sType) {
+        case "friend":
+          return (this.sectionTooltip == null);
+        default: return false;
       }
     },
     displayItemList: function() {
@@ -313,6 +322,10 @@ Vue.component('section-list', {
     cancelEdit: function() {
       this.edit = false;
       this.syncClonedWithOri();
+    },
+    removeSection: function() {
+      this.$emit("remove", this.sectionTypeData.data.friendId);
+      this.edit = false;
     },
     moveUp: function(itemId) {
       showDebug(["move '" + itemId + "' up"]);
@@ -357,7 +370,7 @@ Vue.component('section-list', {
       showDebug(["add item: ", copyObj(newItem)]);
       newItem.itemId = generateId(this.itemList.map(item => item.itemId));
       newItem.order = Math.max(...this.itemList.filter(item => (item.order > -1)).map(item => item.order)) + 1;
-      if (this.sectionType == "friend") {
+      if (this.sectionType.sType == "friend") {
         newItem.owner = OWNER.MINE;
       }
       this.itemList.splice(this.itemList.length, 1, newItem);
@@ -373,6 +386,7 @@ Vue.component('section-list', {
         <div class="section-title decor-sectiontitle" v-bind:title="sectionTooltip">{{ sectionTitle }}</div>
         <div class="section-action decor-sectionaction">
           <template v-if="edit">
+            <span v-if="allowRemove" @click="removeSection" class="section-action-item decor-sectionactionitem" title="Remove">&#x1f464;&#x2093</span>
             <span @click="edit=false" class="section-action-item decor-sectionactionitem" title="Update">&#x1f4be;</span>
             <span @click="cancelEdit" class="section-action-item decor-sectionactionitem" title="Cancel">&#x21b6;</span>
           </template>
@@ -402,7 +416,7 @@ Vue.component('section-list', {
           @close="showAddNewItem=false" 
           @createNew="createNew"
           action="new"
-          :sectionType="sectionType"
+          :sectionType="sectionTypeData.sType"
           :item="[]">
         </edit-item-overlay>
       </div>
@@ -482,8 +496,23 @@ function initVueInst() {
         });
         console.log("allFriends", allFriends);
         return allFriends;
+      },
+      myFriendList: function() {
+        var allFriends = savedData.friends.map(friend => friend);
+        allFriends.sort(function(a,b) {
+          return a.name.localeCompare(b.name);
+        })
+        return allFriends;
       }
-    }
+    },
+    methods: {
+      removeFriend: function(friendId) {
+        var indexOfFriend = savedData.friends.findIndex((friend) => friend.friendId == friendId);
+        showDebug(["remove '" + savedData.friends[indexOfFriend].name + "' (id: " + savedData.friends[indexOfFriend].friendId + ")"]);
+        savedData.friends.splice(indexOfFriend, 1);
+        updateToDatabase();
+      }
+    },
   });
 
   showDebug(['savedData', copyObj(savedData), 'app.savedData', copyObj(app.savedData)]);
@@ -506,7 +535,7 @@ function initVueInst() {
     methods: {
       saveProfile: function(newProfileName) {
         savedData.mine.name = newProfileName;
-        updateToDatabase(savedData);
+        updateToDatabase();
       }
     }
   });

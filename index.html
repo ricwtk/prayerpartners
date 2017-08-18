@@ -74,7 +74,7 @@
             v-if="showAsSingleList"
             section-tooltip="Active list" 
             section-title="Active" 
-            section-type="mine"
+            :section-type-data="{ sType: 'mine', data: null }"
             v-bind:item-list="myItems" 
             v-bind:section-style="sectionStyle"
             v-bind:friend-list="savedData.friends">
@@ -83,7 +83,7 @@
             <section-list 
               v-bind:section-tooltip="friend.email" 
               v-bind:section-title="friend.name" 
-              section-type="mine-friend"
+              :section-type-data="{ sType: 'mine-friend', data: null }"
               v-bind:item-list="friend.items" 
               v-bind:section-style="sectionStyle"
               v-bind:friend-list="savedData.friends">
@@ -92,7 +92,7 @@
           <section-list 
             section-tooltip="Archived list" 
             section-title="Archive" 
-            section-type="archive"
+            :section-type-data="{ sType: 'archive', data: null }"
             v-bind:item-list="myArchived" 
             v-bind:section-style="sectionStyle"
             v-bind:friend-list="savedData.friends">
@@ -105,14 +105,15 @@
           <div class="group-title decor-grouptitle">Friends'</div>
         </div>
         <div class="section-group">
-          <template v-for="friend in savedData.friends">
+          <template v-for="friend in myFriendList">
             <section-list 
               v-bind:section-tooltip="friend.email" 
               v-bind:section-title="friend.name" 
-              section-type="friend"
+              :section-type-data="{ sType: 'friend', data: friend }"
               v-bind:item-list="friend.items" 
               v-bind:section-style="sectionStyle"
-              v-bind:friend-list="savedData.friends">
+              v-bind:friend-list="savedData.friends"
+              @remove="removeFriend">
             </section-list>
           </template>
           <add-new-friend-section
