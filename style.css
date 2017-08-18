@@ -233,6 +233,7 @@ html, body {
 
 .overlay-row {
   display: flex;
+  align-items: center;
 }
 
 .edit-item-content {

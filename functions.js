@@ -50,12 +50,16 @@ var newFriendItem = {
   order: null
 };
 
-var data = null;
+var savedData = defaultData;
 
 // display if debug
 function showDebug(debugString) {
   if (DEBUG) {
-    console.log(debugString);
+    try {
+      console.log(...debugString);
+    } catch (e) {
+      console.log(debugString);
+    }
   }
 }
 
@@ -121,19 +125,19 @@ function readFromGmail() {
 
 // first time log in
 function firstTimeLogIn() {
-  data = defaultData;
+  savedData = defaultData;
   // read from google account
   // save email and name to data
 }
 
 // load api
 function loadApi() {
-  showDebug("loadApi");
+  showDebug(["loadApi"]);
   gapi.load("client", initApi);
 }
 
 function initApi() {
-  showDebug("initApi");
+  showDebug(["initApi"]);
   gapi.client.init({
     discoveryDocs: GOOGLE.DISCOVERY_DOCS,
     clientId: GOOGLE.CLIENT_ID,
@@ -150,8 +154,8 @@ function initApi() {
 
 // check signed in status, show sign in screen or direct to the main screen
 function signedIn(signinState) {
-  showDebug("signedIn");
-  showDebug(signinState);
+  showDebug(["signedIn"]);
+  showDebug([signinState]);
   if (signinState) {
     document.getElementById("signin-overlay").classList.add("hide");
     initSystem();
@@ -162,25 +166,25 @@ function signedIn(signinState) {
 
 // click to authenticate
 function handleAuthClick() {
-  showDebug("handleAuthClick");
+  showDebug(["handleAuthClick"]);
   gapi.auth2.getAuthInstance().signIn();
 }
 
 // click to sign out
 function handleSignoutClick() {
-  showDebug("handleSignoutClick");
+  showDebug(["handleSignoutClick"]);
   gapi.auth2.getAuthInstance().signOut();
 }
 
 // click to disconnect
 function handleDisconnectClick() {
-  showDebug("handleDisconnectClick");
+  showDebug(["handleDisconnectClick"]);
   gapi.auth2.getAuthInstance().disconnect();
 }
 
 // read from saved data
 function getSavedFile() {
-  showDebug("getSavedFile");
+  showDebug(["getSavedFile"]);
   // read from saved data, if no saved data, load default
   return gapi.client.drive.files.list({
     q: 'name="data.json"',
@@ -190,21 +194,20 @@ function getSavedFile() {
 }
 
 function readOrCreateData(searchResult) {
-  showDebug("readOrCreateData");
   // load previous data if available, else load default
   var files = searchResult.result.files;
-  showDebug(files);
+  showDebug(["readOrCreateData", files]);
   if (files.length > 0) {
     return readFileContent(files[0].id);
   } else {
-    data = defaultData;
+    savedData = defaultData;
     var basicProfile = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
-    data.mine.name = basicProfile.getName();
-    data.mine.email = basicProfile.getEmail();
-    data.mine.personId = generateId([]);
+    savedData.mine.name = basicProfile.getName();
+    savedData.mine.email = basicProfile.getEmail();
+    savedData.mine.personId = generateId([]);
     return createDataFile()
       .then((res)=>{
-        return {fileId: res.result.id, content: data};
+        return {fileId: res.result.id, content: savedData};
       })
       .then(saveToFile)
       .then((res) => {
@@ -215,7 +218,7 @@ function readOrCreateData(searchResult) {
 }
 
 function createDataFile() {
-  showDebug("createDataFile");
+  showDebug(["createDataFile"]);
   return gapi.client.drive.files.create({
     resource: {
       name: "data.json",
@@ -226,15 +229,20 @@ function createDataFile() {
 }
 
 function readFileContent(fileId) {
-  showDebug("readFileContent");
+  showDebug(["readFileContent"]);
   return gapi.client.drive.files.get({
     fileId: fileId,
     alt: 'media'
   });
 }
 
+function saveToGlobal(readData) {
+  showDebug(["saveToGlobal", copyObj(readData)]);
+  savedData = readData.result;
+} 
+
 function saveToFile(newContent) {
-  showDebug("saveToFile");
+  showDebug(["saveToFile"]);
   return gapi.client.request({
     path: '/upload/drive/v3/files/' + newContent.fileId,
     method: 'PATCH',
@@ -245,12 +253,24 @@ function saveToFile(newContent) {
   });
 }
 
+function updateToDatabase(newData) {
+  showDebug(["updateToDatabase"]);
+  getSavedFile()
+    .then((res) => {
+      return {
+        fileId: res.result.files[0].id,
+        content: newData
+      } 
+    })
+    .then(saveToFile);
+}
+
 // init function
 function initSystem() {
   // read from google account
-  getSavedFile().then(readOrCreateData, showDebug).then(showDebug, showDebug);
+  getSavedFile().then(readOrCreateData).then(saveToGlobal).then(initVueInst);
   // getSavedFile().then(console.log, console.log);
-  if (data == null) {
+  if (savedData == null) {
     firstTimeLogIn();
   }
 }

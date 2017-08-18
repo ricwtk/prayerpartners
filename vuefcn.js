@@ -14,7 +14,7 @@ Vue.component('add-new-friend-section', {
       var friendList = app.savedData.friends.map(friend => friend.name);
       if (friendList.includes(this.newFriendName)) {
         this.addPrivateError = true;
-        showDebug(this.newFriendName + " is in existing friend list");
+        showDebug([this.newFriendName + " is in existing friend list"]);
       } else {
         var friend = JSON.parse(JSON.stringify(newFriend));
         friend.friendId = generateId(app.savedData.friends.map(friend => friend.friendId));
@@ -22,19 +22,19 @@ Vue.component('add-new-friend-section', {
         app.savedData.friends.push(friend);
         this.newFriendName = '';
         this.showOverlay = false;
-        showDebug("Save '" + this.newFriendName + "' to friend list");
+        showDebug(["Save '" + this.newFriendName + "' to friend list"]);
       }
     },
     addEmail: function() {
       var friendEmailList = app.savedData.friends.map(friend => friend.email);
       if (friendEmailList.includes(this.newFriendEmail)) {
         this.addEmailError = true;
-        showDebug(this.newFriendName + " is in existing friend list");
+        showDebug([this.newFriendName + " is in existing friend list"]);
       } else {
         // send invite
         this.newFriendEmail = '';
         this.showOverlay = false;
-        showDebug("Save '" + this.newFriendName + "' to friend list");
+        showDebug(["Save '" + this.newFriendName + "' to friend list"]);
       }
     }
   },
@@ -67,31 +67,45 @@ Vue.component('add-new-friend-section', {
 });
 
 Vue.component('edit-item-overlay', {
-  props: ["item"],
+  props: ["item", "action", "sectionType"],// action = [new, edit]
   data: function() {
     return {
-      showThis: true,
+      newItem: null,
       newItemTitle: "",
       newItemDesc: "",
       edited: false
     }
   },
   created: function() {
-    this.newItemTitle = this.item.item;
-    this.newItemDesc = this.item.desc;
+    if (this.action == "new") {
+      if (this.sectionType == "mine") {
+        this.newItem = copyObj(newMineItem);
+      } else { // if (this.sectionType == "friend")
+        this.newItem = copyObj(newFriendItem);
+      }
+      this.newItem = Object.assign({}, this.newItem, { edit: false, deleted: false });
+    } else {
+      this.newItemTitle = this.item.item;
+      this.newItemDesc = this.item.desc;
+    }
   },
   methods: {
     saveThis: function() {
-      this.item.item = this.newItemTitle;
-      this.item.desc = this.newItemDesc;
-      this.item.edit = true;
-      this.showThis = false;
-      showDebug(JSON.parse(JSON.stringify(app.savedData)));
-    }
-  },
-  watch: {
-    'showThis': function() {
-      this.$emit('input', this.showThis);
+      if (this.action == "new") {
+        this.newItem.item = this.newItemTitle;
+        this.newItem.desc = this.newItemDesc;
+        this.newItem.edit = true;
+        this.$emit('createNew', this.newItem);
+      } else {
+        this.item.item = this.newItemTitle;
+        this.item.desc = this.newItemDesc;
+        this.item.edit = true;
+      }
+      this.closeThis();
+      showDebug([copyObj(app.savedData)]);
+    },
+    closeThis: function() {
+      this.$emit('close');
     }
   },
   template: `
@@ -103,7 +117,7 @@ Vue.component('edit-item-overlay', {
         <textarea class="edit-item-content" rows="10" v-model="newItemDesc">{{ item.desc ? item.desc:'' }}</textarea>
         <div class="edit-item-overlay-actions">
           <button type="button" @click="saveThis">&#x1f4be; Save</button>
-          <button type="button" @click="showThis=false">&#x21b6; Cancel</button>
+          <button type="button" @click="closeThis">&#x21b6; Cancel</button>
         </div>
       </div>
     </div>
@@ -140,13 +154,14 @@ Vue.component('share-with-overlay', {
     },
     updateShareWithList: function(detail) {
       if (detail.isChecked) {
-        showDebug("sharedWith list: added '" + detail.friendEmail + "'");
+        showDebug(["sharedWith list: added '" + detail.friendEmail + "'"]);
         this.item.sharedWith.push(detail.friendEmail);
       } else {
-        showDebug("sharedWith list: removed '" + detail.friendEmail + "'");
+        showDebug(["sharedWith list: removed '" + detail.friendEmail + "'"]);
         var idx = this.item.sharedWith.findIndex(x => (x == detail.friendEmail));
         this.item.sharedWith.splice(idx, 1);
       }
+      this.item.edit = true;
     }
   },
   template: `
@@ -223,8 +238,10 @@ Vue.component('single-item', {
       <div v-if="showDesc" class="item-long-desc">{{ item.desc }}</div>
       <edit-item-overlay 
         v-if="showEdit" 
-        v-model="showEdit" 
-        v-bind:item="item">
+        action="edit"
+        :item="item"
+        sectionType=""
+        @close="showEdit=false">
       </edit-item-overlay>
       <share-with-overlay 
         v-if="showShareWith" 
@@ -264,8 +281,8 @@ Vue.component('section-list', {
     },
     allowNew: function() {
       switch(this.sectionType) {
-        case "mine": case "mine-friend": case "friend": return true;
-        case "archive": default: return false;
+        case "mine": case "friend": return true;
+        case "mine-friend": case "archive": default: return false;
       }
     },
     displayItemList: function() {
@@ -280,7 +297,8 @@ Vue.component('section-list', {
       return itemList.filter(item => (item.order == itemOrder))[0];
     },
     syncClonedWithOri: function() {
-      this.clonedItemList = JSON.parse(JSON.stringify(this.itemList));
+      showDebug(["syncClonedWithOri", copyObj(this.itemList)]);
+      this.clonedItemList = copyObj(this.itemList);
       this.clonedItemList = this.clonedItemList.map(item => {
         return Object.assign({}, item, { edit: false, deleted: false });
       });
@@ -290,14 +308,14 @@ Vue.component('section-list', {
     },
     extractDisplayList: function() {
       this.displayItemList = this.clonedItemList.filter(item => !item.archived);
-      showDebug(copyObj(this.displayItemList));
+      showDebug([copyObj(this.displayItemList)]);
     },
     cancelEdit: function() {
       this.edit = false;
       this.syncClonedWithOri();
     },
     moveUp: function(itemId) {
-      showDebug("move '" + itemId + "' up");
+      showDebug(["move '" + itemId + "' up"]);
       var itemToMove = this.findItemById(this.itemList, itemId);
       if (itemToMove.order !== 0) {
         var itemToSwap = this.findItemByOrder(this.itemList, itemToMove.order-1);
@@ -307,7 +325,7 @@ Vue.component('section-list', {
       this.syncClonedWithOri();
     },
     moveDown: function(itemId) {
-      showDebug("move '" + itemId + "' down");
+      showDebug(["move '" + itemId + "' down"]);
       var itemToMove = this.findItemById(this.itemList, itemId);
       var lastOrder = Math.max(...this.itemList.filter(item => (item.order > -1)).map(item => item.order));
       if (itemToMove.order !== lastOrder) {
@@ -318,22 +336,32 @@ Vue.component('section-list', {
       this.syncClonedWithOri();
     },
     setArchived: function(itemId) {
-      showDebug("archived '" + itemId + "'");
+      showDebug(["archived '" + itemId + "'"]);
       var itemToEdit = this.findItemById(this.clonedItemList, itemId);
       itemToEdit.archived = true;
       itemToEdit.edit = true;
     },
     setUnarchived: function(itemId) {
-      showDebug("unarchived '" + itemId + "'")
+      showDebug(["unarchived '" + itemId + "'"])
       var itemToEdit = this.findItemById(this.clonedItemList, itemId);
       itemToEdit.archived = false;
       itemToEdit.edit = true;
     },
     deleteItem: function(itemId) {
-      showDebug("delete '" + itemId + "'");
+      showDebug(["delete '" + itemId + "'"]);
       var itemToEdit = this.findItemById(this.clonedItemList, itemId);
       itemToEdit.deleted = true;
       itemToEdit.edit = true;
+    },
+    createNew: function(newItem) {
+      showDebug(["add item: ", copyObj(newItem)]);
+      newItem.itemId = generateId(this.itemList.map(item => item.itemId));
+      newItem.order = Math.max(...this.itemList.filter(item => (item.order > -1)).map(item => item.order)) + 1;
+      if (this.sectionType == "friend") {
+        newItem.owner = OWNER.MINE;
+      }
+      this.itemList.splice(this.itemList.length, 1, newItem);
+      this.syncClonedWithOri();
     }
   },
   created: function() {
@@ -369,218 +397,131 @@ Vue.component('section-list', {
         <div v-if="allowNew && edit" class="item">
           <div class="item-add-new item-menu decor-itemmenu" title="Add new prayer item" @click="showAddNewItem=true">&#x1f7a1;</div>
         </div>
-        <edit-item-overlay v-if="showAddNewItem" v-model="showAddNewItem" v-bind:item="[]"></edit-item-overlay>
+        <edit-item-overlay 
+          v-if="showAddNewItem" 
+          @close="showAddNewItem=false" 
+          @createNew="createNew"
+          action="new"
+          :sectionType="sectionType"
+          :item="[]">
+        </edit-item-overlay>
       </div>
     </div>
   `
-})
+});
 
-
-
-
-var app = new Vue({
-  el: '#main',
-  data: {
-    sectionStyle: {
-      width: "40%",
-      height: "200px"
-    },
-    savedData: {
-      lastEmailChecked: null,
-      mine: {
-        personId: "as8sc7d9ac",
-        name: "Richard Wong",
-        email: "ricwtk@gmail.com",
-        personIdAtFriends: [],
-        items: [{
-          itemId: "fsaosi0923",
-          item: "Item 0",
-          desc: "Description for item 0.",
-          sharedWith: [],
-          order: 0,
-          archived: false
-        },{
-          itemId: "12ondosoia",
-          item: "Item 1",
-          desc: "Description for item 1",
-          sharedWith: ["friend0@domain.com"],
-          order: 1,
-          archived: false
-        },{
-          itemId: "fdsa70adf",
-          item: "Item 2",
-          desc: "Description for item 2",
-          sharedWith: [],
-          order: -1,
-          archived: true
-        }]
-      },
-      friends: [{
-        friendId: "231khj24k",
-        name: "Friend Name 0",
-        email: "friend0@domain.com",
-        items: [{
-          itemId: "asdf987fda",
-          item: "item 0",
-          desc: "description for item 0",
-          owner: OWNER.FRIEND,
-          order: 0
-        },{
-          itemId: "fsd080",
-          item: "item 1",
-          desc: "description for item 1",
-          owner: OWNER.MINE,
-          order: 1
-        }]
-      },{
-        friendId: "asdf9sadf8",
-        name: "Friend Name 1",
-        email: "friend1@domain.com",
-        items: [{
-          itemId: "asd080sdfa",
-          item: "item 0",
-          desc: "description for item 0",
-          owner: OWNER.FRIEND,
-          order: 0
-        },{
-          itemId: "asdf098f",
-          item: "item 1",
-          desc: "description for item 1",
-          owner: OWNER.MINE,
-          order: 1
-        }]
-      },{
-        friendId: "dasf098d",
-        name: "Friend Name 2",
-        email: "friend2@domain.com",
-        items: []
-      },{
-        friendId: "dsaf120",
-        name: "Friend Name 3",
-        email: "friend3@domain.com",
-        items: []
-      },{
-        friendId: "d231sf9a",
-        name: "Friend Name 4",
-        email: "friend4@domain.com",
-        items: []
-      },{
-        friendId: "fds098",
-        name: "Friend Name 5",
-        email: null,
-        items: []
-      }],
-      friendRequests: []
-    },
-    showAsSingleList: true,
+Vue.component("edit-profile-overlay", {
+  data: function () {
+    return {
+      newUserName: ''
+    };
   },
   computed: {
-    myItems: function() {
-      var myitems = this.savedData.mine.items.filter(item => !item.archived);
-      myitems.sort(function(a,b) {
-        return a.order - b.order;
-      })
-      return myitems;
-    },
-    myArchived: function() {
-      return this.savedData.mine.items.filter(item => item.archived);
-    },
-    mySharedWithList: function() {
-      var allFriends = this.savedData.friends.map(friend => {
-        return {
-          name: friend.name, 
-          email: friend.email, 
-          items: this.savedData.mine.items.filter(item => (item.sharedWith.includes(friend.email)))};
-      });
-      console.log("allFriends", allFriends);
-      return allFriends;
+    userName: function () {
+      return savedData.mine.name;
     }
-  }
-  // components: {
-  //   "single-item": {
-  //     props: ["itemTitle", "itemLongDesc", "edit"],
-  //     data: {
-  //       function () {
-  //         return {
-  //           showDesc: false
-  //         }
-  //       }
-  //     },
-  //     template: `
-  //       <div class="item">
-  //         <div class="item-head">
-  //           <span class="item-short-desc">{{ itemTitle }}</span>
-  //           <span class="item-actions">
-  //             <template v-if="edit">
-  //               <span class="item-archive item-menu decor-itemmenu" title="Archive">&#x21aa;</span>
-  //               <span class="item-delete item-menu decor-itemmenu" title="Delete">&#x1f7a8;</span>
-  //               <span class="item-share item-menu decor-itemmenu" title="Share">&#x21cc;</span>
-  //             </template>
-  //             <template v-else>
-  //               <span class="item-archive item-menu decor-itemmenu" title="Up">&#x25b2;</span>
-  //               <span class="item-delete item-menu decor-itemmenu" title="Down">&#x25bc;</span>
-  //             </template>
-  //           </span>
-  //         </div>
-  //         <div v-if="showDesc" class="item-long-desc">{{ itemLongDesc }}</div>
-  //       </div>
-  //     `
-  //   },
-  //   "section-list": {
-  //     props: ["sectionTooltip", "sectionTitle", "itemList", "sectionStyle"],
-  //     data: {
-  //       function () {
-  //         return {
-  //           edit: false
-  //         }
-  //       }
-  //     },
-  //     template: `
-  //       <div class="section decor-section" v-bind:style="sectionStyle">
-  //         <div class="section-head decor-sectionhead">
-  //           <div class="section-title decor-sectiontitle" v-bind:title="sectionTooltip">{{ sectionTitle }}</div>
-  //           <div class="section-action decor-sectionaction">
-  //             <template v-if="edit">
-  //               <span v-on:click="edit=false" class="section-action-item decor-sectionactionitem" title="Cancel">&#x21b6;</span>
-  //               <span v-on:click="edit=false" class="section-action-item decor-sectionactionitem" title="Update">&#x1f4be;</span>
-  //             </template>
-  //             <span v-else v-on:click="edit=true" class="section-action-item decor-sectionactionitem" title="Edit">&#x1f589;</span>
-  //           </div>
-  //         </div>
-  //         <div class="section-content decor-sectioncontent">
-  //           <template v-for="item in itemList">
-  //             <single-item v-bind:item-title="item.item" v-bind:item-long-desc="item.desc" v-bind:edit="edit"></single-item>
-  //           </template>
-  //           <div class="item">
-  //             <div class="item-add-new item-menu decor-itemmenu" title="Add new prayer item">&#x1f7a1;</div>
-  //           </div>
-  //         </div>
-  //       </div>
-  //     `
-  //   }
-  // } 
+  },
+  created: function() {
+    this.newUserName = savedData.mine.name;
+  },
+  methods: {
+    saveThis: function() {
+      this.$emit("save", this.newUserName);
+      this.closeThis();
+    },
+    closeThis: function() {
+      this.$emit("close");
+    }
+  },
+  template: `
+    <div class="overlay decor-overlay">
+      <div class="overlay-wrapper">
+        <div class="overlay-row">
+          <div class="overlay-label">Change display name from "{{ userName }}" to  </div>
+          <input class="overlay-input" type="text" v-model="newUserName">
+        </div>
+        <div class="overlay-actions">
+          <button type="button" @click="saveThis">&#x1f4be; Save</button>
+          <button type="button" @click="closeThis">&#x21b6; Cancel</button>
+        </div>
+      </div>
+    </div>
+  `
 });
 
-var app2 = new Vue({
-  el: '#menu',
-  data: {
-    widthOfSection: app.sectionStyle.width,
-    heightOfSection: app.sectionStyle.height
-  }
-});
 
-var inputSectionWidth = document.getElementById("input-section-width");
-inputSectionWidth.value = app.sectionStyle.width.replace("%", "");
-inputSectionWidth.addEventListener("change", () => {
-  app.sectionStyle.width = inputSectionWidth.value + '%';
-  app2.widthOfSection = app.sectionStyle.width;
-});
+var app, app2;
+function initVueInst() {
+  app = new Vue({
+    el: '#main',
+    data: {
+      sectionStyle: {
+        width: "40%",
+        height: "200px"
+      },
+      savedData: savedData,
+      showAsSingleList: true,
+    },
+    computed: {
+      myItems: function() {
+        var myitems = this.savedData.mine.items.filter(item => !item.archived);
+        myitems.sort(function(a,b) {
+          return a.order - b.order;
+        })
+        return myitems;
+      },
+      myArchived: function() {
+        return this.savedData.mine.items.filter(item => item.archived);
+      },
+      mySharedWithList: function() {
+        var allFriends = this.savedData.friends.map(friend => {
+          return {
+            name: friend.name, 
+            email: friend.email, 
+            items: this.savedData.mine.items.filter(item => (item.sharedWith.includes(friend.email)))};
+        });
+        console.log("allFriends", allFriends);
+        return allFriends;
+      }
+    }
+  });
 
-var inputSectionHeight = document.getElementById("input-section-height");
-inputSectionHeight.value = app.sectionStyle.height.replace("px", "");
-inputSectionHeight.addEventListener("change", () => {
-  app.sectionStyle.height = inputSectionHeight.value + 'px';
-  app2.heightOfSection = app.sectionStyle.height;
-});
-// console.log("width", document.getElementById("input-section-width").value);
-// console.log("height", document.getElementById("input-section-height").value);
+  showDebug(['savedData', copyObj(savedData), 'app.savedData', copyObj(app.savedData)]);
+
+  app2 = new Vue({
+    el: '#menu',
+    data: {
+      widthOfSection: app.sectionStyle.width,
+      heightOfSection: app.sectionStyle.height,
+      showEditProfile: false
+    },
+    computed: {
+      userName: () => {
+        return savedData.mine.name;
+      },
+      userEmail: () => {
+        return savedData.mine.email;
+      }
+    },
+    methods: {
+      saveProfile: function(newProfileName) {
+        savedData.mine.name = newProfileName;
+        updateToDatabase(savedData);
+      }
+    }
+  });
+
+  var inputSectionWidth = document.getElementById("input-section-width");
+  inputSectionWidth.value = app.sectionStyle.width.replace("%", "");
+  inputSectionWidth.addEventListener("change", () => {
+    app.sectionStyle.width = inputSectionWidth.value + '%';
+    app2.widthOfSection = app.sectionStyle.width;
+  });
+
+  var inputSectionHeight = document.getElementById("input-section-height");
+  inputSectionHeight.value = app.sectionStyle.height.replace("px", "");
+  inputSectionHeight.addEventListener("change", () => {
+    app.sectionStyle.height = inputSectionHeight.value + 'px';
+    app2.heightOfSection = app.sectionStyle.height;
+  });
+}

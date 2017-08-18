@@ -16,7 +16,12 @@
       <span id="menutoggle" class="decor-menuitem">&#9776;</span>
     </div>
     <div id="menu" class="decor-menu hide">
-      <span class="menu-item" id="signed-in-as">Signed in as ...</span>
+      <span class="menu-item" id="signed-in-as" :title="userEmail" @click="showEditProfile=true">Signed in as {{ userName }}</span>
+      <edit-profile-overlay 
+        v-if="showEditProfile" 
+        v-on:save="saveProfile"
+        v-on:close="showEditProfile=false">
+      </edit-profile-overlay>
       <span class="menu-item decor-menuitem" id="signout-google">Sign out</span>
       <span class="menu-item decor-menuitem" id="disconnect-google">Disconnect</span>
       <span class="menu-item decor-menuitem" id="open-about">About Prayer Partners</span>
@@ -123,9 +128,9 @@
       </div>
     </div>
 
+    <script src="vuefcn.js"></script>
     <script async defer src="https://apis.google.com/js/api.js"
       onload="this.onload=function(){};loadApi()"
       onreadystatechange="if (this.readyState === 'complete') this.onload()"></script>
-    <script src="vuefcn.js"></script>
   </body>
 </html>
