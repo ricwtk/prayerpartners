@@ -295,7 +295,16 @@ Vue.component('section-list', {
       }
     },
     displayItemList: function() {
-      return this.clonedItemList.filter(item => (!item.archived && !item.deleted));
+      var myList = this.clonedItemList.filter(item => !item.deleted);
+      switch (this.sectionTypeData.sType) {
+        case "mine":
+          return myList.filter(item => !item.archived);
+        case "archive":
+          return myList.filter(item => item.archived);
+        default:
+          return myList;
+      }
+      
     },
   },
   methods: {
@@ -314,14 +323,6 @@ Vue.component('section-list', {
       this.clonedItemList.sort(function(a,b) {
         return a.order - b.order;
       });
-    },
-    extractDisplayList: function() {
-      this.displayItemList = this.clonedItemList.filter(item => !item.archived);
-      showDebug([copyObj(this.displayItemList)]);
-    },
-    cancelEdit: function() {
-      this.edit = false;
-      this.syncClonedWithOri();
     },
     removeSection: function() {
       this.$emit("remove", this.sectionTypeData.data.friendId);
@@ -353,29 +354,76 @@ Vue.component('section-list', {
       var itemToEdit = this.findItemById(this.clonedItemList, itemId);
       itemToEdit.archived = true;
       itemToEdit.edit = true;
+      itemToEdit.order = -1;
+      //reorder
     },
     setUnarchived: function(itemId) {
       showDebug(["unarchived '" + itemId + "'"])
       var itemToEdit = this.findItemById(this.clonedItemList, itemId);
       itemToEdit.archived = false;
       itemToEdit.edit = true;
+      //set order to last item
     },
     deleteItem: function(itemId) {
       showDebug(["delete '" + itemId + "'"]);
       var itemToEdit = this.findItemById(this.clonedItemList, itemId);
       itemToEdit.deleted = true;
       itemToEdit.edit = true;
+      //reorder
     },
     createNew: function(newItem) {
-      showDebug(["add item: ", copyObj(newItem)]);
-      newItem.itemId = generateId(this.itemList.map(item => item.itemId));
-      newItem.order = Math.max(...this.itemList.filter(item => (item.order > -1)).map(item => item.order)) + 1;
-      if (this.sectionType.sType == "friend") {
+      newItem.itemId = generateId(this.clonedItemList.map(item => item.itemId));
+      newItem.order = Math.max(...this.clonedItemList.filter(item => (item.order > -1)).map(item => item.order)) + 1;
+      if (newItem.order == -Infinity) newItem.order = 0;
+      if (this.sectionTypeData.sType == "friend") {
         newItem.owner = OWNER.MINE;
       }
-      this.itemList.splice(this.itemList.length, 1, newItem);
+      showDebug(["add item: ", copyObj(newItem)]);
+      this.clonedItemList.splice(this.clonedItemList.length, 1, newItem);
+    },
+    saveEdit: function() {
+      showDebug(["update list", copyObj(this.clonedItemList)]);
+      var saveToItemList;
+      switch (this.sectionTypeData.sType) {
+        case "mine":
+        case "archive":
+          saveToItemList = savedData.mine.items;
+          break;
+        default:
+          saveToItemList = this.itemList;
+      }
+      this.clonedItemList.forEach((item) => {
+        if (item.edit) {
+          var itemToEdit = this.findItemById(saveToItemList, item.itemId);
+          if (itemToEdit == undefined) {
+            var newItem;
+            if (this.sectionTypeData.sType == 'friend') {
+              newItem = copyObj(newFriendItem);
+            } else {
+              newItem = copyObj(newMineItem);
+            }
+            for (k in newItem) {
+              this.$set(newItem, k, item[k]);
+            }
+            saveToItemList.splice(saveToItemList.length, 1, newItem);
+          } else {
+            if (item.deleted) {
+              saveToItemList.splice(saveToItemList.findIndex(it => it.itemId == item.itemId), 1);
+            } else {
+              for (k in itemToEdit) {
+                this.$set(itemToEdit, k, item[k]);
+              }
+            }
+          }
+        }
+      });
+      updateToDatabase();
+      this.edit = false;
+    },
+    cancelEdit: function() {
+      this.edit = false;
       this.syncClonedWithOri();
-    }
+    },
   },
   created: function() {
     this.syncClonedWithOri();
@@ -387,7 +435,7 @@ Vue.component('section-list', {
         <div class="section-action decor-sectionaction">
           <template v-if="edit">
             <span v-if="allowRemove" @click="removeSection" class="section-action-item decor-sectionactionitem" title="Remove">&#x1f464;&#x2093</span>
-            <span @click="edit=false" class="section-action-item decor-sectionactionitem" title="Update">&#x1f4be;</span>
+            <span @click="saveEdit" class="section-action-item decor-sectionactionitem" title="Update">&#x1f4be;</span>
             <span @click="cancelEdit" class="section-action-item decor-sectionactionitem" title="Cancel">&#x21b6;</span>
           </template>
           <span v-else @click="edit=true" class="section-action-item decor-sectionactionitem" title="Edit">&#x1f589;</span>
@@ -473,19 +521,19 @@ function initVueInst() {
         width: "40%",
         height: "200px"
       },
-      savedData: savedData,
       showAsSingleList: true,
+      savedData: savedData
     },
     computed: {
       myItems: function() {
-        var myitems = this.savedData.mine.items.filter(item => !item.archived);
+        var myitems = savedData.mine.items.filter(item => !item.archived);
         myitems.sort(function(a,b) {
           return a.order - b.order;
         })
         return myitems;
       },
       myArchived: function() {
-        return this.savedData.mine.items.filter(item => item.archived);
+        return savedData.mine.items.filter(item => item.archived);
       },
       mySharedWithList: function() {
         var allFriends = this.savedData.friends.map(friend => {
@@ -515,7 +563,7 @@ function initVueInst() {
     },
   });
 
-  showDebug(['savedData', copyObj(savedData), 'app.savedData', copyObj(app.savedData)]);
+  showDebug(['savedData', copyObj(savedData)]);
 
   app2 = new Vue({
     el: '#menu',
