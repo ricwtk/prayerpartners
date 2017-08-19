@@ -208,6 +208,12 @@ Vue.component('single-tag', {
 
 Vue.component('add-tag-overlay', {
   props: ["item"],
+  data: function() {
+    return {
+      newTags: "",
+      // tagList: []
+    };
+  },
   computed: {
     tagList: function() {
       var tags = [];
@@ -231,17 +237,30 @@ Vue.component('add-tag-overlay', {
         this.item.tags.splice(idx, 1);
       }
       this.item.edit = true;
+      showDebug([copyObj(this.item)]);
+    },
+    addNewTag: function() {
+      var newTags = this.newTags.split(',');
+      newTags.forEach(tag => {
+        this.updateTagList({ isChecked: true, tag: tag });
+      });
     }
   },
+  // created: function() {
+  //   savedData.mine.items.forEach(item => {
+  //     this.tagList = this.tagList.concat(item.tags.filter(tag => this.tagList.indexOf(tag) < 0));
+  //   });
+  //   this.tagList = copyObj(this.tagList);
+  // },
   template: `
     <div class="overlay decor-overlay">
       <div class="overlay-wrapper">
         <div class="overlay-label">Tags:</div>
         <div class="overlay-row">
-          <div class="overlay-label">New tag(s): &nbsp;</div>
-          <input class="overlay-input" type="text">
+          <div class="overlay-label" title="Separate multiple tags by comma (,)">New tag(s): &nbsp;</div>
+          <input class="overlay-input" type="text" v-model="newTags">
           <div class="overlay-actions">
-            <button type="button">Add</button>
+            <button type="button" @click="addNewTag">Add</button>
           </div>
         </div>
         <div class="tags-content">
