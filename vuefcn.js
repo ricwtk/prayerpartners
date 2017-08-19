@@ -187,7 +187,7 @@ Vue.component('share-with-overlay', {
 });
 
 Vue.component('single-item', {
-  props: ["item", "edit", "allowOrder", "editActions", "friendList"],
+  props: ["item", "edit", "allowOrder", "editActions"],
   data: function () {
     return {
       showDesc: false,
@@ -254,12 +254,11 @@ Vue.component('single-item', {
 });
 
 Vue.component('section-list', {
-  props: ["sectionTooltip", "sectionTitle", "itemList", "sectionStyle", "sectionTypeData", "friendList"],
+  props: ["sectionTooltip", "sectionTitle", "itemList", "sectionStyle", "sectionTypeData"],
   // sectionTypeData = { sType: "", data: null }
   data: function () {
     return {
       edit: false,
-      OWNER: OWNER,
       showAddNewItem: false,
       clonedItemList: [],
       moving: null
@@ -380,7 +379,7 @@ Vue.component('section-list', {
       newItem.order = Math.max(...this.clonedItemList.filter(item => (item.order > -1)).map(item => item.order)) + 1;
       if (newItem.order == -Infinity) newItem.order = 0;
       if (this.sectionTypeData.sType == "friend") {
-        newItem.owner = OWNER.MINE;
+        newItem.owner = "mine";
       }
       showDebug(["add item: ", copyObj(newItem)]);
       this.clonedItemList.splice(this.clonedItemList.length, 1, newItem);
@@ -451,8 +450,7 @@ Vue.component('section-list', {
             v-bind:item="item"
             v-bind:edit="edit"
             v-bind:allow-order="allowOrder"
-            v-bind:edit-actions="item.owner ? ( (item.owner === OWNER.FRIEND) ? []: editActions) : editActions"
-            v-bind:friendList="friendList"
+            v-bind:edit-actions="item.owner ? ( (item.owner === 'friend') ? []: editActions) : editActions"
             @moveUp="moveUp"
             @moveDown="moveDown"
             @setArchived="setArchived"

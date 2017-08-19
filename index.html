@@ -76,8 +76,7 @@
             section-title="Active" 
             :section-type-data="{ sType: 'mine', data: null }"
             v-bind:item-list="myItems"
-            v-bind:section-style="sectionStyle"
-            v-bind:friend-list="savedData.friends">
+            v-bind:section-style="sectionStyle">
           </section-list>
           <template v-else v-for="friend in mySharedWithList">
             <section-list 
@@ -85,8 +84,7 @@
               v-bind:section-title="friend.name" 
               :section-type-data="{ sType: 'mine-friend', data: null }"
               v-bind:item-list="friend.items" 
-              v-bind:section-style="sectionStyle"
-              v-bind:friend-list="savedData.friends">
+              v-bind:section-style="sectionStyle">
             </section-list>
           </template>
           <section-list 
@@ -94,8 +92,7 @@
             section-title="Archive" 
             :section-type-data="{ sType: 'archive', data: null }"
             v-bind:item-list="myArchived" 
-            v-bind:section-style="sectionStyle"
-            v-bind:friend-list="savedData.friends">
+            v-bind:section-style="sectionStyle">
           </section-list>
         </div>
       </div>
@@ -112,12 +109,10 @@
               :section-type-data="{ sType: 'friend', data: friend }"
               v-bind:item-list="friend.items" 
               v-bind:section-style="sectionStyle"
-              v-bind:friend-list="savedData.friends"
               @remove="removeFriend">
             </section-list>
           </template>
           <add-new-friend-section
-            v-bind:friend-list="savedData.friends"
             v-bind:section-style="sectionStyle">
           </add-new-friend-section>
           <!-- <div class="section decor-section section-add-new-wrapper" v-bind:style="sectionStyle">

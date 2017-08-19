@@ -8,11 +8,6 @@ var GOOGLE = {
     + " https://www.googleapis.com/auth/drive.appfolder"
 };
 
-const OWNER = {
-  MINE: 'mine',
-  FRIEND: 'friend'
-};
-
 var defaultData = {
   lastEmailChecked: null,
   mine: {
