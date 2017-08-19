@@ -169,6 +169,7 @@ Vue.component('share-with-overlay', {
     <div class="overlay decor-overlay">
       <div class="overlay-wrapper">
         <div class="overlay-label">Friends:</div>
+        <div v-if="friendList.length == 0">Invite friends using emails to share prayer items.</div>
         <div class="share-with-content">
           <template v-for="friend in friendList">
             <single-friend-to-share 
@@ -308,6 +309,9 @@ Vue.component('single-item', {
     },
     deleteItem: function() {
       this.$emit('deleteItem', this.item.itemId);
+    },
+    removeFromList: function() {
+      this.$emit('removeFromList', this.item.itemId);
     }
   },
   template: `
@@ -320,7 +324,7 @@ Vue.component('single-item', {
               <span v-if="action === 'e'" class="item-archive item-menu decor-itemmenu" title="Edit" @click="showEdit=true">&#x1f589;</span>
               <span v-else-if="action === 'u'" class="item-archive item-menu decor-itemmenu" title="Unarchive" @click="setUnarchived">&#x21a9;</span>
               <span v-else-if="action === 'a'" class="item-archive item-menu decor-itemmenu" title="Archive" @click="setArchived">&#x21aa;</span>
-              <span v-else-if="action === 'r'" class="item-delete item-menu decor-itemmenu" title="Remove from list">&#x2262;</span>
+              <span v-else-if="action === 'r'" class="item-delete item-menu decor-itemmenu" title="Remove from list" @click="removeFromList">&#x2262;</span>
               <span v-else-if="action === 'd'" class="item-delete item-menu decor-itemmenu" title="Delete" @click="deleteItem">&#x1f7a8;</span>
               <span v-else-if="action === 's'" class="item-share item-menu decor-itemmenu" title="Share" @click="showShareWith=true">&#x21cc;</span>
               <span v-else-if="action === 't'" class="item-share item-menu decor-itemmenu" title="Tag" @click="showTagList=true">&#x1f516;</span>
@@ -369,14 +373,19 @@ Vue.component('section-list', {
     allowOrder: function() { 
       switch(this.sectionTypeData.sType) {
         case "mine": case "friend": return true;
-        case "archive": case "mine-friend": default: return false;
+        case "archive": case "mine-friend": case "mine-tag": default: return false;
       }
     },
     editActions: function() {
       switch(this.sectionTypeData.sType) {
         case "mine": return ['e','a','d','s','t'];
         case "archive": return ['u','d'];
-        case "mine-friend": return ['e','a','r','d','s'];
+        case "mine-friend": 
+          if (this.sectionTitle == 'Unshared') return ['e','a','d','s','t'];
+          return ['e','a','d','s','t','r'];
+        case "mine-tag": 
+          if (this.sectionTitle == 'Untagged') return ['e','a','d','s','t'];
+          return ['e','a','d','s','t','r'];
         case "friend": return ['e','d'];
         default: return [];
       }
@@ -384,7 +393,7 @@ Vue.component('section-list', {
     allowNew: function() {
       switch(this.sectionTypeData.sType) {
         case "mine": case "friend": return true;
-        case "mine-friend": case "archive": default: return false;
+        case "mine-friend": case "mine-tag": case "archive": default: return false;
       }
     },
     allowRemove: function() {
@@ -397,7 +406,18 @@ Vue.component('section-list', {
     displayItemList: function() {
       var myList = this.clonedItemList.filter(item => !item.deleted);
       switch (this.sectionTypeData.sType) {
-        case "mine":
+        case "mine-tag": 
+          if (this.sectionTitle !== 'Untagged') 
+            myList = myList.filter(item => item.tags.includes(this.sectionTitle));
+          break;
+        case "mine-friend":
+          if (this.sectionTitle !== 'Unshared') 
+            myList = myList.filter(item => item.sharedWith.includes(this.sectionTooltip));
+          break;
+        default: break;
+      }
+      switch (this.sectionTypeData.sType) {
+        case "mine": case "mine-tag": case "mine-friend":
           return myList.filter(item => !item.archived);
         case "archive":
           return myList.filter(item => item.archived);
@@ -459,6 +479,8 @@ Vue.component('section-list', {
       itemToEdit.archived = true;
       itemToEdit.edit = true;
       itemToEdit.order = -1;
+      itemToEdit.tags = [];
+      itemToEdit.sharedWith = [];
       //reorder
     },
     setUnarchived: function(itemId) {
@@ -474,6 +496,19 @@ Vue.component('section-list', {
       itemToEdit.deleted = true;
       itemToEdit.edit = true;
       //reorder
+    },
+    removeFromList: function(itemId) {
+      showDebug(["remove '" + itemId + "' from list"]);
+      var itemToEdit = this.findItemById(this.clonedItemList, itemId);
+      if (this.sectionTypeData.sType == 'mine-friend') {
+        var idx = itemToEdit.sharedWith.findIndex(x => (x == this.sectionTooltip));
+        itemToEdit.sharedWith.splice(idx, 1);
+      } else if (this.sectionTypeData.sType == 'mine-tag') {
+        var idx = itemToEdit.tags.findIndex(x => (x == this.sectionTitle));
+        itemToEdit.tags.splice(idx, 1);
+      }
+      showDebug([copyObj(itemToEdit)]);
+      itemToEdit.edit = true;
     },
     createNew: function(newItem) {
       newItem.itemId = generateId(this.clonedItemList.map(item => item.itemId));
@@ -491,6 +526,8 @@ Vue.component('section-list', {
       switch (this.sectionTypeData.sType) {
         case "mine":
         case "archive":
+        case "mine-tag":
+        case "mine-friend":
           saveToItemList = savedData.mine.items;
           break;
         default:
@@ -556,7 +593,8 @@ Vue.component('section-list', {
             @moveDown="moveDown"
             @setArchived="setArchived"
             @setUnarchived="setUnarchived"
-            @deleteItem="deleteItem">
+            @deleteItem="deleteItem"
+            @removeFromList="removeFromList">
           </single-item>
         </template>        
         <div v-if="allowNew && edit" class="item">
@@ -624,7 +662,7 @@ function initVueInst() {
         width: "40%",
         height: "200px"
       },
-      showAsSingleList: true,
+      showList: 'single',
       savedData: savedData
     },
     computed: {
@@ -647,7 +685,7 @@ function initVueInst() {
             email: friend.email, 
             items: savedData.mine.items.filter(item => (item.sharedWith.includes(friend.email)))};
         });
-        console.log("allFriends", allFriends);
+        showDebug(["allFriends", allFriends]);
         return allFriends;
       },
       myFriendList: function() {
@@ -656,6 +694,26 @@ function initVueInst() {
           return a.name.localeCompare(b.name);
         })
         return allFriends;
+      },
+      myUnshared: function() {
+        return savedData.mine.items.filter(item => (item.sharedWith.length == 0));
+      },
+      myTags: function() {
+        var tags = [];
+        savedData.mine.items.forEach(item => {
+          tags = tags.concat(item.tags.filter(tag => tags.indexOf(tag) < 0));
+        });
+        var allTags = tags.map(tag => {
+          return {
+            name: tag,
+            items: savedData.mine.items.filter(item => (item.tags.includes(tag)))
+          };
+        });
+        showDebug(["allTags", copyObj(allTags)])
+        return allTags;
+      },
+      myUntagged: function() {
+        return savedData.mine.items.filter(item => (item.tags.length == 0));
       }
     },
     methods: {

@@ -65,28 +65,55 @@
         <div class="group-header decor-groupheader">
           <div class="group-title decor-grouptitle">Mine</div>
           <div class="group-action decor-groupaction">
-            <span class="group-action-item decor-groupactionitem" title="Show as tag list" @click="">&#x1f516;</span>
-            <span class="group-action-item decor-groupactionitem" title="Show as friends list" @click="showAsSingleList=false">&#x1f46a;</span>
-            <span class="group-action-item decor-groupactionitem" title="Show as single list" @click="showAsSingleList=true">&#x2254;</span>
+            <span class="group-action-item decor-groupactionitem" title="Show as tag list" @click="showList='tag'">&#x1f516;</span>
+            <span class="group-action-item decor-groupactionitem" title="Show as friends list" @click="showList='friend'">&#x1f46a;</span>
+            <span class="group-action-item decor-groupactionitem" title="Show as single list" @click="showList='single'">&#x2254;</span>
           </div>
         </div>
         <div class="section-group">
           <section-list 
-            v-if="showAsSingleList"
+            v-if="showList == 'single'"
             section-tooltip="Active list" 
             section-title="Active" 
             :section-type-data="{ sType: 'mine', data: null }"
             v-bind:item-list="myItems"
             v-bind:section-style="sectionStyle">
           </section-list>
-          <template v-else v-for="friend in mySharedWithList">
+          <template v-else-if="showList == 'friend'" v-for="friend in mySharedWithList">
             <section-list 
-              v-bind:section-tooltip="friend.email" 
-              v-bind:section-title="friend.name" 
+              :section-tooltip="null"
+              section-title="Unshared"
               :section-type-data="{ sType: 'mine-friend', data: null }"
-              v-bind:item-list="friend.items" 
-              v-bind:section-style="sectionStyle">
+              :item-list="myUnshared" 
+              :section-style="sectionStyle">
             </section-list>
+            <template v-for="friend in mySharedWithList">
+              <section-list 
+                v-bind:section-tooltip="friend.email" 
+                v-bind:section-title="friend.name" 
+                :section-type-data="{ sType: 'mine-friend', data: null }"
+                v-bind:item-list="friend.items" 
+                v-bind:section-style="sectionStyle">
+              </section-list>
+            </template>
+          </template>
+          <template v-else-if="showList == 'tag'">
+            <section-list 
+              :section-tooltip="null"
+              section-title="Untagged"
+              :section-type-data="{ sType: 'mine-tag', data: null }"
+              :item-list="myUntagged" 
+              :section-style="sectionStyle">
+            </section-list>
+            <template v-for="tag in myTags">
+              <section-list 
+                :section-tooltip="null"
+                :section-title="tag.name" 
+                :section-type-data="{ sType: 'mine-tag', data: null }"
+                :item-list="tag.items" 
+                :section-style="sectionStyle">
+              </section-list>
+            </template>
           </template>
           <section-list 
             section-tooltip="Archived list" 
