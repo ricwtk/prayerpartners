@@ -258,18 +258,18 @@ button {
   width: 100px;
 }
 
-.share-with-content {
+.share-with-content, .tags-content {
   display: flex;
   flex-wrap: wrap;
   padding: 10px;
 }
 
-.friend-item {
+.friend-item, .tag-item {
   width: 30%;
   padding: 5px;
 }
 
-.friend-item-name {
+.friend-item-name, .tag-item-name {
   padding: 0px 0px 0px 5px;
 }
 

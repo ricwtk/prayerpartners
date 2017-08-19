@@ -27,6 +27,7 @@ var newMineItem = {
   desc: null,
   sharedWith: [],
   order: null,
+  tags: [],
   archived: false
 };
 

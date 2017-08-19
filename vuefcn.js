@@ -186,13 +186,89 @@ Vue.component('share-with-overlay', {
   `
 });
 
+Vue.component('single-tag', {
+  props: ["isChecked", "tag"],
+  data: function() {
+    return {}
+  },
+  methods: {
+    toggleState: function() {
+      this.$emit('change', {isChecked: !this.isChecked, tag: this.tag});
+    }
+  },
+  template: `
+    <span class="tag-item" :title="tag">
+      <input type="checkbox" 
+        :checked="isChecked" 
+        @change="toggleState">
+      <span class="tag-item-name">{{ tag }}</span>
+    </span>
+  `
+});
+
+Vue.component('add-tag-overlay', {
+  props: ["item"],
+  computed: {
+    tagList: function() {
+      var tags = [];
+      savedData.mine.items.forEach(item => {
+        tags = tags.concat(item.tags.filter(tag => tags.indexOf(tag) < 0));
+      });
+      return tags;
+    }
+  },
+  methods: {
+    closeThis: function() {
+      this.$emit('close');
+    },
+    updateTagList: function(detail) {
+      if (detail.isChecked) {
+        showDebug(["tag list: added '" + detail.tag + "'"]);
+        this.item.tags.push(detail.tag);
+      } else {
+        showDebug(["tag list: removed '" + detail.tag + "'"]);
+        var idx = this.item.tags.findIndex(x => (x == detail.tag));
+        this.item.tags.splice(idx, 1);
+      }
+      this.item.edit = true;
+    }
+  },
+  template: `
+    <div class="overlay decor-overlay">
+      <div class="overlay-wrapper">
+        <div class="overlay-label">Tags:</div>
+        <div class="overlay-row">
+          <div class="overlay-label">New tag(s): &nbsp;</div>
+          <input class="overlay-input" type="text">
+          <div class="overlay-actions">
+            <button type="button">Add</button>
+          </div>
+        </div>
+        <div class="tags-content">
+          <template v-for="tag in tagList">
+            <single-tag 
+              :isChecked="item.tags.includes(tag)" 
+              :tag="tag"
+              @change="updateTagList">
+            </single-tag>
+          </template>
+        </div>
+        <div class="overlay-actions">
+          <button type="button" @click="closeThis">&#x1f7a8; Close</button>
+        </div>
+      </div>
+    </div>
+  `
+});
+
 Vue.component('single-item', {
   props: ["item", "edit", "allowOrder", "editActions"],
   data: function () {
     return {
       showDesc: false,
       showShareWith: false,
-      showEdit: false
+      showEdit: false,
+      showTagList: false
     }
   },
   methods: {
@@ -228,6 +304,7 @@ Vue.component('single-item', {
               <span v-else-if="action === 'r'" class="item-delete item-menu decor-itemmenu" title="Remove from list">&#x2262;</span>
               <span v-else-if="action === 'd'" class="item-delete item-menu decor-itemmenu" title="Delete" @click="deleteItem">&#x1f7a8;</span>
               <span v-else-if="action === 's'" class="item-share item-menu decor-itemmenu" title="Share" @click="showShareWith=true">&#x21cc;</span>
+              <span v-else-if="action === 't'" class="item-share item-menu decor-itemmenu" title="Tag" @click="showTagList=true">&#x1f516;</span>
             </template>
           </template>
           <template v-else-if="allowOrder">
@@ -249,6 +326,11 @@ Vue.component('single-item', {
         @close="showShareWith=false"
         :item="item">
       </share-with-overlay>
+      <add-tag-overlay 
+        v-if="showTagList" 
+        @close="showTagList=false"
+        :item="item">
+      </add-tag-overlay>
     </div>
   `
 });
@@ -273,7 +355,7 @@ Vue.component('section-list', {
     },
     editActions: function() {
       switch(this.sectionTypeData.sType) {
-        case "mine": return ['e','a','d','s'];
+        case "mine": return ['e','a','d','s','t'];
         case "archive": return ['u','d'];
         case "mine-friend": return ['e','a','r','d','s'];
         case "friend": return ['e','d'];
@@ -501,7 +583,7 @@ Vue.component("edit-profile-overlay", {
     <div class="overlay decor-overlay">
       <div class="overlay-wrapper">
         <div class="overlay-row">
-          <div class="overlay-label">Change display name from "{{ userName }}" to  </div>
+          <div class="overlay-label">Change display name from "{{ userName }}" to &nbsp;</div>
           <input class="overlay-input" type="text" v-model="newUserName">
         </div>
         <div class="overlay-actions">
@@ -538,11 +620,13 @@ function initVueInst() {
         return savedData.mine.items.filter(item => item.archived);
       },
       mySharedWithList: function() {
-        var allFriends = this.savedData.friends.map(friend => {
+        // var shareableFriends = savedData.friends.filter(friend => friend.email);
+        var shareableFriends = savedData.friends;
+        var allFriends = shareableFriends.map(friend => {
           return {
             name: friend.name, 
             email: friend.email, 
-            items: this.savedData.mine.items.filter(item => (item.sharedWith.includes(friend.email)))};
+            items: savedData.mine.items.filter(item => (item.sharedWith.includes(friend.email)))};
         });
         console.log("allFriends", allFriends);
         return allFriends;
