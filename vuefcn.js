@@ -303,9 +303,13 @@ Vue.component('section-list', {
           return myList.filter(item => item.archived);
         default:
           return myList;
-      }
-      
+      }      
     },
+  },
+  watch: {
+    'itemList': function() {
+      this.syncClonedWithOri();
+    }
   },
   methods: {
     findItemById: function(itemList, itemId) {
@@ -559,7 +563,7 @@ function initVueInst() {
         showDebug(["remove '" + savedData.friends[indexOfFriend].name + "' (id: " + savedData.friends[indexOfFriend].friendId + ")"]);
         savedData.friends.splice(indexOfFriend, 1);
         updateToDatabase();
-      }
+      },
     },
   });
 
