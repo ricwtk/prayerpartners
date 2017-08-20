@@ -481,21 +481,18 @@ Vue.component('section-list', {
       itemToEdit.order = -1;
       itemToEdit.tags = [];
       itemToEdit.sharedWith = [];
-      //reorder
     },
     setUnarchived: function(itemId) {
       showDebug(["unarchived '" + itemId + "'"])
       var itemToEdit = this.findItemById(this.clonedItemList, itemId);
       itemToEdit.archived = false;
       itemToEdit.edit = true;
-      //set order to last item
     },
     deleteItem: function(itemId) {
       showDebug(["delete '" + itemId + "'"]);
       var itemToEdit = this.findItemById(this.clonedItemList, itemId);
       itemToEdit.deleted = true;
       itemToEdit.edit = true;
-      //reorder
     },
     removeFromList: function(itemId) {
       showDebug(["remove '" + itemId + "' from list"]);
@@ -558,6 +555,21 @@ Vue.component('section-list', {
           }
         }
       });
+      // reorder
+      saveToItemList = saveToItemList.filter(item => !item.archived);
+      saveToItemList.sort((a,b) => {
+        if (a.order == -1 && b.order == -1)
+          return 0;
+        else if (a.order == -1)
+          return 1;
+        else if (b.order == -1)
+          return -1;
+        else
+          return a.order - b.order;
+      });
+      saveToItemList.map((item, index) => {
+        item.order = index;
+      })
       updateToDatabase();
       this.edit = false;
     },
