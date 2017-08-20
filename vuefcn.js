@@ -386,7 +386,8 @@ Vue.component('section-list', {
       edit: false,
       showAddNewItem: false,
       clonedItemList: [],
-      moving: null
+      moving: null,
+      showEditName: false
     }
   },
   computed: {
@@ -420,6 +421,13 @@ Vue.component('section-list', {
       switch(this.sectionTypeData.sType) {
         case "friend":
           return (this.sectionTooltip == null);
+        default: return false;
+      }
+    },
+    allowEditName: function() {
+      switch(this.sectionTypeData.sType) {
+        case "friend":
+          return true;
         default: return false;
       }
     },
@@ -596,7 +604,7 @@ Vue.component('section-list', {
     cancelEdit: function() {
       this.edit = false;
       this.syncClonedWithOri();
-    },
+    }
   },
   created: function() {
     this.syncClonedWithOri();
@@ -604,10 +612,19 @@ Vue.component('section-list', {
   template: `
     <div class="section decor-section" v-bind:style="sectionStyle">
       <div class="section-head decor-sectionhead">
+        <div class="section-action decor-sectionaction" v-if="edit && allowEditName">
+          <span @click="showEditName = true" class="section-action-item decor-sectionactionitem" title="Edit name">&#x1f589;</span>
+          <edit-name-overlay 
+            v-if="showEditName" 
+            :name="sectionTypeData.data.name" 
+            @save="(name) => { sectionTypeData.data.name = name; }"
+            @close="showEditName = false">
+          </edit-name-overlay>
+        </div>
         <div class="section-title decor-sectiontitle" v-bind:title="sectionTooltip">{{ sectionTitle }}</div>
         <div class="section-action decor-sectionaction">
           <template v-if="edit">
-            <span v-if="allowRemove" @click="removeSection" class="section-action-item decor-sectionactionitem" title="Remove">&#x1f464;&#x2093</span>
+            <span v-if="allowRemove" @click="removeSection" class="section-action-item decor-sectionactionitem" title="Remove">&#x1f464;&#x2093;</span>
             <span @click="saveEdit" class="section-action-item decor-sectionactionitem" title="Update">&#x1f4be;</span>
             <span @click="cancelEdit" class="section-action-item decor-sectionactionitem" title="Cancel">&#x21b6;</span>
           </template>
@@ -640,6 +657,41 @@ Vue.component('section-list', {
           :sectionType="sectionTypeData.sType"
           :item="[]">
         </edit-item-overlay>
+      </div>
+    </div>
+  `
+});
+
+Vue.component("edit-name-overlay", {
+  props: ["name"],
+  data: function () {
+    return {
+      newName: ''
+    };
+  },
+  created: function() {
+    this.newName = this.name;
+  },
+  methods: {
+    saveThis: function() {
+      this.$emit("save", this.newName);
+      this.closeThis();
+    },
+    closeThis: function() {
+      this.$emit("close");
+    }
+  },
+  template: `
+    <div class="overlay decor-overlay">
+      <div class="overlay-wrapper">
+        <div class="overlay-row">
+          <div class="overlay-label">Change display name from "{{ name }}" to &nbsp;</div>
+          <input class="overlay-input" type="text" v-model="newName">
+        </div>
+        <div class="overlay-actions">
+          <button type="button" @click="saveThis">&#x1f4be; Save</button>
+          <button type="button" @click="closeThis">&#x21b6; Cancel</button>
+        </div>
       </div>
     </div>
   `
