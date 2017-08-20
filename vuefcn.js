@@ -1,3 +1,23 @@
+Vue.component('about-overlay', {
+  methods: {
+    closeThis: function() {
+      this.$emit('close');
+    }
+  },
+  template: `
+    <div class="overlay decor-overlay">
+      <div class="overlay-content">
+        Prayer Partners<br>
+        Developer: Richard Wong ricwtk@gmail.com<br>
+        Source code: Github link<br>
+        Use Github tracker or email me to report any issue or suggest any enhancement
+        <br>
+        <button type="button" @click="closeThis">Close</button>
+      </div>
+    </div>
+  `
+});
+
 Vue.component('add-new-friend-section', {
   props: ["sectionStyle"],
   data: function() {
@@ -745,7 +765,8 @@ function initVueInst() {
     data: {
       widthOfSection: app.sectionStyle.width,
       heightOfSection: app.sectionStyle.height,
-      showEditProfile: false
+      showEditProfile: false,
+      showAbout: false
     },
     computed: {
       userName: () => {

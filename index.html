@@ -24,7 +24,8 @@
       </edit-profile-overlay>
       <span class="menu-item decor-menuitem" id="signout-google">Sign out</span>
       <span class="menu-item decor-menuitem" id="disconnect-google">Disconnect</span>
-      <span class="menu-item decor-menuitem" id="open-about">About Prayer Partners</span>
+      <span class="menu-item decor-menuitem" id="open-about" @click="showAbout=true">About Prayer Partners</span>
+      <about-overlay v-if="showAbout" @close="showAbout=false"></about-overlay>
       <span class="menu-item" id="section-width">
         Width of list ({{ widthOfSection }})<br>
         <input id="input-section-width" type="range" min="20" max="100">
@@ -45,18 +46,8 @@
       </span>
     </div>
 
-    <div id="signin-overlay" class="signin-overlay decor-signinoverlay">
+    <div id="signin-overlay" class="overlay decor-overlay">
       <div class="signin-button decor-menuitem" id="signin-google">Sign in with Google</div>
-    </div>
-
-    <div id="about-overlay" class="decor-aboutoverlay hide">
-      <div id="about">
-        <div id="close-about" class="decor-closeabout">&#x1f7a8;</div>
-        Prayer Partners<br>
-        Developer: Richard Wong ricwtk@gmail.com<br>
-        Source code: Github link<br>
-        Use Github tracker or email me to report any issue or suggest any enhancement
-      </div>
     </div>
     
 

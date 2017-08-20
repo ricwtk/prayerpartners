@@ -327,8 +327,8 @@ button {
   color: #e0f2f1;
 }
 
-.decor-overlay, .decor-edititemoverlay, .decor-sharewithoverlay {
-  background-color: rgba(255, 255, 255, 0.8);
+.decor-overlay, .decor-edititemoverlay {
+  background-color: rgba(255, 255, 255, 0.95);
   color: #009688;
 }
 
