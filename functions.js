@@ -3,10 +3,17 @@ const DEBUG = true;
 
 var GOOGLE = {
   CLIENT_ID: "885265693601-q38bh4n7s7rdrv6lpn4qbb6sbt065pum.apps.googleusercontent.com",
-  DISCOVERY_DOCS: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"],
-  SCOPES: "https://www.googleapis.com/auth/drive.file"
-    + " https://www.googleapis.com/auth/drive.appfolder"
+  DISCOVERY_DOCS: [
+    "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest", 
+    "https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest"
+  ],
+  SCOPES: [//"https://www.googleapis.com/auth/drive.file",
+    "https://www.googleapis.com/auth/drive.appfolder",
+    "https://www.googleapis.com/auth/gmail.readonly",
+    "https://www.googleapis.com/auth/gmail.compose"].join(" ")
 };
+
+// var threadId = 
 
 var defaultData = {
   lastEmailChecked: null,
@@ -46,7 +53,75 @@ var newFriendItem = {
   order: null
 };
 
-var savedData = defaultData;
+var messageData = {
+  type: 'text/html',
+  encoding: 'UTF-8',
+  from: '',
+  to: [],
+  cc: [],
+  bcc: [],
+  replyTo: [],
+  date: new Date(),
+  subject: '',
+  body: ''
+}
+
+var aboutText = "PrayerPartners is ...";
+
+var cssStyle = `
+  body { text-align: center; }
+  .hide, #id { display: none; }
+  #main { background-color: #e0f2f1; color: #009688; padding: 1em; }
+  a.button { display: inline-block; padding: 1em; background-color: #009688; color: #e0f2f1; text-decoration: none; font-size: 150%; }
+  a.button:hover { background-color: #b2dfdb; color: #009688; }
+  #sender-name, #sender-email { display: inline-block; }
+  .align-center { text-align: center; }
+  #text { font-size: 120%; }
+  .top-sep { min-height: 1em; }
+  .bottom-sep { min-height: 3em; }
+`;
+
+var verbalAction = {
+  invite: "sent an invitation",
+  accept: "accepted your invitation"
+};
+
+var action = {
+  invite: "invite",
+  accept: "accept"
+};
+
+var messageSubject = {
+  invite: "Invite to PrayerPartners",
+  accept: "Accept invitation to PrayerPartners"
+};
+
+var messageBody = `
+  <html>
+    <head>
+      <style>
+        %cssStyle%
+      </style>
+    </head>
+    <body>
+      <div id="main">
+        <div id="text">
+          <div id="sender-name">%name%</div>&nbsp;(<div id="sender-email">%email%</div>) %verbalAction% to connect on PrayerPartners.
+        </div>
+        <div class="top-sep"></div>
+        <div class="align-center">
+          <a class="button" href="https://ricwtk.github.io/prayerpartners/" target="_blank">Go to PrayerPartners</a>
+        </div>
+        <div class="bottom-sep"></div>
+        <div class="align-center">
+          %aboutText%
+        </div>
+        <div id="id">PP</div>
+        <div class="hide">%action%</div>
+      </div>
+    </body>
+  </html>
+`
 
 // display if debug
 function showDebug(debugString) {
@@ -119,13 +194,6 @@ function readFromGmail() {
 
 }
 
-// first time log in
-function firstTimeLogIn() {
-  savedData = defaultData;
-  // read from google account
-  // save email and name to data
-}
-
 // load api
 function loadApi() {
   showDebug(["loadApi"]);
@@ -142,9 +210,9 @@ function initApi() {
     gapi.auth2.getAuthInstance().isSignedIn.listen(signedIn);
     signedIn(gapi.auth2.getAuthInstance().isSignedIn.get());
 
-    document.getElementById("signin-google").onclick = handleAuthClick;
-    document.getElementById("signout-google").onclick = handleSignoutClick;
-    document.getElementById("disconnect-google").onclick = handleDisconnectClick;
+    // document.getElementById("signin-google").onclick = handleAuthClick;
+    // document.getElementById("signout-google").onclick = handleSignoutClick;
+    // document.getElementById("disconnect-google").onclick = handleDisconnectClick;
   }, console.log);
 }
 
@@ -153,11 +221,16 @@ function signedIn(signinState) {
   showDebug(["signedIn"]);
   showDebug([signinState]);
   if (signinState) {
-    document.getElementById("signin-overlay").classList.add("hide");
+    // document.getElementById("signin-overlay").classList.add("hide");
+    globalStore.showSignIn = false;
+    globalStore.showMenu = false;
     initSystem();
   } else {
-    document.getElementById("signin-overlay").classList.remove("hide");
+    // document.getElementById("signin-overlay").classList.remove("hide");
+    globalStore.showSignIn = true;
+    globalStore.showMenu = true;
   }
+  // showDebug([document.getElementById("signin-overlay")]);
 }
 
 // click to authenticate
@@ -196,14 +269,14 @@ function readOrCreateData(searchResult) {
   if (files.length > 0) {
     return readFileContent(files[0].id);
   } else {
-    savedData = defaultData;
+    globalStore.savedData = defaultData;
     var basicProfile = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
-    savedData.mine.name = basicProfile.getName();
-    savedData.mine.email = basicProfile.getEmail();
-    savedData.mine.personId = generateId([]);
+    globalStore.savedData.mine.name = basicProfile.getName();
+    globalStore.savedData.mine.email = basicProfile.getEmail();
+    globalStore.savedData.mine.personId = generateId([]);
     return createDataFile()
       .then((res)=>{
-        return {fileId: res.result.id, content: savedData};
+        return {fileId: res.result.id, content: copyObj(globalStore.savedData)};
       })
       .then(saveToFile)
       .then((res) => {
@@ -234,7 +307,7 @@ function readFileContent(fileId) {
 
 function saveToGlobal(readData) {
   showDebug(["saveToGlobal", copyObj(readData)]);
-  savedData = readData.result;
+  globalStore.savedData = readData.result;
 } 
 
 function saveToFile(newContent) {
@@ -255,18 +328,150 @@ function updateToDatabase() {
     .then((res) => {
       return {
         fileId: res.result.files[0].id,
-        content: savedData
+        content: copyObj(globalStore.savedData)
       } 
     })
     .then(saveToFile);
 }
 
+
+
+function readFromGmail() {
+  return gapi.client.gmail.users.messages.list({
+    "userId": "me",
+    "q": "subject:PrayerPartners",
+    "format": "full"
+  }).then((res) => {
+    if (res.result.resultSizeEstimate == 0) {
+      throw "No result";
+    } else {
+      return res.result.messages[0].id;
+    }
+  });
+  // return gapi.client.request({
+  //   path: "gmail/v1/users/me/messages/" + "15d5b5c74b3aa89b",
+  //   method: 'GET',
+  //   params: {
+  //     format: "full"
+  //   }
+  // });
+
+  // q: "from: abe.nong@gmail.com to: ricwtk@gmail.com"
+  // threadId: 15d5b5c74b3aa89b 
+    // "id": "15d5b5c74b3aa89b",
+
+}
+
+function getMessageWithId(messageId) {
+  return gapi.client.gmail.users.messages.get({
+    userId: "me",
+    id: messageId,
+    format: "full"
+  });
+}
+
+function displayBody(res) {
+  console.log(res);
+  // console.log(Base64.fromBase64(res.result.raw));
+  console.log(getHeader(res.result.payload.headers, "To"));
+  console.log(getHeader(res.result.payload.headers, "From"));
+  console.log(new Date(getHeader(res.result.payload.headers, "Date")));
+  console.log(getBody(res.result.payload));
+  // console.log(res.result.raw.replace(/-/g, '+').replace(/_/g, '/').replace(/\s/g, ''));
+  // console.log(atob(res.result.raw.replace(/-/g, '+').replace(/_/g, '/').replace(/\s/g, '')));
+}
+
+
+// https://github.com/sitepoint-editors/gmail-api-javascript-example/blob/master/01%20-%20Basic%20client/index.html
+function getHeader(headers, index) {
+  var output = '';
+  headers.forEach(header => {
+    if (header.name == index) {
+      output = header.value;
+    }
+  });
+  return output;
+}
+
+function getBody(message) {
+  // message = returned.result.payload
+  var encodedBody = '';
+  if(typeof message.parts === 'undefined')
+  {
+    encodedBody = message.body.data;
+  }
+  else
+  {
+    encodedBody = getHTMLPart(message.parts);
+  }
+  // encodedBody = encodedBody.replace(/-/g, '+').replace(/_/g, '/').replace(/\s/g, '');
+  // return decodeURIComponent(escape(window.atob(encodedBody)));
+  return Base64.fromBase64(encodedBody);
+}
+
+function getHTMLPart(arr) {
+  for(var x = 0; x <= arr.length; x++)
+  {
+    if(typeof arr[x].parts === 'undefined')
+    {
+      if(arr[x].mimeType === 'text/html')
+      {
+        return arr[x].body.data;
+      }
+    }
+    else
+    {
+      return getHTMLPart(arr[x].parts);
+    }
+  }
+  return '';
+}
+
+function generateMessage(action, sendTo) {
+  var newMsg = copyObj(messageData);
+  newMsg.to.push(sendTo);
+  newMsg.subject = copyObj(messageSubject[action]);
+  newMsg.body = copyObj(messageBody)
+    .replace("%name%", globalStore.savedData.mine.name)
+    .replace("%email%", globalStore.savedData.mine.email)
+    .replace("%cssStyle%", cssStyle)
+    .replace("%aboutText%", aboutText)
+    .replace("%verbalAction%", verbalAction[action])
+    .replace("%action%", action[action]);
+
+  if (MimeMessage.validMimeMessage(newMsg)) {
+    const message = MimeMessage.createMimeMessage(newMsg);
+    const base64SafeString = message.toBase64SafeString();
+
+    // console.log(Base64.fromBase64(base64SafeString));
+    return base64SafeString;
+  } else {
+    return null;
+  }
+}
+
+function sendInvite(sendTo) {
+  return gapi.client.gmail.users.messages.send({
+    'userId': 'me',
+    'resource': {
+      'raw': generateMessage(action.invite, sendTo)
+    }
+  });
+}
+
+function sendAccept(sendTo) {
+  return gapi.client.gmail.users.messages.send({
+    'userId': 'me',
+    'resource': {
+      'raw': generateMessage(action.accept, sendTo)
+    }
+  });
+}
+
+
 // init function
 function initSystem() {
   // read from google account
-  getSavedFile().then(readOrCreateData).then(saveToGlobal).then(initVueInst);
-  // getSavedFile().then(console.log, console.log);
-  if (savedData == null) {
-    firstTimeLogIn();
-  }
+  getSavedFile().then(readOrCreateData).then(saveToGlobal);
+  readFromGmail().then(getMessageWithId).then(displayBody);
 }

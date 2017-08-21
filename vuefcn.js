@@ -1,3 +1,15 @@
+var globalStore = new Vue({
+  data: {
+    showSignIn: true,
+    showMenu: true,
+    savedData: defaultData,
+    sectionStyle: {
+      width: "",
+      height: ""
+    },
+  }
+});
+
 Vue.component('about-overlay', {
   methods: {
     closeThis: function() {
@@ -19,7 +31,7 @@ Vue.component('about-overlay', {
 });
 
 Vue.component('add-new-friend-section', {
-  props: ["sectionStyle"],
+  props: [],
   data: function() {
     return {
       showOverlay: false,
@@ -29,17 +41,22 @@ Vue.component('add-new-friend-section', {
       addEmailError: false
     }
   },
+  computed: {
+    sectionStyle: () => {
+      return globalStore.sectionStyle;
+    }
+  },
   methods: {
     addPrivate: function() {
-      var friendList = savedData.friends.map(friend => friend.name);
+      var friendList = globalStore.savedData.friends.map(friend => friend.name);
       if (friendList.includes(this.newFriendName)) {
         this.addPrivateError = true;
         showDebug([this.newFriendName + " is in existing friend list"]);
       } else {
         var friend = JSON.parse(JSON.stringify(newFriend));
-        friend.friendId = generateId(savedData.friends.map(friend => friend.friendId));
+        friend.friendId = generateId(globalStore.savedData.friends.map(friend => friend.friendId));
         friend.name = this.newFriendName;
-        savedData.friends.push(friend);
+        globalStore.savedData.friends.push(friend);
         this.newFriendName = '';
         this.showOverlay = false;
         showDebug(["Save '" + this.newFriendName + "' to friend list"]);
@@ -47,15 +64,22 @@ Vue.component('add-new-friend-section', {
       updateToDatabase();
     },
     addEmail: function() {
-      var friendEmailList = app.savedData.friends.map(friend => friend.email);
+      var friendEmailList = globalStore.savedData.friends.map(friend => friend.email);
       if (friendEmailList.includes(this.newFriendEmail)) {
         this.addEmailError = true;
-        showDebug([this.newFriendName + " is in existing friend list"]);
+        showDebug([this.newFriendEmail + " is in existing friend list"]);
       } else {
         // send invite
-        this.newFriendEmail = '';
-        this.showOverlay = false;
-        showDebug(["Save '" + this.newFriendName + "' to friend list"]);
+        sendInvite(this.newFriendEmail).then(() => {
+          showDebug(["Save '" + this.newFriendEmail + "' to friend list"]);
+          this.newFriendEmail = '';
+          this.showOverlay = false;
+        }, () => {
+          this.addEmailError = true;
+          showDebug(["Error adding " + this.newFriendEmail]);
+        });
+        
+        
       }
     }
   },
@@ -123,7 +147,7 @@ Vue.component('edit-item-overlay', {
         this.item.edit = true;
       }
       this.closeThis();
-      showDebug([copyObj(app.savedData)]);
+      showDebug([copyObj(globalStore.savedData)]);
     },
     closeThis: function() {
       this.$emit('close');
@@ -166,7 +190,7 @@ Vue.component('share-with-overlay', {
   props: ["item"],
   computed: {
     friendList: function() {
-      return app.savedData.friends.filter(friend => (friend.email !== null));
+      return globalStore.savedData.friends.filter(friend => (friend.email !== null));
     }
   },
   methods: {
@@ -238,7 +262,7 @@ Vue.component('add-tag-overlay', {
   computed: {
     tagList: function() {
       var tags = [];
-      savedData.mine.items.forEach(item => {
+      globalStore.savedData.mine.items.forEach(item => {
         tags = tags.concat(item.tags.filter(tag => tags.indexOf(tag) < 0));
       });
       return tags;
@@ -379,7 +403,7 @@ Vue.component('single-item', {
 });
 
 Vue.component('section-list', {
-  props: ["sectionTooltip", "sectionTitle", "itemList", "sectionStyle", "sectionTypeData"],
+  props: ["sectionTooltip", "sectionTitle", "itemList", "sectionTypeData"],
   // sectionTypeData = { sType: "", data: null }
   data: function () {
     return {
@@ -391,6 +415,9 @@ Vue.component('section-list', {
     }
   },
   computed: {
+    sectionStyle: () => {
+      return globalStore.sectionStyle;
+    },
     allowOrder: function() { 
       switch(this.sectionTypeData.sType) {
         case "mine": case "friend": return true;
@@ -553,7 +580,7 @@ Vue.component('section-list', {
         case "archive":
         case "mine-tag":
         case "mine-friend":
-          saveToItemList = savedData.mine.items;
+          saveToItemList = globalStore.savedData.mine.items;
           break;
         default:
           saveToItemList = this.itemList;
@@ -705,11 +732,11 @@ Vue.component("edit-profile-overlay", {
   },
   computed: {
     userName: function () {
-      return savedData.mine.name;
+      return globalStore.savedData.mine.name;
     }
   },
   created: function() {
-    this.newUserName = savedData.mine.name;
+    this.newUserName = globalStore.savedData.mine.name;
   },
   methods: {
     saveThis: function() {
@@ -736,117 +763,239 @@ Vue.component("edit-profile-overlay", {
   `
 });
 
-
-var app, app2;
-function initVueInst() {
-  app = new Vue({
-    el: '#main',
-    data: {
-      sectionStyle: {
-        width: "40%",
-        height: "200px"
-      },
-      showList: 'single',
-      savedData: savedData
-    },
-    computed: {
-      myItems: function() {
-        var myitems = savedData.mine.items.filter(item => !item.archived);
-        myitems.sort(function(a,b) {
-          return a.order - b.order;
-        })
-        return myitems;
-      },
-      myArchived: function() {
-        return savedData.mine.items.filter(item => item.archived);
-      },
-      mySharedWithList: function() {
-        // var shareableFriends = savedData.friends.filter(friend => friend.email);
-        var shareableFriends = savedData.friends;
-        var allFriends = shareableFriends.map(friend => {
-          return {
-            name: friend.name, 
-            email: friend.email, 
-            items: savedData.mine.items.filter(item => (item.sharedWith.includes(friend.email)))};
-        });
-        showDebug(["allFriends", allFriends]);
-        return allFriends;
-      },
-      myFriendList: function() {
-        var allFriends = savedData.friends.map(friend => friend);
-        allFriends.sort(function(a,b) {
-          return a.name.localeCompare(b.name);
-        })
-        return allFriends;
-      },
-      myUnshared: function() {
-        return savedData.mine.items.filter(item => (item.sharedWith.length == 0));
-      },
-      myTags: function() {
-        var tags = [];
-        savedData.mine.items.forEach(item => {
-          tags = tags.concat(item.tags.filter(tag => tags.indexOf(tag) < 0));
-        });
-        var allTags = tags.map(tag => {
-          return {
-            name: tag,
-            items: savedData.mine.items.filter(item => (item.tags.includes(tag)))
-          };
-        });
-        showDebug(["allTags", copyObj(allTags)])
-        return allTags;
-      },
-      myUntagged: function() {
-        return savedData.mine.items.filter(item => (item.tags.length == 0));
-      }
-    },
-    methods: {
-      removeFriend: function(friendId) {
-        var indexOfFriend = savedData.friends.findIndex((friend) => friend.friendId == friendId);
-        showDebug(["remove '" + savedData.friends[indexOfFriend].name + "' (id: " + savedData.friends[indexOfFriend].friendId + ")"]);
-        savedData.friends.splice(indexOfFriend, 1);
-        updateToDatabase();
-      },
-    },
-  });
-
-  showDebug(['savedData', copyObj(savedData)]);
-
-  app2 = new Vue({
-    el: '#menu',
-    data: {
-      widthOfSection: app.sectionStyle.width,
-      heightOfSection: app.sectionStyle.height,
-      showEditProfile: false,
-      showAbout: false
-    },
-    computed: {
-      userName: () => {
-        return savedData.mine.name;
-      },
-      userEmail: () => {
-        return savedData.mine.email;
-      }
-    },
-    methods: {
-      saveProfile: function(newProfileName) {
-        savedData.mine.name = newProfileName;
-        updateToDatabase();
-      }
+Vue.component("site-head", {
+  methods: {
+    toggleMenu: function() {
+      this.$emit("toggle");
     }
-  });
+  },
+  template: `
+    <div id="header" class="decor-header">
+      <span id="pagetitle">Prayer Partners</span>
+      <span id="menutoggle" 
+        class="decor-menuitem"
+        @click="toggleMenu">&#9776;</span>
+    </div>
+  `
+});
 
-  var inputSectionWidth = document.getElementById("input-section-width");
-  inputSectionWidth.value = app.sectionStyle.width.replace("%", "");
-  inputSectionWidth.addEventListener("change", () => {
-    app.sectionStyle.width = inputSectionWidth.value + '%';
-    app2.widthOfSection = app.sectionStyle.width;
-  });
+Vue.component("site-menu", {
+  data: function() {
+    return {
+      showEditProfile: false,
+      showAbout: false,
+      widthOfSection: 40,
+      heightOfSection: 200
+    }
+  },
+  computed: {
+    widthOfSectionWithUnit: function() {
+      return this.widthOfSection.toString() + "%";
+    },
+    heightOfSectionWithUnit: function() {
+      return this.heightOfSection.toString() + "px";
+    },
+    showSignIn: () => {
+      return globalStore.showSignIn;
+    },
+    userName: () => {
+      return globalStore.savedData.mine.name;
+    },
+    userEmail: () => {
+      return globalStore.savedData.mine.email;
+    },
+  },
+  watch: {
+    "widthOfSection": function() {
+      globalStore.sectionStyle.width = this.widthOfSectionWithUnit;
+    },
+    "heightOfSection": function() {
+      globalStore.sectionStyle.height = this.heightOfSectionWithUnit;
+    }
+  },
+  created: function() {
+    globalStore.sectionStyle.width = this.widthOfSectionWithUnit;
+    globalStore.sectionStyle.height = this.heightOfSectionWithUnit;
+  },
+  methods: {
+    signIn: () => {
+      handleAuthClick();
+    },
+    signOut: () => {
+      handleSignoutClick();
+    },
+    disconnect: () => {
+      handleDisconnectClick();
+    },
+    saveProfile: (newProfileName) => {
+      globalStore.savedData.mine.name = newProfileName;
+      updateToDatabase();
+    },
+  },
+  template: `
+    <div id="menu" class="decor-menu">
+      <div v-if="showSignIn" id="signin-overlay" class="overlay decor-overlay">
+        <div class="signin-button decor-menuitem" id="signin-google" @click="signIn">Sign in with Google</div>
+      </div>  
+      <span class="menu-item" id="signed-in-as" :title="userEmail" @click="showEditProfile=true">Signed in as {{ userName }}</span>
+      <edit-profile-overlay 
+        v-if="showEditProfile" 
+        v-on:save="saveProfile"
+        v-on:close="showEditProfile=false">
+      </edit-profile-overlay>
+      <span class="menu-item decor-menuitem" id="signout-google" @click="signOut">Sign out</span>
+      <span class="menu-item decor-menuitem" id="disconnect-google" @click="disconnect">Disconnect</span>
+      <span class="menu-item decor-menuitem" id="open-about" @click="showAbout=true">About Prayer Partners</span>
+      <about-overlay v-if="showAbout" @close="showAbout=false"></about-overlay>
+      <span class="menu-item" id="section-width">
+        Width of list ({{ widthOfSectionWithUnit }})<br>
+        <input id="input-section-width" type="range" min="20" max="100" v-model="widthOfSection">
+      </span>
+      <span class="menu-item" id="section-height">
+        Height of list ({{ heightOfSectionWithUnit }})<br>
+        <input id="input-section-height" type="range" min="200" max="500" v-model="heightOfSection">
+      </span>
+      <span class="menu-item friend-invite">
+        <span class="friend-invite-identity">
+          <span class="friend-invite-name">Friend's name</span><br>
+          <span class="friend-invite-email">Friend's email</span>
+        </span>
+        <span class="friend-invite-actions">
+          <span class="friend-invite-accept decor-menuitem">&#x1f7a1;</span>
+          <span class="friend-invite-reject decor-menuitem">&#x1f7a8;</span>
+        </span>
+      </span>
+    </div>  
+  `
+});
 
-  var inputSectionHeight = document.getElementById("input-section-height");
-  inputSectionHeight.value = app.sectionStyle.height.replace("px", "");
-  inputSectionHeight.addEventListener("change", () => {
-    app.sectionStyle.height = inputSectionHeight.value + 'px';
-    app2.heightOfSection = app.sectionStyle.height;
-  });
-}
+var app = new Vue({
+  el: '#main',
+  data: {
+    showList: 'single',
+  },
+  computed: {
+    myItems: function() {
+      var myitems = globalStore.savedData.mine.items.filter(item => !item.archived);
+      myitems.sort(function(a,b) {
+        return a.order - b.order;
+      })
+      return myitems;
+    },
+    myArchived: function() {
+      return globalStore.savedData.mine.items.filter(item => item.archived);
+    },
+    mySharedWithList: function() {
+      // var shareableFriends = savedData.friends.filter(friend => friend.email);
+      var shareableFriends = globalStore.savedData.friends;
+      var allFriends = shareableFriends.map(friend => {
+        return {
+          name: friend.name, 
+          email: friend.email, 
+          items: globalStore.savedData.mine.items.filter(item => (item.sharedWith.includes(friend.email)))};
+      });
+      showDebug(["allFriends", allFriends]);
+      return allFriends;
+    },
+    myFriendList: function() {
+      var allFriends = globalStore.savedData.friends.map(friend => friend);
+      allFriends.sort(function(a,b) {
+        return a.name.localeCompare(b.name);
+      })
+      return allFriends;
+    },
+    myUnshared: function() {
+      return globalStore.savedData.mine.items.filter(item => (item.sharedWith.length == 0));
+    },
+    myTags: function() {
+      var tags = [];
+      globalStore.savedData.mine.items.forEach(item => {
+        tags = tags.concat(item.tags.filter(tag => tags.indexOf(tag) < 0));
+      });
+      var allTags = tags.map(tag => {
+        return {
+          name: tag,
+          items: globalStore.savedData.mine.items.filter(item => (item.tags.includes(tag)))
+        };
+      });
+      showDebug(["allTags", copyObj(allTags)])
+      return allTags;
+    },
+    myUntagged: function() {
+      return globalStore.savedData.mine.items.filter(item => (item.tags.length == 0));
+    }
+  },
+  methods: {
+    removeFriend: function(friendId) {
+      var indexOfFriend = globalStore.savedData.friends.findIndex((friend) => friend.friendId == friendId);
+      showDebug(["remove '" + globalStore.savedData.friends[indexOfFriend].name + "' (id: " + globalStore.savedData.friends[indexOfFriend].friendId + ")"]);
+      globalStore.savedData.friends.splice(indexOfFriend, 1);
+      updateToDatabase();
+    },
+  },
+});
+
+showDebug(['savedData', copyObj(globalStore.savedData)]);
+
+var app_head = new Vue({
+  el: '#sitehead',
+  data: {
+  },
+  computed: {
+    showMenu: () => {
+      return globalStore.showMenu;
+    }
+  },
+  methods: {
+    toggleMenu: function() {
+      globalStore.showMenu = !globalStore.showMenu;
+    }
+  },
+});
+
+// app2 = new Vue({
+//   el: '#menu',
+//   data: {
+//     widthOfSection: app.sectionStyle.width,
+//     heightOfSection: app.sectionStyle.height,
+//     showEditProfile: false,
+//     showAbout: false,
+//     showSignIn: true
+//   },
+//   computed: {
+//     userName: () => {
+//       return savedData.mine.name;
+//     },
+//     userEmail: () => {
+//       return savedData.mine.email;
+//     }
+//   },
+//   methods: {
+//     saveProfile: function(newProfileName) {
+//       savedData.mine.name = newProfileName;
+//       updateToDatabase();
+//     },
+//     handleAuthClick: function() {
+//       showDebug(["handleAuthClick"]);
+//       handleAuthClick();
+//     },
+//     handleSignoutClick: function() {
+//       showDebug(["handleSignoutClick"]);
+//       handleSignoutClick();
+//     }
+//   }
+// });
+
+// var inputSectionWidth = document.getElementById("input-section-width");
+// inputSectionWidth.value = app.sectionStyle.width.replace("%", "");
+// inputSectionWidth.addEventListener("change", () => {
+//   app.sectionStyle.width = inputSectionWidth.value + '%';
+//   app2.widthOfSection = app.sectionStyle.width;
+// });
+
+// var inputSectionHeight = document.getElementById("input-section-height");
+// inputSectionHeight.value = app.sectionStyle.height.replace("px", "");
+// inputSectionHeight.addEventListener("change", () => {
+//   app.sectionStyle.height = inputSectionHeight.value + 'px';
+//   app2.heightOfSection = app.sectionStyle.height;
+// });
