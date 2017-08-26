@@ -78,8 +78,6 @@ Vue.component('add-new-friend-section', {
           this.addEmailError = true;
           showDebug(["Error adding " + this.newFriendEmail]);
         });
-        
-        
       }
     }
   },
@@ -112,7 +110,7 @@ Vue.component('add-new-friend-section', {
 });
 
 Vue.component('edit-item-overlay', {
-  props: ["item", "action", "sectionType"],// action = [new, edit]
+  props: ["item", "action", "sectionType"], // action = [new, edit]
   data: function() {
     return {
       newItem: null,
@@ -176,7 +174,7 @@ Vue.component('single-friend-to-share', {
   },
   methods: {
     toggleState: function() {
-      this.$emit('change', {isChecked: !this.isChecked, friendEmail: this.friend.email});
+      this.$emit('change', { isChecked: !this.isChecked, friendEmail: this.friend.email });
     }
   },
   template: `
@@ -238,7 +236,7 @@ Vue.component('single-tag', {
   },
   methods: {
     toggleState: function() {
-      this.$emit('change', {isChecked: !this.isChecked, tag: this.tag});
+      this.$emit('change', { isChecked: !this.isChecked, tag: this.tag });
     }
   },
   template: `
@@ -327,7 +325,7 @@ Vue.component('add-tag-overlay', {
 
 Vue.component('single-item', {
   props: ["item", "edit", "allowOrder", "editActions"],
-  data: function () {
+  data: function() {
     return {
       showDesc: false,
       showShareWith: false,
@@ -405,7 +403,7 @@ Vue.component('single-item', {
 Vue.component('section-list', {
   props: ["sectionTooltip", "sectionTitle", "itemList", "sectionTypeData"],
   // sectionTypeData = { sType: "", data: null }
-  data: function () {
+  data: function() {
     return {
       edit: false,
       showAddNewItem: false,
@@ -418,67 +416,88 @@ Vue.component('section-list', {
     sectionStyle: () => {
       return globalStore.sectionStyle;
     },
-    allowOrder: function() { 
-      switch(this.sectionTypeData.sType) {
-        case "mine": case "friend": return true;
-        case "archive": case "mine-friend": case "mine-tag": default: return false;
+    allowOrder: function() {
+      switch (this.sectionTypeData.sType) {
+        case "mine":
+        case "friend":
+          return true;
+        case "archive":
+        case "mine-friend":
+        case "mine-tag":
+        default:
+          return false;
       }
     },
     editActions: function() {
-      switch(this.sectionTypeData.sType) {
-        case "mine": return ['e','a','d','s','t'];
-        case "archive": return ['u','d'];
-        case "mine-friend": 
-          if (this.sectionTitle == 'Unshared') return ['e','a','d','s','t'];
-          return ['e','a','d','s','t','r'];
-        case "mine-tag": 
-          if (this.sectionTitle == 'Untagged') return ['e','a','d','s','t'];
-          return ['e','a','d','s','t','r'];
-        case "friend": return ['e','d'];
-        default: return [];
+      switch (this.sectionTypeData.sType) {
+        case "mine":
+          return ['e', 'a', 'd', 's', 't'];
+        case "archive":
+          return ['u', 'd'];
+        case "mine-friend":
+          if (this.sectionTitle == 'Unshared') return ['e', 'a', 'd', 's', 't'];
+          return ['e', 'a', 'd', 's', 't', 'r'];
+        case "mine-tag":
+          if (this.sectionTitle == 'Untagged') return ['e', 'a', 'd', 's', 't'];
+          return ['e', 'a', 'd', 's', 't', 'r'];
+        case "friend":
+          return ['e', 'd'];
+        default:
+          return [];
       }
     },
     allowNew: function() {
-      switch(this.sectionTypeData.sType) {
-        case "mine": case "friend": return true;
-        case "mine-friend": case "mine-tag": case "archive": default: return false;
+      switch (this.sectionTypeData.sType) {
+        case "mine":
+        case "friend":
+          return true;
+        case "mine-friend":
+        case "mine-tag":
+        case "archive":
+        default:
+          return false;
       }
     },
     allowRemove: function() {
-      switch(this.sectionTypeData.sType) {
+      switch (this.sectionTypeData.sType) {
         case "friend":
           return (this.sectionTooltip == null);
-        default: return false;
+        default:
+          return false;
       }
     },
     allowEditName: function() {
-      switch(this.sectionTypeData.sType) {
+      switch (this.sectionTypeData.sType) {
         case "friend":
           return true;
-        default: return false;
+        default:
+          return false;
       }
     },
     displayItemList: function() {
       var myList = this.clonedItemList.filter(item => !item.deleted);
       switch (this.sectionTypeData.sType) {
-        case "mine-tag": 
-          if (this.sectionTitle !== 'Untagged') 
+        case "mine-tag":
+          if (this.sectionTitle !== 'Untagged')
             myList = myList.filter(item => item.tags.includes(this.sectionTitle));
           break;
         case "mine-friend":
-          if (this.sectionTitle !== 'Unshared') 
+          if (this.sectionTitle !== 'Unshared')
             myList = myList.filter(item => item.sharedWith.includes(this.sectionTooltip));
           break;
-        default: break;
+        default:
+          break;
       }
       switch (this.sectionTypeData.sType) {
-        case "mine": case "mine-tag": case "mine-friend":
+        case "mine":
+        case "mine-tag":
+        case "mine-friend":
           return myList.filter(item => !item.archived);
         case "archive":
           return myList.filter(item => item.archived);
         default:
           return myList;
-      }      
+      }
     },
   },
   watch: {
@@ -499,7 +518,7 @@ Vue.component('section-list', {
       this.clonedItemList = this.clonedItemList.map(item => {
         return Object.assign({}, item, { edit: false, deleted: false });
       });
-      this.clonedItemList.sort(function(a,b) {
+      this.clonedItemList.sort(function(a, b) {
         return a.order - b.order;
       });
     },
@@ -511,7 +530,7 @@ Vue.component('section-list', {
       showDebug(["move '" + itemId + "' up"]);
       var itemToMove = this.findItemById(this.itemList, itemId);
       if (itemToMove.order !== 0) {
-        var itemToSwap = this.findItemByOrder(this.itemList, itemToMove.order-1);
+        var itemToSwap = this.findItemByOrder(this.itemList, itemToMove.order - 1);
         itemToSwap.order += 1;
         itemToMove.order -= 1;
       }
@@ -522,7 +541,7 @@ Vue.component('section-list', {
       var itemToMove = this.findItemById(this.itemList, itemId);
       var lastOrder = Math.max(...this.itemList.filter(item => (item.order > -1)).map(item => item.order));
       if (itemToMove.order !== lastOrder) {
-        var itemToSwap = this.findItemByOrder(this.itemList, itemToMove.order+1);
+        var itemToSwap = this.findItemByOrder(this.itemList, itemToMove.order + 1);
         itemToSwap.order -= 1;
         itemToMove.order += 1;
       }
@@ -612,7 +631,7 @@ Vue.component('section-list', {
       });
       // reorder
       saveToItemList = saveToItemList.filter(item => !item.archived);
-      saveToItemList.sort((a,b) => {
+      saveToItemList.sort((a, b) => {
         if (a.order == -1 && b.order == -1)
           return 0;
         else if (a.order == -1)
@@ -691,7 +710,7 @@ Vue.component('section-list', {
 
 Vue.component("edit-name-overlay", {
   props: ["name"],
-  data: function () {
+  data: function() {
     return {
       newName: ''
     };
@@ -725,13 +744,13 @@ Vue.component("edit-name-overlay", {
 });
 
 Vue.component("edit-profile-overlay", {
-  data: function () {
+  data: function() {
     return {
       newUserName: ''
     };
   },
   computed: {
-    userName: function () {
+    userName: function() {
       return globalStore.savedData.mine.name;
     }
   },
@@ -877,7 +896,7 @@ var app = new Vue({
   computed: {
     myItems: function() {
       var myitems = globalStore.savedData.mine.items.filter(item => !item.archived);
-      myitems.sort(function(a,b) {
+      myitems.sort(function(a, b) {
         return a.order - b.order;
       })
       return myitems;
@@ -890,16 +909,17 @@ var app = new Vue({
       var shareableFriends = globalStore.savedData.friends;
       var allFriends = shareableFriends.map(friend => {
         return {
-          name: friend.name, 
-          email: friend.email, 
-          items: globalStore.savedData.mine.items.filter(item => (item.sharedWith.includes(friend.email)))};
+          name: friend.name,
+          email: friend.email,
+          items: globalStore.savedData.mine.items.filter(item => (item.sharedWith.includes(friend.email)))
+        };
       });
       showDebug(["allFriends", allFriends]);
       return allFriends;
     },
     myFriendList: function() {
       var allFriends = globalStore.savedData.friends.map(friend => friend);
-      allFriends.sort(function(a,b) {
+      allFriends.sort(function(a, b) {
         return a.name.localeCompare(b.name);
       })
       return allFriends;
@@ -939,8 +959,7 @@ showDebug(['savedData', copyObj(globalStore.savedData)]);
 
 var app_head = new Vue({
   el: '#sitehead',
-  data: {
-  },
+  data: {},
   computed: {
     showMenu: () => {
       return globalStore.showMenu;

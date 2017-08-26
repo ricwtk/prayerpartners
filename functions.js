@@ -4,19 +4,21 @@ const DEBUG = true;
 var GOOGLE = {
   CLIENT_ID: "885265693601-q38bh4n7s7rdrv6lpn4qbb6sbt065pum.apps.googleusercontent.com",
   DISCOVERY_DOCS: [
-    "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest", 
+    "https://www.googleapis.com/discovery/v1/apis/drive/v3/rest",
     "https://www.googleapis.com/discovery/v1/apis/gmail/v1/rest"
   ],
-  SCOPES: [//"https://www.googleapis.com/auth/drive.file",
+  SCOPES: [ //"https://www.googleapis.com/auth/drive.file",
     "https://www.googleapis.com/auth/drive.appfolder",
     "https://www.googleapis.com/auth/gmail.readonly",
-    "https://www.googleapis.com/auth/gmail.compose"].join(" ")
+    "https://www.googleapis.com/auth/gmail.compose"
+  ].join(" ")
 };
 
 // var threadId = 
 
 var defaultData = {
   lastEmailChecked: null,
+  messageIdOnLastDay: [],
   mine: {
     personId: null,
     name: null,
@@ -82,13 +84,14 @@ var cssStyle = `
 `;
 
 var verbalAction = {
-  invite: "sent an invitation",
+  invite: "sent you an invitation",
   accept: "accepted your invitation"
 };
 
 var action = {
   invite: "invite",
-  accept: "accept"
+  accept: "accept",
+  update: "update"
 };
 
 var messageSubject = {
@@ -117,7 +120,7 @@ var messageBody = `
           %aboutText%
         </div>
         <div id="id">PP</div>
-        <div class="hide">%action%</div>
+        <div id="action" class="hide">%action%</div>
       </div>
     </body>
   </html>
@@ -275,8 +278,11 @@ function readOrCreateData(searchResult) {
     globalStore.savedData.mine.email = basicProfile.getEmail();
     globalStore.savedData.mine.personId = generateId([]);
     return createDataFile()
-      .then((res)=>{
-        return {fileId: res.result.id, content: copyObj(globalStore.savedData)};
+      .then((res) => {
+        return {
+          fileId: res.result.id,
+          content: copyObj(globalStore.savedData)
+        };
       })
       .then(saveToFile)
       .then((res) => {
@@ -308,7 +314,7 @@ function readFileContent(fileId) {
 function saveToGlobal(readData) {
   showDebug(["saveToGlobal", copyObj(readData)]);
   globalStore.savedData = readData.result;
-} 
+}
 
 function saveToFile(newContent) {
   showDebug(["saveToFile"]);
@@ -329,7 +335,7 @@ function updateToDatabase() {
       return {
         fileId: res.result.files[0].id,
         content: copyObj(globalStore.savedData)
-      } 
+      }
     })
     .then(saveToFile);
 }
@@ -337,29 +343,33 @@ function updateToDatabase() {
 
 
 function readFromGmail() {
+  var dateQuery;
+  if (globalStore.savedData.lastEmailChecked == null) {
+    dateQuery = '';
+  } else {
+    dateQuery = "after:" +
+      globalStore.savedData.lastEmailChecked.getUTCFullYear() + "/" +
+      globalStore.savedData.lastEmailChecked.getUTCMonth() + "/" +
+      globalStore.savedData.lastEmailChecked.getUTCDate();
+  }
   return gapi.client.gmail.users.messages.list({
     "userId": "me",
-    "q": "subject:PrayerPartners",
+    "q": ["subject:PrayerPartners", dateQuery].join(" "),
     "format": "full"
   }).then((res) => {
-    if (res.result.resultSizeEstimate == 0) {
-      throw "No result";
-    } else {
-      return res.result.messages[0].id;
-    }
+    return new Promise((resolve, reject) => {
+      if (res.result.resultSizeEstimate == 0) {
+        reject("No result");
+      } else {
+        resolve(Promise.all(res.result.messages.map(msg => getMessageWithId(msg.id))));
+      }
+    });
   });
-  // return gapi.client.request({
-  //   path: "gmail/v1/users/me/messages/" + "15d5b5c74b3aa89b",
-  //   method: 'GET',
-  //   params: {
-  //     format: "full"
-  //   }
-  // });
-
-  // q: "from: abe.nong@gmail.com to: ricwtk@gmail.com"
-  // threadId: 15d5b5c74b3aa89b 
-    // "id": "15d5b5c74b3aa89b",
-
+  // read for invites
+  // read for accepts
+  // read for updates
+  // watch for invites, accepts, and updates
+  // update lastEmailChecked, messagesAtLastChecked
 }
 
 function getMessageWithId(messageId) {
@@ -370,12 +380,48 @@ function getMessageWithId(messageId) {
   });
 }
 
+function extractRelevantMessages(resultArrays) {
+  var relMsgs = resultArrays.filter((res) => {
+    let headers = res.result.payload.headers;
+    // headers['Received'] = from 885265693601 named unknown by gmailapi.google.com with HTTPREST; Tue, 22 Aug 2017 10:26:41 -0400
+    // AND not in messageIdOnLastDay
+    if (getHeader(headers, "Received").includes("885265693601")) {
+      if (getHeader(headers, "To").includes(globalStore.savedData.mine.email)) {
+        if (!globalStore.savedData.messageIdOnLastDay.includes(res.result.id)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  });
+
+  relMsgs = relMsgs.map(msg => {
+    let parser = new DOMParser();
+    let body = parser.parseFromString(getBody(msg.result.payload), "text/html");
+    return {
+      id: msg.result.id,
+      action: body.getElementById("action").textContent,
+      sender: {
+        name: body.getElementById("sender-name").textContent,
+        email: body.getElementById("sender-email").textContent
+      }
+    }
+  });
+
+  return relMsgs;
+  // read invites
+  // read accepts
+  // read updates
+  // set up watch
+}
+
 function displayBody(res) {
   console.log(res);
   // console.log(Base64.fromBase64(res.result.raw));
   console.log(getHeader(res.result.payload.headers, "To"));
   console.log(getHeader(res.result.payload.headers, "From"));
   console.log(new Date(getHeader(res.result.payload.headers, "Date")));
+  console.log(getHeader(res.result.payload.headers, "Received"));
   console.log(getBody(res.result.payload));
   // console.log(res.result.raw.replace(/-/g, '+').replace(/_/g, '/').replace(/\s/g, ''));
   // console.log(atob(res.result.raw.replace(/-/g, '+').replace(/_/g, '/').replace(/\s/g, '')));
@@ -396,12 +442,9 @@ function getHeader(headers, index) {
 function getBody(message) {
   // message = returned.result.payload
   var encodedBody = '';
-  if(typeof message.parts === 'undefined')
-  {
+  if (typeof message.parts === 'undefined') {
     encodedBody = message.body.data;
-  }
-  else
-  {
+  } else {
     encodedBody = getHTMLPart(message.parts);
   }
   // encodedBody = encodedBody.replace(/-/g, '+').replace(/_/g, '/').replace(/\s/g, '');
@@ -410,34 +453,29 @@ function getBody(message) {
 }
 
 function getHTMLPart(arr) {
-  for(var x = 0; x <= arr.length; x++)
-  {
-    if(typeof arr[x].parts === 'undefined')
-    {
-      if(arr[x].mimeType === 'text/html')
-      {
+  for (var x = 0; x <= arr.length; x++) {
+    if (typeof arr[x].parts === 'undefined') {
+      if (arr[x].mimeType === 'text/html') {
         return arr[x].body.data;
       }
-    }
-    else
-    {
+    } else {
       return getHTMLPart(arr[x].parts);
     }
   }
   return '';
 }
 
-function generateMessage(action, sendTo) {
+function generateMessage(act, sendTo) {
   var newMsg = copyObj(messageData);
   newMsg.to.push(sendTo);
-  newMsg.subject = copyObj(messageSubject[action]);
+  newMsg.subject = copyObj(messageSubject[act]);
   newMsg.body = copyObj(messageBody)
     .replace("%name%", globalStore.savedData.mine.name)
     .replace("%email%", globalStore.savedData.mine.email)
     .replace("%cssStyle%", cssStyle)
     .replace("%aboutText%", aboutText)
-    .replace("%verbalAction%", verbalAction[action])
-    .replace("%action%", action[action]);
+    .replace("%verbalAction%", verbalAction[act])
+    .replace("%action%", action[act]);
 
   if (MimeMessage.validMimeMessage(newMsg)) {
     const message = MimeMessage.createMimeMessage(newMsg);
@@ -468,10 +506,31 @@ function sendAccept(sendTo) {
   });
 }
 
+function chainError(err) {
+  return Promise.reject(err);
+}
+
+function finalError(err) {
+  showDebug([err]);
+}
+
+function logAndForward(obj) {
+  showDebug([obj]);
+  return obj
+}
 
 // init function
 function initSystem() {
   // read from google account
-  getSavedFile().then(readOrCreateData).then(saveToGlobal);
-  readFromGmail().then(getMessageWithId).then(displayBody);
+  getSavedFile()
+    .then(readOrCreateData, chainError)
+    .then(saveToGlobal, chainError)
+    .then(readFromGmail, chainError)
+    .then(logAndForward, chainError)
+    .then(extractRelevantMessages, chainError)
+    .then(console.log, finalError);
+  readFromGmail()
+    .then(getMessageWithId, chainError)
+    .then(displayBody, chainError)
+    .then(null, finalError);
 }
