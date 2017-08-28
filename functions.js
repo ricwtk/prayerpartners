@@ -40,12 +40,23 @@ var newMineItem = {
   archived: false
 };
 
-var newFriend = {
-  friendId: null,
-  name: null,
-  email: null,
-  items: []
-};
+function newFriendRequest(name, email) {
+  return {
+    name: name,
+    email: email,
+    rejected: false
+  }
+}
+
+function newFriend(name, email) {
+  return {
+    friendId: generateId(globalStore.savedData.friends.map(friend => friend.friendId)),
+    name: name,
+    email: email,
+    groups: [],
+    items: []
+  }
+}
 
 var newFriendItem = {
   itemId: null,
@@ -404,15 +415,59 @@ function extractRelevantMessages(resultArrays) {
       sender: {
         name: body.getElementById("sender-name").textContent,
         email: body.getElementById("sender-email").textContent
-      }
+      },
+      content: body.getElementById("updateContent")
     }
   });
 
-  return relMsgs;
+  return {
+    invites: relMsgs.filter(msg => (msg.action == action.invite)),
+    accepts: relMsgs.filter(msg => (msg.action == action.accept)),
+    updates: relMsgs.filter(msg => (msg.action == action.update))
+  }
   // read invites
   // read accepts
   // read updates
   // set up watch
+}
+
+function processMessages(messages) {
+  let result = {
+    invites: messages.invites.filter(filterInvite).map(msg => processInvite(msg)),
+    accepts: messages.accepts.map(msg => processAccept(msg)),
+    updates: messages.updates.map(msg => processUpdate(msg))
+  };
+  return result;
+}
+
+function filterInvite(invite) {
+  // check if friendRequest already saved in the friendRequest list or in the friend list
+  if ((globalStore.savedData.friendRequests.filter(friR => (friR.email == invite.sender.email)).length == 0) &&
+    (globalStore.savedData.friends.filter(fri => (fri.email == invite.sender.email)).length == 0)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function processInvite(invite) {
+  let friReq = newFriendRequest(invite.sender.name, invite.sender.email);
+  globalStore.savedData.friendRequests.push(friReq);
+  return friReq;
+}
+
+function processAccept(accept) {
+  let friend = newFriend(accept.sender.name, accept.sender.email);
+  globalStore.savedData.friends.push(friend);
+  return friend;
+}
+
+function processUpdate(update) {
+
+}
+
+function setLastChecked() {
+
 }
 
 function displayBody(res) {
@@ -526,8 +581,11 @@ function initSystem() {
     .then(readOrCreateData, chainError)
     .then(saveToGlobal, chainError)
     .then(readFromGmail, chainError)
-    .then(logAndForward, chainError)
     .then(extractRelevantMessages, chainError)
+    .then(logAndForward, chainError)
+    .then(processMessages, chainError)
+    .then(logAndForward, chainError)
+    .then(updateToDatabase, chainError)
     .then(console.log, finalError);
   readFromGmail()
     .then(getMessageWithId, chainError)

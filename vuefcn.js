@@ -12,7 +12,7 @@ var globalStore = new Vue({
 
 Vue.component('about-overlay', {
   methods: {
-    closeThis: function() {
+    closeThis: function () {
       this.$emit('close');
     }
   },
@@ -32,7 +32,7 @@ Vue.component('about-overlay', {
 
 Vue.component('add-new-friend-section', {
   props: [],
-  data: function() {
+  data: function () {
     return {
       showOverlay: false,
       newFriendEmail: '',
@@ -47,23 +47,21 @@ Vue.component('add-new-friend-section', {
     }
   },
   methods: {
-    addPrivate: function() {
+    addPrivate: function () {
       var friendList = globalStore.savedData.friends.map(friend => friend.name);
       if (friendList.includes(this.newFriendName)) {
         this.addPrivateError = true;
         showDebug([this.newFriendName + " is in existing friend list"]);
       } else {
-        var friend = JSON.parse(JSON.stringify(newFriend));
-        friend.friendId = generateId(globalStore.savedData.friends.map(friend => friend.friendId));
-        friend.name = this.newFriendName;
+        var friend = newFriend(this.newFriendName, null);
         globalStore.savedData.friends.push(friend);
         this.newFriendName = '';
         this.showOverlay = false;
-        showDebug(["Save '" + this.newFriendName + "' to friend list"]);
+        showDebug(["Save '" + friend.name + "' to friend list"]);
       }
       updateToDatabase();
     },
-    addEmail: function() {
+    addEmail: function () {
       var friendEmailList = globalStore.savedData.friends.map(friend => friend.email);
       if (friendEmailList.includes(this.newFriendEmail)) {
         this.addEmailError = true;
@@ -111,7 +109,7 @@ Vue.component('add-new-friend-section', {
 
 Vue.component('edit-item-overlay', {
   props: ["item", "action", "sectionType"], // action = [new, edit]
-  data: function() {
+  data: function () {
     return {
       newItem: null,
       newItemTitle: "",
@@ -119,21 +117,24 @@ Vue.component('edit-item-overlay', {
       edited: false
     }
   },
-  created: function() {
+  created: function () {
     if (this.action == "new") {
       if (this.sectionType == "mine") {
         this.newItem = copyObj(newMineItem);
       } else { // if (this.sectionType == "friend")
         this.newItem = copyObj(newFriendItem);
       }
-      this.newItem = Object.assign({}, this.newItem, { edit: false, deleted: false });
+      this.newItem = Object.assign({}, this.newItem, {
+        edit: false,
+        deleted: false
+      });
     } else {
       this.newItemTitle = this.item.item;
       this.newItemDesc = this.item.desc;
     }
   },
   methods: {
-    saveThis: function() {
+    saveThis: function () {
       if (this.action == "new") {
         this.newItem.item = this.newItemTitle;
         this.newItem.desc = this.newItemDesc;
@@ -147,7 +148,7 @@ Vue.component('edit-item-overlay', {
       this.closeThis();
       showDebug([copyObj(globalStore.savedData)]);
     },
-    closeThis: function() {
+    closeThis: function () {
       this.$emit('close');
     }
   },
@@ -169,12 +170,15 @@ Vue.component('edit-item-overlay', {
 
 Vue.component('single-friend-to-share', {
   props: ["isChecked", "friend"],
-  data: function() {
+  data: function () {
     return {}
   },
   methods: {
-    toggleState: function() {
-      this.$emit('change', { isChecked: !this.isChecked, friendEmail: this.friend.email });
+    toggleState: function () {
+      this.$emit('change', {
+        isChecked: !this.isChecked,
+        friendEmail: this.friend.email
+      });
     }
   },
   template: `
@@ -187,15 +191,15 @@ Vue.component('single-friend-to-share', {
 Vue.component('share-with-overlay', {
   props: ["item"],
   computed: {
-    friendList: function() {
+    friendList: function () {
       return globalStore.savedData.friends.filter(friend => (friend.email !== null));
     }
   },
   methods: {
-    closeThis: function() {
+    closeThis: function () {
       this.$emit('close');
     },
-    updateShareWithList: function(detail) {
+    updateShareWithList: function (detail) {
       if (detail.isChecked) {
         showDebug(["sharedWith list: added '" + detail.friendEmail + "'"]);
         this.item.sharedWith.push(detail.friendEmail);
@@ -231,12 +235,15 @@ Vue.component('share-with-overlay', {
 
 Vue.component('single-tag', {
   props: ["isChecked", "tag"],
-  data: function() {
+  data: function () {
     return {}
   },
   methods: {
-    toggleState: function() {
-      this.$emit('change', { isChecked: !this.isChecked, tag: this.tag });
+    toggleState: function () {
+      this.$emit('change', {
+        isChecked: !this.isChecked,
+        tag: this.tag
+      });
     }
   },
   template: `
@@ -251,14 +258,14 @@ Vue.component('single-tag', {
 
 Vue.component('add-tag-overlay', {
   props: ["item"],
-  data: function() {
+  data: function () {
     return {
       newTags: "",
       // tagList: []
     };
   },
   computed: {
-    tagList: function() {
+    tagList: function () {
       var tags = [];
       globalStore.savedData.mine.items.forEach(item => {
         tags = tags.concat(item.tags.filter(tag => tags.indexOf(tag) < 0));
@@ -267,10 +274,10 @@ Vue.component('add-tag-overlay', {
     }
   },
   methods: {
-    closeThis: function() {
+    closeThis: function () {
       this.$emit('close');
     },
-    updateTagList: function(detail) {
+    updateTagList: function (detail) {
       if (detail.isChecked) {
         showDebug(["tag list: added '" + detail.tag + "'"]);
         this.item.tags.push(detail.tag);
@@ -282,10 +289,13 @@ Vue.component('add-tag-overlay', {
       this.item.edit = true;
       showDebug([copyObj(this.item)]);
     },
-    addNewTag: function() {
+    addNewTag: function () {
       var newTags = this.newTags.split(',');
       newTags.forEach(tag => {
-        this.updateTagList({ isChecked: true, tag: tag });
+        this.updateTagList({
+          isChecked: true,
+          tag: tag
+        });
       });
     }
   },
@@ -325,7 +335,7 @@ Vue.component('add-tag-overlay', {
 
 Vue.component('single-item', {
   props: ["item", "edit", "allowOrder", "editActions"],
-  data: function() {
+  data: function () {
     return {
       showDesc: false,
       showShareWith: false,
@@ -334,25 +344,25 @@ Vue.component('single-item', {
     }
   },
   methods: {
-    toggleDesc: function() {
+    toggleDesc: function () {
       this.showDesc = !this.showDesc;
     },
-    moveUp: function() {
+    moveUp: function () {
       this.$emit('moveUp', this.item.itemId);
     },
-    moveDown: function() {
+    moveDown: function () {
       this.$emit('moveDown', this.item.itemId);
     },
-    setArchived: function() {
+    setArchived: function () {
       this.$emit('setArchived', this.item.itemId);
     },
-    setUnarchived: function() {
+    setUnarchived: function () {
       this.$emit('setUnarchived', this.item.itemId);
     },
-    deleteItem: function() {
+    deleteItem: function () {
       this.$emit('deleteItem', this.item.itemId);
     },
-    removeFromList: function() {
+    removeFromList: function () {
       this.$emit('removeFromList', this.item.itemId);
     }
   },
@@ -403,7 +413,7 @@ Vue.component('single-item', {
 Vue.component('section-list', {
   props: ["sectionTooltip", "sectionTitle", "itemList", "sectionTypeData"],
   // sectionTypeData = { sType: "", data: null }
-  data: function() {
+  data: function () {
     return {
       edit: false,
       showAddNewItem: false,
@@ -416,7 +426,7 @@ Vue.component('section-list', {
     sectionStyle: () => {
       return globalStore.sectionStyle;
     },
-    allowOrder: function() {
+    allowOrder: function () {
       switch (this.sectionTypeData.sType) {
         case "mine":
         case "friend":
@@ -428,7 +438,7 @@ Vue.component('section-list', {
           return false;
       }
     },
-    editActions: function() {
+    editActions: function () {
       switch (this.sectionTypeData.sType) {
         case "mine":
           return ['e', 'a', 'd', 's', 't'];
@@ -446,7 +456,7 @@ Vue.component('section-list', {
           return [];
       }
     },
-    allowNew: function() {
+    allowNew: function () {
       switch (this.sectionTypeData.sType) {
         case "mine":
         case "friend":
@@ -458,7 +468,7 @@ Vue.component('section-list', {
           return false;
       }
     },
-    allowRemove: function() {
+    allowRemove: function () {
       switch (this.sectionTypeData.sType) {
         case "friend":
           return (this.sectionTooltip == null);
@@ -466,7 +476,7 @@ Vue.component('section-list', {
           return false;
       }
     },
-    allowEditName: function() {
+    allowEditName: function () {
       switch (this.sectionTypeData.sType) {
         case "friend":
           return true;
@@ -474,7 +484,7 @@ Vue.component('section-list', {
           return false;
       }
     },
-    displayItemList: function() {
+    displayItemList: function () {
       var myList = this.clonedItemList.filter(item => !item.deleted);
       switch (this.sectionTypeData.sType) {
         case "mine-tag":
@@ -501,32 +511,35 @@ Vue.component('section-list', {
     },
   },
   watch: {
-    'itemList': function() {
+    'itemList': function () {
       this.syncClonedWithOri();
     }
   },
   methods: {
-    findItemById: function(itemList, itemId) {
+    findItemById: function (itemList, itemId) {
       return itemList.filter(item => (item.itemId == itemId))[0];
     },
-    findItemByOrder: function(itemList, itemOrder) {
+    findItemByOrder: function (itemList, itemOrder) {
       return itemList.filter(item => (item.order == itemOrder))[0];
     },
-    syncClonedWithOri: function() {
+    syncClonedWithOri: function () {
       showDebug(["syncClonedWithOri", copyObj(this.itemList)]);
       this.clonedItemList = copyObj(this.itemList);
       this.clonedItemList = this.clonedItemList.map(item => {
-        return Object.assign({}, item, { edit: false, deleted: false });
+        return Object.assign({}, item, {
+          edit: false,
+          deleted: false
+        });
       });
-      this.clonedItemList.sort(function(a, b) {
+      this.clonedItemList.sort(function (a, b) {
         return a.order - b.order;
       });
     },
-    removeSection: function() {
+    removeSection: function () {
       this.$emit("remove", this.sectionTypeData.data.friendId);
       this.edit = false;
     },
-    moveUp: function(itemId) {
+    moveUp: function (itemId) {
       showDebug(["move '" + itemId + "' up"]);
       var itemToMove = this.findItemById(this.itemList, itemId);
       if (itemToMove.order !== 0) {
@@ -536,7 +549,7 @@ Vue.component('section-list', {
       }
       this.syncClonedWithOri();
     },
-    moveDown: function(itemId) {
+    moveDown: function (itemId) {
       showDebug(["move '" + itemId + "' down"]);
       var itemToMove = this.findItemById(this.itemList, itemId);
       var lastOrder = Math.max(...this.itemList.filter(item => (item.order > -1)).map(item => item.order));
@@ -547,7 +560,7 @@ Vue.component('section-list', {
       }
       this.syncClonedWithOri();
     },
-    setArchived: function(itemId) {
+    setArchived: function (itemId) {
       showDebug(["archived '" + itemId + "'"]);
       var itemToEdit = this.findItemById(this.clonedItemList, itemId);
       itemToEdit.archived = true;
@@ -556,19 +569,19 @@ Vue.component('section-list', {
       itemToEdit.tags = [];
       itemToEdit.sharedWith = [];
     },
-    setUnarchived: function(itemId) {
+    setUnarchived: function (itemId) {
       showDebug(["unarchived '" + itemId + "'"])
       var itemToEdit = this.findItemById(this.clonedItemList, itemId);
       itemToEdit.archived = false;
       itemToEdit.edit = true;
     },
-    deleteItem: function(itemId) {
+    deleteItem: function (itemId) {
       showDebug(["delete '" + itemId + "'"]);
       var itemToEdit = this.findItemById(this.clonedItemList, itemId);
       itemToEdit.deleted = true;
       itemToEdit.edit = true;
     },
-    removeFromList: function(itemId) {
+    removeFromList: function (itemId) {
       showDebug(["remove '" + itemId + "' from list"]);
       var itemToEdit = this.findItemById(this.clonedItemList, itemId);
       if (this.sectionTypeData.sType == 'mine-friend') {
@@ -581,7 +594,7 @@ Vue.component('section-list', {
       showDebug([copyObj(itemToEdit)]);
       itemToEdit.edit = true;
     },
-    createNew: function(newItem) {
+    createNew: function (newItem) {
       newItem.itemId = generateId(this.clonedItemList.map(item => item.itemId));
       newItem.order = Math.max(...this.clonedItemList.filter(item => (item.order > -1)).map(item => item.order)) + 1;
       if (newItem.order == -Infinity) newItem.order = 0;
@@ -591,7 +604,7 @@ Vue.component('section-list', {
       showDebug(["add item: ", copyObj(newItem)]);
       this.clonedItemList.splice(this.clonedItemList.length, 1, newItem);
     },
-    saveEdit: function() {
+    saveEdit: function () {
       showDebug(["update list", copyObj(this.clonedItemList)]);
       var saveToItemList;
       switch (this.sectionTypeData.sType) {
@@ -647,12 +660,12 @@ Vue.component('section-list', {
       updateToDatabase();
       this.edit = false;
     },
-    cancelEdit: function() {
+    cancelEdit: function () {
       this.edit = false;
       this.syncClonedWithOri();
     }
   },
-  created: function() {
+  created: function () {
     this.syncClonedWithOri();
   },
   template: `
@@ -710,20 +723,20 @@ Vue.component('section-list', {
 
 Vue.component("edit-name-overlay", {
   props: ["name"],
-  data: function() {
+  data: function () {
     return {
       newName: ''
     };
   },
-  created: function() {
+  created: function () {
     this.newName = this.name;
   },
   methods: {
-    saveThis: function() {
+    saveThis: function () {
       this.$emit("save", this.newName);
       this.closeThis();
     },
-    closeThis: function() {
+    closeThis: function () {
       this.$emit("close");
     }
   },
@@ -744,25 +757,25 @@ Vue.component("edit-name-overlay", {
 });
 
 Vue.component("edit-profile-overlay", {
-  data: function() {
+  data: function () {
     return {
       newUserName: ''
     };
   },
   computed: {
-    userName: function() {
+    userName: function () {
       return globalStore.savedData.mine.name;
     }
   },
-  created: function() {
+  created: function () {
     this.newUserName = globalStore.savedData.mine.name;
   },
   methods: {
-    saveThis: function() {
+    saveThis: function () {
       this.$emit("save", this.newUserName);
       this.closeThis();
     },
-    closeThis: function() {
+    closeThis: function () {
       this.$emit("close");
     }
   },
@@ -784,7 +797,7 @@ Vue.component("edit-profile-overlay", {
 
 Vue.component("site-head", {
   methods: {
-    toggleMenu: function() {
+    toggleMenu: function () {
       this.$emit("toggle");
     }
   },
@@ -798,8 +811,50 @@ Vue.component("site-head", {
   `
 });
 
+Vue.component("friend-request", {
+  props: ["name", "email"],
+  data: function () {
+    return {}
+  },
+  methods: {
+    acceptRequest: function () {
+      showDebug(["acceptRequest"]);
+      // send email to accept
+      sendAccept(this.email).then(() => {
+        let friend = newFriend(this.name, this.email);
+        globalStore.savedData.friends.push(friend);
+        // remove from friendRequest
+        let indexOfRequest = globalStore.savedData.friendRequests.findIndex(friend => friend.email == this.email);
+        globalStore.savedData.friendRequests.splice(indexOfRequest, 1);
+        updateToDatabase();
+        showDebug(["Successfully accepted " + this.name + " (" + friend.email + ") as friend"])
+      }, () => {
+        showDebug(["Error accepting " + this.name + " (" + friend.email + ") as friend"])
+      });
+    },
+    rejectRequest: function () {
+      showDebug(["rejectRequest"]);
+      let indexOfRequest = globalStore.savedData.friendRequests.findIndex(friend => friend.email == this.email);
+      globalStore.savedData.friendRequests.rejected = true;
+      updateToDatabase();
+    }
+  },
+  template: `
+    <span class="menu-item friend-invite">
+      <span class="friend-invite-identity">
+        <span class="friend-invite-name">{{ name }}</span><br>
+        <span class="friend-invite-email">{{ email }}</span>
+      </span>
+      <span class="friend-invite-actions">
+        <span class="friend-invite-accept decor-menuitem" @click="acceptRequest">&#x1f7a1;</span>
+        <span class="friend-invite-reject decor-menuitem" @click="rejectRequest">&#x1f7a8;</span>
+      </span>
+    </span>
+  `
+});
+
 Vue.component("site-menu", {
-  data: function() {
+  data: function () {
     return {
       showEditProfile: false,
       showAbout: false,
@@ -808,10 +863,10 @@ Vue.component("site-menu", {
     }
   },
   computed: {
-    widthOfSectionWithUnit: function() {
+    widthOfSectionWithUnit: function () {
       return this.widthOfSection.toString() + "%";
     },
-    heightOfSectionWithUnit: function() {
+    heightOfSectionWithUnit: function () {
       return this.heightOfSection.toString() + "px";
     },
     showSignIn: () => {
@@ -823,16 +878,19 @@ Vue.component("site-menu", {
     userEmail: () => {
       return globalStore.savedData.mine.email;
     },
+    friendRequests: () => {
+      return globalStore.savedData.friendRequests;
+    }
   },
   watch: {
-    "widthOfSection": function() {
+    "widthOfSection": function () {
       globalStore.sectionStyle.width = this.widthOfSectionWithUnit;
     },
-    "heightOfSection": function() {
+    "heightOfSection": function () {
       globalStore.sectionStyle.height = this.heightOfSectionWithUnit;
     }
   },
-  created: function() {
+  created: function () {
     globalStore.sectionStyle.width = this.widthOfSectionWithUnit;
     globalStore.sectionStyle.height = this.heightOfSectionWithUnit;
   },
@@ -874,16 +932,13 @@ Vue.component("site-menu", {
         Height of list ({{ heightOfSectionWithUnit }})<br>
         <input id="input-section-height" type="range" min="200" max="500" v-model="heightOfSection">
       </span>
-      <span class="menu-item friend-invite">
-        <span class="friend-invite-identity">
-          <span class="friend-invite-name">Friend's name</span><br>
-          <span class="friend-invite-email">Friend's email</span>
-        </span>
-        <span class="friend-invite-actions">
-          <span class="friend-invite-accept decor-menuitem">&#x1f7a1;</span>
-          <span class="friend-invite-reject decor-menuitem">&#x1f7a8;</span>
-        </span>
-      </span>
+      <template v-for="friendRequest in friendRequests">
+        <friend-request 
+          v-if="!friendRequest.rejected" 
+          :name="friendRequest.name"
+          :email="friendRequest.email">
+        </friend-request>
+      </template>
     </div>  
   `
 });
@@ -894,17 +949,17 @@ var app = new Vue({
     showList: 'single',
   },
   computed: {
-    myItems: function() {
+    myItems: function () {
       var myitems = globalStore.savedData.mine.items.filter(item => !item.archived);
-      myitems.sort(function(a, b) {
+      myitems.sort(function (a, b) {
         return a.order - b.order;
       })
       return myitems;
     },
-    myArchived: function() {
+    myArchived: function () {
       return globalStore.savedData.mine.items.filter(item => item.archived);
     },
-    mySharedWithList: function() {
+    mySharedWithList: function () {
       // var shareableFriends = savedData.friends.filter(friend => friend.email);
       var shareableFriends = globalStore.savedData.friends;
       var allFriends = shareableFriends.map(friend => {
@@ -917,17 +972,17 @@ var app = new Vue({
       showDebug(["allFriends", allFriends]);
       return allFriends;
     },
-    myFriendList: function() {
+    myFriendList: function () {
       var allFriends = globalStore.savedData.friends.map(friend => friend);
-      allFriends.sort(function(a, b) {
+      allFriends.sort(function (a, b) {
         return a.name.localeCompare(b.name);
       })
       return allFriends;
     },
-    myUnshared: function() {
+    myUnshared: function () {
       return globalStore.savedData.mine.items.filter(item => (item.sharedWith.length == 0));
     },
-    myTags: function() {
+    myTags: function () {
       var tags = [];
       globalStore.savedData.mine.items.forEach(item => {
         tags = tags.concat(item.tags.filter(tag => tags.indexOf(tag) < 0));
@@ -941,12 +996,12 @@ var app = new Vue({
       showDebug(["allTags", copyObj(allTags)])
       return allTags;
     },
-    myUntagged: function() {
+    myUntagged: function () {
       return globalStore.savedData.mine.items.filter(item => (item.tags.length == 0));
     }
   },
   methods: {
-    removeFriend: function(friendId) {
+    removeFriend: function (friendId) {
       var indexOfFriend = globalStore.savedData.friends.findIndex((friend) => friend.friendId == friendId);
       showDebug(["remove '" + globalStore.savedData.friends[indexOfFriend].name + "' (id: " + globalStore.savedData.friends[indexOfFriend].friendId + ")"]);
       globalStore.savedData.friends.splice(indexOfFriend, 1);
@@ -966,7 +1021,7 @@ var app_head = new Vue({
     }
   },
   methods: {
-    toggleMenu: function() {
+    toggleMenu: function () {
       globalStore.showMenu = !globalStore.showMenu;
     }
   },
