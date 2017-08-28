@@ -66,17 +66,19 @@ var newFriendItem = {
   order: null
 };
 
-var messageData = {
-  type: 'text/html',
-  encoding: 'UTF-8',
-  from: '',
-  to: [],
-  cc: [],
-  bcc: [],
-  replyTo: [],
-  date: new Date(),
-  subject: '',
-  body: ''
+function newMessageData() {
+  return {
+    type: 'text/html',
+    encoding: 'UTF-8',
+    from: '',
+    to: [],
+    cc: [],
+    bcc: [],
+    replyTo: [],
+    date: new Date(),
+    subject: '',
+    body: ''
+  }
 }
 
 var aboutText = "PrayerPartners is ...";
@@ -95,8 +97,9 @@ var cssStyle = `
 `;
 
 var verbalAction = {
-  invite: "sent you an invitation",
-  accept: "accepted your invitation"
+  invite: "sent you an invitation to connect on PrayerPartners",
+  accept: "accepted your invitation to connect on PrayerPartners",
+  update: "update the prayer items shared with you"
 };
 
 var action = {
@@ -107,24 +110,22 @@ var action = {
 
 var messageSubject = {
   invite: "Invite to PrayerPartners",
-  accept: "Accept invitation to PrayerPartners"
+  accept: "Accept invitation to PrayerPartners",
+  update: "Updates to shared list on PrayerPartners"
 };
 
 var messageBody = `
   <html>
-    <head>
-      <style>
-        %cssStyle%
-      </style>
-    </head>
+    <head><style>%cssStyle%</style></head>
     <body>
       <div id="main">
         <div id="text">
-          <div id="sender-name">%name%</div>&nbsp;(<div id="sender-email">%email%</div>) %verbalAction% to connect on PrayerPartners.
+          <div id="sender-name">%name%</div>&nbsp;(<div id="sender-email">%email%</div>) %verbalAction%.
         </div>
         <div class="top-sep"></div>
         <div class="align-center">
           <a class="button" href="https://ricwtk.github.io/prayerpartners/" target="_blank">Go to PrayerPartners</a>
+          %msgContent%
         </div>
         <div class="bottom-sep"></div>
         <div class="align-center">
@@ -135,7 +136,18 @@ var messageBody = `
       </div>
     </body>
   </html>
-`
+`;
+
+function genContent(act, sharedItems) {
+  if (sharedItems.length > 0 && act == action.update) {
+    return sharedItems.map(item => {
+      return "<div class='item-header'>" + item.item + "</div>" +
+        "<div class='item-content>" + item.desc + "</div>";
+    }).join();
+  } else {
+    return "";
+  }
+}
 
 // display if debug
 function showDebug(debugString) {
@@ -351,6 +363,18 @@ function updateToDatabase() {
     .then(saveToFile);
 }
 
+function updateAndSendSharedList(friendList) {
+  showDebug(["updateAndSendSharedList", friendList]);
+  // loop through friendlist
+  friendList.forEach(friend => {
+    // extract items shared with the friend
+    let items = globalStore.savedData.mine.items.filter(item => item.sharedWith.includes(friend));
+    // send items to the friend
+    sendUpdate(friend, items);
+  });
+
+}
+
 
 
 function readFromGmail() {
@@ -520,17 +544,19 @@ function getHTMLPart(arr) {
   return '';
 }
 
-function generateMessage(act, sendTo) {
-  var newMsg = copyObj(messageData);
+function generateMessage(act, sendTo, sharedItems = []) {
+  var newMsg = newMessageData();
   newMsg.to.push(sendTo);
-  newMsg.subject = copyObj(messageSubject[act]);
-  newMsg.body = copyObj(messageBody)
+  newMsg.subject = messageSubject[act];
+  newMsg.body = messageBody
     .replace("%name%", globalStore.savedData.mine.name)
     .replace("%email%", globalStore.savedData.mine.email)
     .replace("%cssStyle%", cssStyle)
     .replace("%aboutText%", aboutText)
     .replace("%verbalAction%", verbalAction[act])
-    .replace("%action%", action[act]);
+    .replace("%action%", action[act])
+    .replace("%msgContent%", genContent(act, sharedItems));
+  showDebug([newMsg, newMsg.body]);
 
   if (MimeMessage.validMimeMessage(newMsg)) {
     const message = MimeMessage.createMimeMessage(newMsg);
@@ -557,6 +583,15 @@ function sendAccept(sendTo) {
     'userId': 'me',
     'resource': {
       'raw': generateMessage(action.accept, sendTo)
+    }
+  });
+}
+
+function sendUpdate(sendTo, updates) {
+  return gapi.client.gmail.users.messages.send({
+    'userId': 'me',
+    'resource': {
+      'raw': generateMessage(action.update, sendTo, updates)
     }
   });
 }

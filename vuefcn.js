@@ -617,6 +617,7 @@ Vue.component('section-list', {
         default:
           saveToItemList = this.itemList;
       }
+      var friendsToUpdate = [];
       this.clonedItemList.forEach((item) => {
         if (item.edit) {
           var itemToEdit = this.findItemById(saveToItemList, item.itemId);
@@ -628,6 +629,9 @@ Vue.component('section-list', {
               newItem = copyObj(newMineItem);
             }
             for (k in newItem) {
+              if (k == "sharedWith") {
+                friendsToUpdate.push(...item[k]);
+              }
               this.$set(newItem, k, item[k]);
             }
             saveToItemList.splice(saveToItemList.length, 1, newItem);
@@ -636,12 +640,17 @@ Vue.component('section-list', {
               saveToItemList.splice(saveToItemList.findIndex(it => it.itemId == item.itemId), 1);
             } else {
               for (k in itemToEdit) {
+                if (k == "sharedWith") {
+                  friendsToUpdate.push(...itemToEdit[k]);
+                  friendsToUpdate.push(...item[k]);
+                }
                 this.$set(itemToEdit, k, item[k]);
               }
             }
           }
         }
       });
+      friendsToUpdate = [...new Set(friendsToUpdate)];
       // reorder
       saveToItemList = saveToItemList.filter(item => !item.archived);
       saveToItemList.sort((a, b) => {
@@ -658,6 +667,7 @@ Vue.component('section-list', {
         item.order = index;
       })
       updateToDatabase();
+      updateAndSendSharedList(friendsToUpdate);
       this.edit = false;
     },
     cancelEdit: function () {
