@@ -93,13 +93,17 @@ var cssStyle = `
   .align-center { text-align: center; }
   #text { font-size: 120%; }
   .top-sep { min-height: 1em; }
+  .mid-sep { min-height: 1em; }
   .bottom-sep { min-height: 3em; }
+  .item-header, .item-content { text-align: left; padding: 1em; }
+  .item-header { background-color: #009688; color: #e0f2f1; padding-bottom: .5em; font-size: 120%; }
+  .item-content { background-color: #b2dfdb; color: #009688; padding-top: 0.5em; }
 `;
 
 var verbalAction = {
   invite: "sent you an invitation to connect on PrayerPartners",
   accept: "accepted your invitation to connect on PrayerPartners",
-  update: "update the prayer items shared with you"
+  update: "updated the prayer items shared with you"
 };
 
 var action = {
@@ -133,6 +137,7 @@ var messageBody = `
         </div>
         <div id="id">PP</div>
         <div id="action" class="hide">%action%</div>
+        <div id="update-content" class="hide">%updateContent%</div>
       </div>
     </body>
   </html>
@@ -140,10 +145,12 @@ var messageBody = `
 
 function genContent(act, sharedItems) {
   if (sharedItems.length > 0 && act == action.update) {
-    return sharedItems.map(item => {
-      return "<div class='item-header'>" + item.item + "</div>" +
-        "<div class='item-content>" + item.desc + "</div>";
-    }).join();
+    return "<div class=\"mid-sep\"></div>\n" +
+      sharedItems.map(item => {
+        return "<div class=\"item-id hide\">" + item.itemId + "</div>\n" +
+          "<div class=\"item-header\">" + item.item + "</div>\n" +
+          "<div class=\"item-content\">" + item.desc + "</div>";
+      }).join();
   } else {
     return "";
   }
@@ -370,7 +377,9 @@ function updateAndSendSharedList(friendList) {
     // extract items shared with the friend
     let items = globalStore.savedData.mine.items.filter(item => item.sharedWith.includes(friend));
     // send items to the friend
-    sendUpdate(friend, items);
+    sendUpdate(friend, items).then(() => {
+      showDebug(["updateAndSendSharedList", "Sent updated shared list to " + friend]);
+    }, finalError);
   });
 
 }
@@ -433,16 +442,27 @@ function extractRelevantMessages(resultArrays) {
   relMsgs = relMsgs.map(msg => {
     let parser = new DOMParser();
     let body = parser.parseFromString(getBody(msg.result.payload), "text/html");
-    return {
-      id: msg.result.id,
-      action: body.getElementById("action").textContent,
-      sender: {
-        name: body.getElementById("sender-name").textContent,
-        email: body.getElementById("sender-email").textContent
-      },
-      content: body.getElementById("updateContent")
+    // showDebug(["extractRelevantMessages"]);
+    let action = body.getElementById("action");
+    let senderName = body.getElementById("sender-name");
+    let senderEmail = body.getElementById("sender-email");
+    let updateContent = body.getElementById("update-content");
+    // showDebug([action, senderName, senderEmail, updateContent]);
+    if ([action, senderName, senderName].indexOf(null) > -1) {
+      return null;
+    } else {
+      return {
+        id: msg.result.id,
+        action: action.textContent,
+        sender: {
+          name: senderName.textContent,
+          email: senderEmail.textContent
+        },
+        content: (updateContent == null) ? null : updateContent.textContent
+      }
     }
   });
+  relMsgs = relMsgs.filter(msg => (msg !== null));
 
   return {
     invites: relMsgs.filter(msg => (msg.action == action.invite)),
@@ -456,18 +476,30 @@ function extractRelevantMessages(resultArrays) {
 }
 
 function processMessages(messages) {
-  let result = {
-    invites: messages.invites.filter(filterInvite).map(msg => processInvite(msg)),
-    accepts: messages.accepts.map(msg => processAccept(msg)),
-    updates: messages.updates.map(msg => processUpdate(msg))
+  // accepts > invites > updates
+  let accepts = messages.accepts.filter(filterAccept).filter(uniqueFilter).map(msg => processAccept(msg));
+  let invites = messages.invites.filter(filterInvite).map(msg => processInvite(msg));
+  let updates = messages.updates.map(msg => processUpdate(msg));
+  return {
+    invites: invites,
+    accepts: accepts,
+    updates: updates
   };
-  return result;
+}
+
+function uniqueFilter(el, idx, arr) {
+  if (arr.findIndex(a => (a.sender.email == el.sender.email)) == idx) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 function filterInvite(invite) {
   // check if friendRequest already saved in the friendRequest list or in the friend list
-  if ((globalStore.savedData.friendRequests.filter(friR => (friR.email == invite.sender.email)).length == 0) &&
-    (globalStore.savedData.friends.filter(fri => (fri.email == invite.sender.email)).length == 0)) {
+  // allow friendRequest if it exists in the friend list => use case: the other friend deleted the acceptance email before it's processed
+  // (globalStore.savedData.friends.filter(fri => (fri.email == invite.sender.email)).length == 0)
+  if ((globalStore.savedData.friendRequests.filter(friR => (friR.email == invite.sender.email)).length == 0)) {
     return true;
   } else {
     return false;
@@ -478,6 +510,15 @@ function processInvite(invite) {
   let friReq = newFriendRequest(invite.sender.name, invite.sender.email);
   globalStore.savedData.friendRequests.push(friReq);
   return friReq;
+}
+
+function filterAccept(accept) {
+  // check if friendAccept already in friend list
+  if (globalStore.savedData.friends.filter(fri => (fri.email == accept.sender.email)).length == 0) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 function processAccept(accept) {
@@ -556,15 +597,17 @@ function generateMessage(act, sendTo, sharedItems = []) {
     .replace("%verbalAction%", verbalAction[act])
     .replace("%action%", action[act])
     .replace("%msgContent%", genContent(act, sharedItems));
-  showDebug([newMsg, newMsg.body]);
+  showDebug(["generateMessage", newMsg, newMsg.body]);
 
   if (MimeMessage.validMimeMessage(newMsg)) {
+    showDebug(["generateMessage", "validMimeMessage"]);
     const message = MimeMessage.createMimeMessage(newMsg);
     const base64SafeString = message.toBase64SafeString();
 
     // console.log(Base64.fromBase64(base64SafeString));
     return base64SafeString;
   } else {
+    showDebug(["generateMessage", "invalidMimeMessage"]);
     return null;
   }
 }
