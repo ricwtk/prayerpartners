@@ -49,5 +49,8 @@ function addToFriend(name, email) {
 
 function acceptFriendRequest(email) {
   let friReq = removeFriendRequest(email);
-  addToFriend(friReq.name, friReq.email);
+  let allFriends = globalStore.savedData.friends.map(friend => friend.email);
+  if (!allFriends.includes(friReq.email)) {
+    addToFriend(friReq.name, friReq.email);
+  }
 }

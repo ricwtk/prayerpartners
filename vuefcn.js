@@ -842,11 +842,6 @@ Vue.component("friend-request", {
       // send email to accept
       sendAccept(this.email).then(() => {
         acceptFriendRequest(this.email);
-        // let friend = newFriend(this.name, this.email);
-        // globalStore.savedData.friends.push(friend);
-        // // remove from friendRequest
-        // let indexOfRequest = globalStore.savedData.friendRequests.findIndex(friend => friend.email == this.email);
-        // globalStore.savedData.friendRequests.splice(indexOfRequest, 1);
         updateToDatabase();
         showDebug(["Successfully accepted " + this.name + " (" + friend.email + ") as friend"])
       }, () => {
