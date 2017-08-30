@@ -53,30 +53,40 @@ Vue.component('add-new-friend-section', {
         this.addPrivateError = true;
         showDebug([this.newFriendName + " is in existing friend list"]);
       } else {
-        var friend = newFriend(this.newFriendName, null);
-        globalStore.savedData.friends.push(friend);
+        addToFriend(this.newFriendName, null);
+        showDebug(["Save '" + this.newFriendName + "' to friend list"]);
         this.newFriendName = '';
         this.showOverlay = false;
-        showDebug(["Save '" + friend.name + "' to friend list"]);
       }
       updateToDatabase();
     },
     addEmail: function () {
-      var friendEmailList = globalStore.savedData.friends.map(friend => friend.email);
+      let friendEmailList = globalStore.savedData.friends.map(friend => friend.email);
+      let friendRequestList = globalStore.savedData.friendRequests.map(friReq => friReq.email);
+      // if in friends list, notify and do not send invite
       if (friendEmailList.includes(this.newFriendEmail)) {
         this.addEmailError = true;
         showDebug([this.newFriendEmail + " is in existing friend list"]);
-      } else {
-        // send invite
-        sendInvite(this.newFriendEmail).then(() => {
-          showDebug(["Save '" + this.newFriendEmail + "' to friend list"]);
-          this.newFriendEmail = '';
-          this.showOverlay = false;
-        }, () => {
-          this.addEmailError = true;
-          showDebug(["Error adding " + this.newFriendEmail]);
-        });
+        return null;
       }
+      // else, if in friend requests list, send accept email, remove friend request, add to friends list
+      if (friendRequestList.includes(this.newFriendEmail)) {
+        sendAccept(this.newFriendEmail).then(() => {
+          showDebug(["'" + this.newFriendEmail + "' is added to friend list"]);
+          acceptFriendRequest(this.newFriendEmail);
+          updateToDatabase();
+        })
+        return null;
+      }
+      // else, send invite email
+      sendInvite(this.newFriendEmail).then(() => {
+        showDebug(["Invite is sent to '" + this.newFriendEmail + "'"]);
+        this.newFriendEmail = '';
+        this.showOverlay = false;
+      }, () => {
+        this.addEmailError = true;
+        showDebug(["Error adding " + this.newFriendEmail]);
+      });
     }
   },
   template: `
@@ -266,7 +276,7 @@ Vue.component('add-tag-overlay', {
   },
   computed: {
     tagList: function () {
-      var tags = [];
+      let tags = [];
       globalStore.savedData.mine.items.forEach(item => {
         tags = tags.concat(item.tags.filter(tag => tags.indexOf(tag) < 0));
       });
@@ -831,11 +841,12 @@ Vue.component("friend-request", {
       showDebug(["acceptRequest"]);
       // send email to accept
       sendAccept(this.email).then(() => {
-        let friend = newFriend(this.name, this.email);
-        globalStore.savedData.friends.push(friend);
-        // remove from friendRequest
-        let indexOfRequest = globalStore.savedData.friendRequests.findIndex(friend => friend.email == this.email);
-        globalStore.savedData.friendRequests.splice(indexOfRequest, 1);
+        acceptFriendRequest(this.email);
+        // let friend = newFriend(this.name, this.email);
+        // globalStore.savedData.friends.push(friend);
+        // // remove from friendRequest
+        // let indexOfRequest = globalStore.savedData.friendRequests.findIndex(friend => friend.email == this.email);
+        // globalStore.savedData.friendRequests.splice(indexOfRequest, 1);
         updateToDatabase();
         showDebug(["Successfully accepted " + this.name + " (" + friend.email + ") as friend"])
       }, () => {
@@ -1036,50 +1047,3 @@ var app_head = new Vue({
     }
   },
 });
-
-// app2 = new Vue({
-//   el: '#menu',
-//   data: {
-//     widthOfSection: app.sectionStyle.width,
-//     heightOfSection: app.sectionStyle.height,
-//     showEditProfile: false,
-//     showAbout: false,
-//     showSignIn: true
-//   },
-//   computed: {
-//     userName: () => {
-//       return savedData.mine.name;
-//     },
-//     userEmail: () => {
-//       return savedData.mine.email;
-//     }
-//   },
-//   methods: {
-//     saveProfile: function(newProfileName) {
-//       savedData.mine.name = newProfileName;
-//       updateToDatabase();
-//     },
-//     handleAuthClick: function() {
-//       showDebug(["handleAuthClick"]);
-//       handleAuthClick();
-//     },
-//     handleSignoutClick: function() {
-//       showDebug(["handleSignoutClick"]);
-//       handleSignoutClick();
-//     }
-//   }
-// });
-
-// var inputSectionWidth = document.getElementById("input-section-width");
-// inputSectionWidth.value = app.sectionStyle.width.replace("%", "");
-// inputSectionWidth.addEventListener("change", () => {
-//   app.sectionStyle.width = inputSectionWidth.value + '%';
-//   app2.widthOfSection = app.sectionStyle.width;
-// });
-
-// var inputSectionHeight = document.getElementById("input-section-height");
-// inputSectionHeight.value = app.sectionStyle.height.replace("px", "");
-// inputSectionHeight.addEventListener("change", () => {
-//   app.sectionStyle.height = inputSectionHeight.value + 'px';
-//   app2.heightOfSection = app.sectionStyle.height;
-// });

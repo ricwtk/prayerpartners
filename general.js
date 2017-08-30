@@ -36,3 +36,18 @@ function logAndForward(obj) {
   showDebug([obj]);
   return obj
 }
+
+function removeFriendRequest(email) {
+  let idx = globalStore.savedData.friendRequests.findIndex(friReq => friReq.email == email);
+  return globalStore.savedData.friendRequests.splice(idx, 1);
+}
+
+function addToFriend(name, email) {
+  let friend = newFriend(name, email);
+  globalStore.savedData.friends.push(friend);
+}
+
+function acceptFriendRequest(email) {
+  let friReq = removeFriendRequest(email);
+  addToFriend(friReq.name, friReq.email);
+}

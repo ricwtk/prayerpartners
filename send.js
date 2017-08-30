@@ -65,6 +65,24 @@ function sendUpdate(sendTo, updates) {
   });
 }
 
+function attemptInvite(inviteEmail) {
+  // if in friends list, return and notify. do not send invite
+  let friendEmailList = globalStore.savedData.friends.map(friend => friend.email);
+  if (friendEmailList.includes(inviteEmail)) {
+    return {
+      error: true,
+      debugMsg: inviteEmail + " is in existing friend list"
+    };
+  }
+  // else, if in friend requests list, send accept email, remove friend request, add to friends list
+  let friendRequestList = globalStore.savedData.friendRequests.map(friReq => friReq.email);
+  if (friendRequestList.includes(inviteEmail)) {
+
+  }
+  // else, send invite email
+
+}
+
 function updateAndSendSharedList(friendList) {
   showDebug(["updateAndSendSharedList", friendList]);
   // loop through friendlist
