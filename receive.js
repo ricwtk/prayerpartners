@@ -111,7 +111,8 @@ function filterInvite(invite) {
   // check if friendRequest already saved in the friendRequest list or in the friend list
   // allow friendRequest if it exists in the friend list => use case: the other friend deleted the acceptance email before it's processed
   // (globalStore.savedData.friends.filter(fri => (fri.email == invite.sender.email)).length == 0)
-  if ((globalStore.savedData.friendRequests.filter(friR => (friR.email == invite.sender.email)).length == 0)) {
+  let friReq = globalStore.savedData.friendRequests.map(friR => friR.email);
+  if (friReq.includes(invite.sender.email)) {
     return true;
   } else {
     return false;
