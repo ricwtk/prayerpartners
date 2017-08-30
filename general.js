@@ -33,24 +33,41 @@ function finalError(err) {
 }
 
 function logAndForward(obj) {
-  showDebug([obj]);
+  showDebug(["logAndForward", obj]);
   return obj
 }
 
 function removeFriendRequest(email) {
+  showDebug(["removeFriendRequest", email]);
   let idx = globalStore.savedData.friendRequests.findIndex(friReq => friReq.email == email);
-  return globalStore.savedData.friendRequests.splice(idx, 1);
+  return globalStore.savedData.friendRequests.splice(idx, 1)[0];
 }
 
 function addToFriend(name, email) {
+  showDebug(["addToFriend", name, email]);
   let friend = newFriend(name, email);
   globalStore.savedData.friends.push(friend);
 }
 
 function acceptFriendRequest(email) {
+  showDebug(["acceptFriendRequest", email]);
   let friReq = removeFriendRequest(email);
   let allFriends = globalStore.savedData.friends.map(friend => friend.email);
   if (!allFriends.includes(friReq.email)) {
     addToFriend(friReq.name, friReq.email);
   }
+}
+
+function addNewFriend(name, email) {
+  showDebug(["addNewFriend", name, email]);
+  let friend = newFriend(name, email);
+  globalStore.savedData.friends.push(friend);
+  return friend;
+}
+
+function addFriendRequest(name, email) {
+  showDebug(["addFriendRequest", name, email]);
+  let friReq = newFriendRequest(name, email);
+  globalStore.savedData.friendRequests.push(friReq);
+  return friReq;
 }

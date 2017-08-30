@@ -1,4 +1,5 @@
 function readFromGmail() {
+  showDebug(["readFromGmail"]);
   var dateQuery;
   if (globalStore.savedData.lastEmailChecked == null) {
     dateQuery = '';
@@ -21,11 +22,6 @@ function readFromGmail() {
       }
     });
   });
-  // read for invites
-  // read for accepts
-  // read for updates
-  // watch for invites, accepts, and updates
-  // update lastEmailChecked, messagesAtLastChecked
 }
 
 function getMessageWithId(messageId) {
@@ -37,6 +33,7 @@ function getMessageWithId(messageId) {
 }
 
 function extractRelevantMessages(resultArrays) {
+  showDebug(["extractRelevantMessages", resultArrays]);
   var relMsgs = resultArrays.filter((res) => {
     let headers = res.result.payload.headers;
     // headers['Received'] = from 885265693601 named unknown by gmailapi.google.com with HTTPREST; Tue, 22 Aug 2017 10:26:41 -0400
@@ -88,10 +85,12 @@ function extractRelevantMessages(resultArrays) {
 }
 
 function processMessages(messages) {
+  showDebug(["processMessages", messages]);
   // accepts > invites > updates
-  let accepts = messages.accepts.filter(filterAccept).filter(uniqueFilter).map(msg => processAccept(msg));
-  let invites = messages.invites.filter(filterInvite).map(msg => processInvite(msg));
+  let accepts = messages.accepts.filter(uniqueFilter).map(msg => processAccept(msg));
+  let invites = messages.invites.filter(uniqueFilter).map(msg => processInvite(msg));
   let updates = messages.updates.map(msg => processUpdate(msg));
+  updateToDatabase();
   return {
     invites: invites,
     accepts: accepts,
@@ -112,7 +111,7 @@ function filterInvite(invite) {
   // allow friendRequest if it exists in the friend list => use case: the other friend deleted the acceptance email before it's processed
   // (globalStore.savedData.friends.filter(fri => (fri.email == invite.sender.email)).length == 0)
   let friReq = globalStore.savedData.friendRequests.map(friR => friR.email);
-  if (friReq.includes(invite.sender.email)) {
+  if (!friReq.includes(invite.sender.email)) {
     return true;
   } else {
     return false;
@@ -120,28 +119,29 @@ function filterInvite(invite) {
 }
 
 function processInvite(invite) {
-  let friReq = newFriendRequest(invite.sender.name, invite.sender.email);
-  globalStore.savedData.friendRequests.push(friReq);
-  return friReq;
-}
-
-function filterAccept(accept) {
-  // check if friendAccept already in friend list
-  if (globalStore.savedData.friends.filter(fri => (fri.email == accept.sender.email)).length == 0) {
-    return true;
-  } else {
-    return false;
+  let friReq = globalStore.savedData.friendRequests.map(friR => friR.email);
+  if (!friReq.includes(invite.sender.email)) {
+    addFriendRequest(invite.sender.name, invite.sender.email);
   }
+  return invite;
 }
 
 function processAccept(accept) {
-  let friend = newFriend(accept.sender.name, accept.sender.email);
-  globalStore.savedData.friends.push(friend);
-  return friend;
+  // if not in friend list, add to friend list
+  let friends = globalStore.savedData.friends.map(fri => fri.email);
+  if (!friends.includes(accept.sender.email)) {
+    addNewFriend(accept.sender.name, accept.sender.email);
+  }
+  // if in friend request list, remove from friend request list
+  let friRequests = globalStore.savedData.friendRequests.map(friReq => friReq.email);
+  if (friRequests.includes(accept.sender.email)) {
+    removeFriendRequest(accept.sender.email);
+  }
+  return accept;
 }
 
 function processUpdate(update) {
-
+  return update;
 }
 
 function setLastChecked() {

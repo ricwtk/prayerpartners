@@ -23,7 +23,7 @@ function generateMessage(act, sendTo, sharedItems = []) {
     .replace("%verbalAction%", verbalAction[act])
     .replace("%action%", action[act])
     .replace("%msgContent%", genContent(act, sharedItems));
-  showDebug(["generateMessage", newMsg, newMsg.body]);
+  showDebug(["generateMessage", newMsg]);
 
   if (MimeMessage.validMimeMessage(newMsg)) {
     showDebug(["generateMessage", "validMimeMessage"]);

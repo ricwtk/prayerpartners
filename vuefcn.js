@@ -533,7 +533,7 @@ Vue.component('section-list', {
       return itemList.filter(item => (item.order == itemOrder))[0];
     },
     syncClonedWithOri: function () {
-      showDebug(["syncClonedWithOri", copyObj(this.itemList)]);
+      // showDebug(["syncClonedWithOri", copyObj(this.itemList)]);
       this.clonedItemList = copyObj(this.itemList);
       this.clonedItemList = this.clonedItemList.map(item => {
         return Object.assign({}, item, {
@@ -843,9 +843,9 @@ Vue.component("friend-request", {
       sendAccept(this.email).then(() => {
         acceptFriendRequest(this.email);
         updateToDatabase();
-        showDebug(["Successfully accepted " + this.name + " (" + friend.email + ") as friend"])
+        showDebug(["Successfully accepted " + this.name + " (" + this.email + ") as friend"])
       }, () => {
-        showDebug(["Error accepting " + this.name + " (" + friend.email + ") as friend"])
+        showDebug(["Error accepting " + this.name + " (" + this.email + ") as friend"])
       });
     },
     rejectRequest: function () {
@@ -1025,8 +1025,6 @@ var app = new Vue({
     },
   },
 });
-
-showDebug(['savedData', copyObj(globalStore.savedData)]);
 
 var app_head = new Vue({
   el: '#sitehead',

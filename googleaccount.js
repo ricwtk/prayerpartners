@@ -1,7 +1,7 @@
 // load api
 function loadApi() {
   showDebug(["loadApi"]);
-  gapi.load("client", initApi);
+  gapi.load("client:auth2", initApi);
 }
 
 function initApi() {
@@ -13,10 +13,6 @@ function initApi() {
   }).then(function () {
     gapi.auth2.getAuthInstance().isSignedIn.listen(signedIn);
     signedIn(gapi.auth2.getAuthInstance().isSignedIn.get());
-
-    // document.getElementById("signin-google").onclick = handleAuthClick;
-    // document.getElementById("signout-google").onclick = handleSignoutClick;
-    // document.getElementById("disconnect-google").onclick = handleDisconnectClick;
   }, console.log);
 }
 
@@ -129,7 +125,7 @@ function saveToFile(newContent) {
 }
 
 function updateToDatabase() {
-  showDebug(["updateToDatabase"]);
+  showDebug(["updateToDatabase", copyObj(globalStore.savedData)]);
   getSavedFile()
     .then((res) => {
       return {
@@ -148,13 +144,15 @@ function initSystem() {
     .then(saveToGlobal, chainError)
     .then(readFromGmail, chainError)
     .then(extractRelevantMessages, chainError)
-    .then(logAndForward, chainError)
+    // .then(logAndForward, chainError)
     .then(processMessages, chainError)
-    .then(logAndForward, chainError)
-    .then(updateToDatabase, chainError)
-    .then(console.log, finalError);
-  readFromGmail()
-    .then(getMessageWithId, chainError)
-    .then(displayBody, chainError)
-    .then(null, finalError);
+    // .then(logAndForward, chainError)
+    // .then(updateToDatabase, chainError)
+    .then(() => {
+      showDebug(["finish initialisation"]);
+    }, finalError);
+  // readFromGmail()
+  //   .then(getMessageWithId, chainError)
+  //   .then(displayBody, chainError)
+  //   .then(null, finalError);
 }
