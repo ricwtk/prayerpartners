@@ -1,21 +1,22 @@
 <!DOCTYPE html>
-<meta charset="UTF-8"> 
+<meta charset="UTF-8">
 <html>
-  <head>
-    <!-- <meta name="google-signin-client_id" content=" 885265693601-e44cq3b3nu153cc8ib9c4jcq6kahvte9.apps.googleusercontent.com ">
-    <script src="https://apis.google.com/js/platform.js" async defer></script> -->
-    <script src="vue.js"></script>
-    <script src="base64.js"></script>
-    <script src="MimeMessage.js"></script>
-    <link rel = "stylesheet" type = "text/css" href = "style.css" />
-  </head>
 
-  <body>
-    <div id="sitehead">
-      <site-head @toggle="toggleMenu"></site-head>
-      <site-menu v-if="showMenu"></site-menu>
-    </div>
-    <!-- <div id="header" class="decor-header">
+<head>
+  <!-- <meta name="google-signin-client_id" content=" 885265693601-e44cq3b3nu153cc8ib9c4jcq6kahvte9.apps.googleusercontent.com ">
+    <script src="https://apis.google.com/js/platform.js" async defer></script> -->
+  <script src="vue.js"></script>
+  <script src="base64.js"></script>
+  <script src="MimeMessage.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+
+<body>
+  <div id="sitehead">
+    <site-head @toggle="toggleMenu"></site-head>
+    <site-menu v-if="showMenu"></site-menu>
+  </div>
+  <!-- <div id="header" class="decor-header">
       <span id="pagetitle">Prayer Partners</span>
       <span id="menutoggle" class="decor-menuitem">&#9776;</span>
     </div>
@@ -51,96 +52,74 @@
           <span class="friend-invite-reject decor-menuitem">&#x1f7a8;</span>
         </span>
       </span>
-    </div>  -->   
+    </div>  -->
 
-    <div id="main">
-      <div class="group">
-        <div class="group-header decor-groupheader">
-          <div class="group-title decor-grouptitle">Mine</div>
-          <div class="group-action decor-groupaction">
-            <span class="group-action-item decor-groupactionitem" title="Show as tag list" @click="showList='tag'">&#x1f516;</span>
-            <span class="group-action-item decor-groupactionitem" title="Show as friends list" @click="showList='friend'">&#x1f46a;</span>
-            <span class="group-action-item decor-groupactionitem" title="Show as single list" @click="showList='single'">&#x2254;</span>
-          </div>
-        </div>
-        <div class="section-group">
-          <section-list 
-            v-if="showList == 'single'"
-            section-tooltip="Active list" 
-            section-title="Active" 
-            :section-type-data="{ sType: 'mine', data: null }"
-            v-bind:item-list="myItems">
-          </section-list>
-          <template v-else-if="showList == 'friend'" v-for="friend in mySharedWithList">
-            <section-list 
-              :section-tooltip="null"
-              section-title="Unshared"
-              :section-type-data="{ sType: 'mine-friend', data: null }"
-              :item-list="myUnshared">
-            </section-list>
-            <template v-for="friend in mySharedWithList">
-              <section-list 
-                v-bind:section-tooltip="friend.email" 
-                v-bind:section-title="friend.name" 
-                :section-type-data="{ sType: 'mine-friend', data: null }"
-                v-bind:item-list="friend.items">
-              </section-list>
-            </template>
-          </template>
-          <template v-else-if="showList == 'tag'">
-            <section-list 
-              :section-tooltip="null"
-              section-title="Untagged"
-              :section-type-data="{ sType: 'mine-tag', data: null }"
-              :item-list="myUntagged">
-            </section-list>
-            <template v-for="tag in myTags">
-              <section-list 
-                :section-tooltip="null"
-                :section-title="tag.name" 
-                :section-type-data="{ sType: 'mine-tag', data: null }"
-                :item-list="tag.items">
-              </section-list>
-            </template>
-          </template>
-          <section-list 
-            section-tooltip="Archived list" 
-            section-title="Archive" 
-            :section-type-data="{ sType: 'archive', data: null }"
-            v-bind:item-list="myArchived">
-          </section-list>
+  <div id="main">
+    <div class="group">
+      <div class="group-header decor-groupheader">
+        <div class="group-title decor-grouptitle">Mine</div>
+        <div class="group-action decor-groupaction">
+          <span class="group-action-item decor-groupactionitem" title="Show as tag list" @click="showList='tag'">&#x1f516;</span>
+          <span class="group-action-item decor-groupactionitem" title="Show as friends list" @click="showList='friend'">&#x1f46a;</span>
+          <span class="group-action-item decor-groupactionitem" title="Show as single list" @click="showList='single'">&#x2254;</span>
         </div>
       </div>
-      <div class="sep decor-sep"></div>
-      <div class="group">
-        <div class="group-header decor-groupheader">
-          <div class="group-title decor-grouptitle">Friends'</div>
-        </div>
-        <div class="section-group">
-          <template v-for="friend in myFriendList">
-            <section-list 
-              v-bind:section-tooltip="friend.email" 
-              v-bind:section-title="friend.name" 
-              :section-type-data="{ sType: 'friend', data: friend }"
-              v-bind:item-list="friend.items" 
-              @remove="removeFriend">
+      <div class="section-group">
+        <section-list v-if="showList == 'single'" section-tooltip="Active list" section-title="Active" :section-type-data="{ sType: 'mine', data: null }"
+          v-bind:item-list="myItems">
+        </section-list>
+        <template v-else-if="showList == 'friend'" v-for="friend in mySharedWithList">
+          <section-list :section-tooltip="null" section-title="Unshared" :section-type-data="{ sType: 'mine-friend', data: null }"
+            :item-list="myUnshared">
+          </section-list>
+          <template v-for="friend in mySharedWithList">
+            <section-list v-bind:section-tooltip="friend.email" v-bind:section-title="friend.name" :section-type-data="{ sType: 'mine-friend', data: null }"
+              v-bind:item-list="friend.items">
             </section-list>
           </template>
-          <add-new-friend-section>
-          </add-new-friend-section>
-          <!-- <div class="section decor-section section-add-new-wrapper" v-bind:style="sectionStyle">
+        </template>
+        <template v-else-if="showList == 'tag'">
+          <section-list :section-tooltip="null" section-title="Untagged" :section-type-data="{ sType: 'mine-tag', data: null }" :item-list="myUntagged">
+          </section-list>
+          <template v-for="tag in myTags">
+            <section-list :section-tooltip="null" :section-title="tag.name" :section-type-data="{ sType: 'mine-tag', data: null }" :item-list="tag.items">
+            </section-list>
+          </template>
+        </template>
+        <section-list section-tooltip="Archived list" section-title="Archive" :section-type-data="{ sType: 'archive', data: null }"
+          v-bind:item-list="myArchived">
+        </section-list>
+      </div>
+    </div>
+    <div class="sep decor-sep"></div>
+    <div class="group">
+      <div class="group-header decor-groupheader">
+        <div class="group-title decor-grouptitle">Friends'</div>
+      </div>
+      <div class="section-group">
+        <template v-for="friend in myFriendList">
+          <section-list v-bind:section-tooltip="friend.email" v-bind:section-title="friend.name" :section-type-data="{ sType: 'friend', data: friend }"
+            v-bind:item-list="friend.items" @remove="removeFriend">
+          </section-list>
+        </template>
+        <add-new-friend-section>
+        </add-new-friend-section>
+        <!-- <div class="section decor-section section-add-new-wrapper" v-bind:style="sectionStyle">
             <div class="section-add-new item-menu decor-itemmenu" title="Add new prayer list for a friend">
               <div class="section-add-new-text">&#x1f7a1;</div>
             </div>
           </div> -->
-        </div>
       </div>
     </div>
+  </div>
 
-    <script src="functions.js"></script>
-    <script src="vuefcn.js"></script>
-    <script async defer src="https://apis.google.com/js/api.js"
-      onload="this.onload=function(){};loadApi()"
-      onreadystatechange="if (this.readyState === 'complete') this.onload()"></script>
-  </body>
+  <script src="constantsdefaults.js"></script>
+  <script src="general.js"></script>
+  <script src="send.js"></script>
+  <script src="receive.js"></script>
+  <script src="googleaccount.js"></script>
+  <script src="vuefcn.js"></script>
+  <script async defer src="https://apis.google.com/js/api.js" onload="this.onload=function(){};loadApi()" onreadystatechange="if (this.readyState === 'complete') this.onload()"></script>
+</body>
+
 </html>
