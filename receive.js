@@ -55,7 +55,7 @@ function extractRelevantMessages(resultArrays) {
     let action = body.getElementById("action");
     let senderName = body.getElementById("sender-name");
     let senderEmail = body.getElementById("sender-email");
-    let updateContent = body.getElementById("update-content");
+    let updateContent = body.getElementById("update-items");
     // showDebug([action, senderName, senderEmail, updateContent]);
     if ([action, senderName, senderName].indexOf(null) > -1) {
       return null;
@@ -67,7 +67,8 @@ function extractRelevantMessages(resultArrays) {
           name: senderName.textContent,
           email: senderEmail.textContent
         },
-        content: (updateContent == null) ? null : updateContent.textContent
+        date: new Date(getHeader(msg.result.payload.headers, "Date")),
+        content: (updateContent == null) ? null : updateContent
       }
     }
   });
@@ -106,18 +107,6 @@ function uniqueFilter(el, idx, arr) {
   }
 }
 
-function filterInvite(invite) {
-  // check if friendRequest already saved in the friendRequest list or in the friend list
-  // allow friendRequest if it exists in the friend list => use case: the other friend deleted the acceptance email before it's processed
-  // (globalStore.savedData.friends.filter(fri => (fri.email == invite.sender.email)).length == 0)
-  let friReq = globalStore.savedData.friendRequests.map(friR => friR.email);
-  if (!friReq.includes(invite.sender.email)) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
 function processInvite(invite) {
   let friReq = globalStore.savedData.friendRequests.map(friR => friR.email);
   if (!friReq.includes(invite.sender.email)) {
@@ -140,7 +129,24 @@ function processAccept(accept) {
   return accept;
 }
 
-function processUpdate(update) {
+function extractUpdates(updates) {
+  let senders = updates.map(update => update.sender.email).filter(uniqueFilter);
+  // discard if not in friends list
+  let friends = globalStore.savedData.friends.filter(friend => friend.email !== null).map(friend => friend.email);
+  senders = senders.filter(sender => friends.includes(sender));
+  let newUpdates = [];
+  senders.forEach(sender => {
+    // get email with latest date
+    let updatesFromSender = updates.filter(update => update.sender.email == sender);
+    updatesFromSender.sort((a, b) => {
+      return b.date - a.date;
+    });
+    newUpdates.push(updatesFromSender[0]);
+  })
+}
+
+function processUpdate(update, idx, updates) {
+  // edit items with matching itemId; add items with no matching itemId; remove items in existing list that are not matched 
   return update;
 }
 

@@ -1,11 +1,15 @@
 function genContent(act, sharedItems) {
   if (sharedItems.length > 0 && act == action.update) {
     return "<div class=\"mid-sep\"></div>\n" +
+      "<div id=\"update-items\">\n" +
       sharedItems.map(item => {
-        return "<div class=\"item-id hide\">" + item.itemId + "</div>\n" +
+        return "<div class=\"single-item\">" +
+          "<div class=\"item-id hide\">" + item.itemId + "</div>\n" +
           "<div class=\"item-header\">" + item.item + "</div>\n" +
-          "<div class=\"item-content\">" + item.desc + "</div>";
-      }).join();
+          "<div class=\"item-content\">" + item.desc + "</div>\n" +
+          "</div>";
+      }).join() +
+      "\n</div>";
   } else {
     return "";
   }
@@ -63,24 +67,6 @@ function sendUpdate(sendTo, updates) {
       'raw': generateMessage(action.update, sendTo, updates)
     }
   });
-}
-
-function attemptInvite(inviteEmail) {
-  // if in friends list, return and notify. do not send invite
-  let friendEmailList = globalStore.savedData.friends.map(friend => friend.email);
-  if (friendEmailList.includes(inviteEmail)) {
-    return {
-      error: true,
-      debugMsg: inviteEmail + " is in existing friend list"
-    };
-  }
-  // else, if in friend requests list, send accept email, remove friend request, add to friends list
-  let friendRequestList = globalStore.savedData.friendRequests.map(friReq => friReq.email);
-  if (friendRequestList.includes(inviteEmail)) {
-
-  }
-  // else, send invite email
-
 }
 
 function updateAndSendSharedList(friendList) {

@@ -136,7 +136,6 @@ var messageBody = `
         </div>
         <div id="id">PP</div>
         <div id="action" class="hide">%action%</div>
-        <div id="update-content" class="hide">%updateContent%</div>
       </div>
     </body>
   </html>
