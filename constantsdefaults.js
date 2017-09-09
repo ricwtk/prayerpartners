@@ -29,15 +29,17 @@ var defaultData = {
   friendRequests: []
 };
 
-var newMineItem = {
-  itemId: null,
-  item: null,
-  desc: null,
-  sharedWith: [],
-  order: null,
-  tags: [],
-  archived: false
-};
+function newMineItem() {
+  return {
+    itemId: null,
+    item: null,
+    desc: null,
+    sharedWith: [],
+    order: null,
+    tags: [],
+    archived: false
+  };
+}
 
 function newFriendRequest(name, email) {
   return {

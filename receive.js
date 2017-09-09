@@ -94,7 +94,7 @@ function processMessages(messages) {
   function getDates(el) {
     return {
       date: el.date,
-      internalDate: el.internalDate
+      internalDate: Number(el.internalDate)
     };
   }
   let allDates = [];

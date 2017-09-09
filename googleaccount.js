@@ -110,7 +110,7 @@ function readFileContent(fileId) {
 function saveToGlobal(readData) {
   showDebug(["saveToGlobal", copyObj(readData)]);
   globalStore.savedData = readData.result;
-  globalStore.savedData.lastDateChecked = new Date(readData.result.lastDateChecked);
+  globalStore.savedData.lastDateChecked = (globalStore.savedData.lastDateChecked == null) ? globalStore.savedData.lastDateChecked : new Date(readData.result.lastDateChecked);
 }
 
 function saveToFile(newContent) {

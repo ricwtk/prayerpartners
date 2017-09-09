@@ -4,8 +4,8 @@ var globalStore = new Vue({
     showMenu: true,
     savedData: defaultData,
     sectionStyle: {
-      width: "",
-      height: ""
+      width: "300px",
+      height: "200px"
     },
   }
 });
@@ -130,7 +130,7 @@ Vue.component('edit-item-overlay', {
   created: function () {
     if (this.action == "new") {
       if (this.sectionType == "mine") {
-        this.newItem = copyObj(newMineItem);
+        this.newItem = newMineItem();
       } else { // if (this.sectionType == "friend")
         this.newItem = newFriendItem();
       }
@@ -636,7 +636,7 @@ Vue.component('section-list', {
             if (this.sectionTypeData.sType == 'friend') {
               newItem = newFriendItem();
             } else {
-              newItem = copyObj(newMineItem);
+              newItem = newMineItem();
             }
             for (k in newItem) {
               if (k == "sharedWith") {
@@ -875,13 +875,13 @@ Vue.component("site-menu", {
     return {
       showEditProfile: false,
       showAbout: false,
-      widthOfSection: 40,
-      heightOfSection: 200
+      widthOfSection: Number(globalStore.sectionStyle.width.replace("px", "")),
+      heightOfSection: Number(globalStore.sectionStyle.height.replace("px", ""))
     }
   },
   computed: {
     widthOfSectionWithUnit: function () {
-      return this.widthOfSection.toString() + "%";
+      return this.widthOfSection.toString() + "px";
     },
     heightOfSectionWithUnit: function () {
       return this.heightOfSection.toString() + "px";
@@ -943,7 +943,7 @@ Vue.component("site-menu", {
       <about-overlay v-if="showAbout" @close="showAbout=false"></about-overlay>
       <span class="menu-item" id="section-width">
         Width of list ({{ widthOfSectionWithUnit }})<br>
-        <input id="input-section-width" type="range" min="20" max="100" v-model="widthOfSection">
+        <input id="input-section-width" type="range" min="300" max="1000" v-model="widthOfSection">
       </span>
       <span class="menu-item" id="section-height">
         Height of list ({{ heightOfSectionWithUnit }})<br>
