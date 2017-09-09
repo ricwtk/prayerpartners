@@ -151,6 +151,7 @@ function initSystem() {
     // .then(updateToDatabase, chainError)
     .then(() => {
       showDebug(["finish initialisation"]);
+      globalStore.showLoading = false;
     }, finalError);
   // readFromGmail()
   //   .then(getMessageWithId, chainError)

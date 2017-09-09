@@ -2,8 +2,19 @@ var globalStore = new Vue({
   data: {
     showSignIn: true,
     showMenu: true,
-    savedData: defaultData
+    savedData: defaultData,
+    showLoading: true
   }
+});
+
+Vue.component('loading-overlay', {
+  template: `
+    <div class="overlay decor-overlay">
+      <div class="overlay-content">
+        <div class="loading-icon">&#x2026;</div>
+      </div>
+    </div>
+  `
 });
 
 Vue.component('about-overlay', {
@@ -962,6 +973,7 @@ var app = new Vue({
     showList: 'single',
   },
   computed: {
+    showLoading: () => globalStore.showLoading,
     myItems: function () {
       var myitems = globalStore.savedData.mine.items.filter(item => !item.archived);
       myitems.sort(function (a, b) {

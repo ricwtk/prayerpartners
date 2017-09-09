@@ -299,6 +299,21 @@ button {
   margin-bottom: 5px;
 }
 
+.loading-icon {
+  font-size: 500%;
+  animation: fade 2s ease-in-out infinite;
+}
+
+@keyframes fade {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 .decor-header,
 .decor-menu {
   background-color: #009688;
