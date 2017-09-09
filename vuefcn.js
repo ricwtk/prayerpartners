@@ -2,8 +2,7 @@ var globalStore = new Vue({
   data: {
     showSignIn: true,
     showMenu: true,
-    savedData: defaultData,
-    timeOfChange: null
+    savedData: defaultData
   }
 });
 
