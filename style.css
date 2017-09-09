@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto+Slab');
-
-html, body {
+html,
+body {
   width: 100%;
   height: 100%;
   margin: 0;
@@ -14,7 +14,8 @@ html, body {
   display: none;
 }
 
-.signin-overlay, #about-overlay {
+.signin-overlay,
+#about-overlay {
   width: 100%;
   height: 100%;
   display: flex;
@@ -37,7 +38,8 @@ html, body {
   color: #ffffff;
 }
 
-.close-button, #close-about {
+.close-button,
+#close-about {
   position: absolute;
   right: 0;
   top: 0;
@@ -54,7 +56,8 @@ html, body {
   /*top: 0;*/
 }
 
-#pagetitle, #menutoggle {
+#pagetitle,
+#menutoggle {
   display: block;
   padding: 10px;
 }
@@ -94,13 +97,14 @@ html, body {
   font-size: 85%;
 }
 
-.friend-invite-accept, .friend-invite-reject {
+.friend-invite-accept,
+.friend-invite-reject {
   padding: 5px;
 }
 
 #main {
   width: calc(100% - 10px);
-  height: 1000px;
+  /* height: 1000px; */
   display: inline-block;
   /*background-color: #e0f2f1;*/
 }
@@ -196,6 +200,7 @@ html, body {
   font-size: 90%;
 }
 
+
 /*.item-head:hover + .item-long-desc {
   visibility: visible;
   display: block;
@@ -206,7 +211,9 @@ html, body {
   cursor: pointer
 }
 
-.overlay, .edit-item-overlay, .share-with-overlay {
+.overlay,
+.edit-item-overlay,
+.share-with-overlay {
   position: fixed;
   height: 100%;
   width: 100%;
@@ -218,7 +225,9 @@ html, body {
   flex-direction: row;
 }
 
-.overlay-wrapper, .edit-item-wrapper, .share-with-wrapper {
+.overlay-wrapper,
+.edit-item-wrapper,
+.share-with-wrapper {
   padding: 10px;
   flex-grow: 1;
   display: flex;
@@ -226,7 +235,9 @@ html, body {
   /*width: 100%;*/
 }
 
-.overlay-input, .edit-item-title, .edit-item-content {
+.overlay-input,
+.edit-item-title,
+.edit-item-content {
   /*width: 100%;*/
   flex-grow: 1;
 }
@@ -241,11 +252,15 @@ html, body {
   padding: 10px;
 }
 
-.overlay-label, .edit-item-overlay-label, .share-with-overlay-label {
+.overlay-label,
+.edit-item-overlay-label,
+.share-with-overlay-label {
   text-align: left;
 }
 
-.overlay-actions, .edit-item-overlay-actions, .share-with-overlay-actions {
+.overlay-actions,
+.edit-item-overlay-actions,
+.share-with-overlay-actions {
   text-align: right;
 }
 
@@ -258,18 +273,21 @@ button {
   width: 100px;
 }
 
-.share-with-content, .tags-content {
+.share-with-content,
+.tags-content {
   display: flex;
   flex-wrap: wrap;
   padding: 10px;
 }
 
-.friend-item, .tag-item {
+.friend-item,
+.tag-item {
   width: 30%;
   padding: 5px;
 }
 
-.friend-item-name, .tag-item-name {
+.friend-item-name,
+.tag-item-name {
   padding: 0px 0px 0px 5px;
 }
 
@@ -279,27 +297,32 @@ button {
   margin-bottom: 5px;
 }
 
-.decor-header, .decor-menu {
+.decor-header,
+.decor-menu {
   background-color: #009688;
   color: #e0f2f1;
 }
 
-.decor-menuitem, .decor-sectionactionitem {
+.decor-menuitem,
+.decor-sectionactionitem {
   background-color: #009688;
   color: #e0f2f1;
 }
 
-.decor-menuitem:hover, .decor-sectionactionitem:hover {
+.decor-menuitem:hover,
+.decor-sectionactionitem:hover {
   background-color: #b2dfdb;
   color: #009688;
 }
 
-.decor-signinoverlay, .decor-aboutoverlay {
+.decor-signinoverlay,
+.decor-aboutoverlay {
   background-color: rgba(255, 255, 255, 0.8);
   color: #009688;
 }
 
-.decor-closebutton:hover, .decor-closeabout:hover {
+.decor-closebutton:hover,
+.decor-closeabout:hover {
   background-color: #f44336;
   color: #b2dfdb;
 }
@@ -327,7 +350,8 @@ button {
   color: #e0f2f1;
 }
 
-.decor-overlay, .decor-edititemoverlay {
+.decor-overlay,
+.decor-edititemoverlay {
   background-color: rgba(255, 255, 255, 0.95);
   color: #009688;
 }

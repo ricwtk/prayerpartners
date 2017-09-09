@@ -16,8 +16,8 @@ var GOOGLE = {
 // var threadId = 
 
 var defaultData = {
-  lastEmailChecked: null,
-  messageIdOnLastDay: [],
+  lastDateChecked: null,
+  lastInternalDateChecked: null,
   mine: {
     personId: null,
     name: null,

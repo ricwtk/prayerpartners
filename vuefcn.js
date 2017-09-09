@@ -648,6 +648,7 @@ Vue.component('section-list', {
           } else {
             if (item.deleted) {
               saveToItemList.splice(saveToItemList.findIndex(it => it.itemId == item.itemId), 1);
+              friendsToUpdate.push(...item.sharedWith);
             } else {
               for (k in itemToEdit) {
                 if (k == "sharedWith") {

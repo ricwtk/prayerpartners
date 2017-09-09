@@ -1,13 +1,14 @@
 function readFromGmail() {
   showDebug(["readFromGmail"]);
   var dateQuery;
-  if (globalStore.savedData.lastEmailChecked == null) {
+  if (globalStore.savedData.lastDateChecked == null) {
     dateQuery = '';
   } else {
+    showDebug(["readFromGmail", typeof globalStore.savedData.lastDateChecked]);
     dateQuery = "after:" +
-      globalStore.savedData.lastEmailChecked.getUTCFullYear() + "/" +
-      globalStore.savedData.lastEmailChecked.getUTCMonth() + "/" +
-      globalStore.savedData.lastEmailChecked.getUTCDate();
+      globalStore.savedData.lastDateChecked.getUTCFullYear() + "/" +
+      globalStore.savedData.lastDateChecked.getUTCMonth() + "/" +
+      globalStore.savedData.lastDateChecked.getUTCDate();
   }
   return gapi.client.gmail.users.messages.list({
     "userId": "me",
@@ -37,10 +38,10 @@ function extractRelevantMessages(resultArrays) {
   var relMsgs = resultArrays.filter((res) => {
     let headers = res.result.payload.headers;
     // headers['Received'] = from 885265693601 named unknown by gmailapi.google.com with HTTPREST; Tue, 22 Aug 2017 10:26:41 -0400
-    // AND not in messageIdOnLastDay
+    // AND later than internalDate
     if (getHeader(headers, "Received").includes("885265693601")) {
       if (getHeader(headers, "To").includes(globalStore.savedData.mine.email)) {
-        if (!globalStore.savedData.messageIdOnLastDay.includes(res.result.id)) {
+        if (res.result.internalDate > globalStore.savedData.lastInternalDateChecked) {
           return true;
         }
       }
@@ -80,9 +81,6 @@ function extractRelevantMessages(resultArrays) {
     accepts: relMsgs.filter(msg => (msg.action == action.accept)),
     updates: relMsgs.filter(msg => (msg.action == action.update))
   }
-  // read invites
-  // read accepts
-  // read updates
   // set up watch
 }
 
@@ -91,7 +89,28 @@ function processMessages(messages) {
   // accepts > invites > updates
   let accepts = messages.accepts.filter(uniqueFilter).map(msg => processAccept(msg));
   let invites = messages.invites.filter(uniqueFilter).map(msg => processInvite(msg));
-  let updates = extractUpdates(messages.updates).map(msg => processUpdate(msg));
+  let updates = (messages.updates.length == 0) ? messages.updates : extractUpdates(messages.updates).map(msg => processUpdate(msg));
+  // extract dates from accepts, invites, and updates
+  function getDates(el) {
+    return {
+      date: el.date,
+      internalDate: el.internalDate
+    };
+  }
+  let allDates = [];
+  allDates = (accepts.length == 0) ? allDates : allDates.concat(accepts.map(getDates));
+  allDates = (invites.length == 0) ? allDates : allDates.concat(invites.map(getDates));
+  allDates = (updates.length == 0) ? allDates : allDates.concat(updates.map(getDates));
+  if (allDates.length !== 0) {
+    // sort allDates to get the latest date
+    allDates.sort((a, b) => {
+      return b.date - a.date;
+    })
+    // save latest date as lastdatechecked (allDates[0])
+    globalStore.savedData.lastDateChecked = allDates[0].date;
+    // save latest internaldate as lastinternaldatechecked
+    globalStore.savedData.lastInternalDateChecked = allDates[0].internalDate;
+  }
   updateToDatabase();
   return {
     invites: invites,
@@ -191,7 +210,7 @@ function processUpdate(update) {
       });
     showDebug(["processUpdate", "updated items", friend.email, copyObj(friend.items)]);
   }
-  return (friend == undefined) ? [] : friend.items;
+  return update;
 }
 
 function setLastChecked() {
