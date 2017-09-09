@@ -107,6 +107,7 @@ body {
   /* height: 1000px; */
   display: inline-block;
   /*background-color: #e0f2f1;*/
+  padding-bottom: 5px;
 }
 
 .group {
