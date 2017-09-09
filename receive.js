@@ -68,6 +68,7 @@ function extractRelevantMessages(resultArrays) {
           email: senderEmail.textContent
         },
         date: new Date(getHeader(msg.result.payload.headers, "Date")),
+        internalDate: msg.result.internalDate,
         content: (updateContent == null) ? null : updateContent
       }
     }
@@ -90,7 +91,7 @@ function processMessages(messages) {
   // accepts > invites > updates
   let accepts = messages.accepts.filter(uniqueFilter).map(msg => processAccept(msg));
   let invites = messages.invites.filter(uniqueFilter).map(msg => processInvite(msg));
-  let updates = messages.updates.map(msg => processUpdate(msg));
+  let updates = extractUpdates(messages.updates).map(msg => processUpdate(msg));
   updateToDatabase();
   return {
     invites: invites,
@@ -107,7 +108,16 @@ function uniqueFilter(el, idx, arr) {
   }
 }
 
+function genericUniqueFilter(el, idx, arr) {
+  if (arr.findIndex(a => (a == el)) == idx) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 function processInvite(invite) {
+  showDebug(["processInvite", invite]);
   let friReq = globalStore.savedData.friendRequests.map(friR => friR.email);
   if (!friReq.includes(invite.sender.email)) {
     addFriendRequest(invite.sender.name, invite.sender.email);
@@ -116,6 +126,7 @@ function processInvite(invite) {
 }
 
 function processAccept(accept) {
+  showDebug(["processAccept", accept]);
   // if not in friend list, add to friend list
   let friends = globalStore.savedData.friends.map(fri => fri.email);
   if (!friends.includes(accept.sender.email)) {
@@ -130,7 +141,8 @@ function processAccept(accept) {
 }
 
 function extractUpdates(updates) {
-  let senders = updates.map(update => update.sender.email).filter(uniqueFilter);
+  showDebug(["extractUpdates", updates]);
+  let senders = updates.map(update => update.sender.email).filter(genericUniqueFilter);
   // discard if not in friends list
   let friends = globalStore.savedData.friends.filter(friend => friend.email !== null).map(friend => friend.email);
   senders = senders.filter(sender => friends.includes(sender));
@@ -142,12 +154,44 @@ function extractUpdates(updates) {
       return b.date - a.date;
     });
     newUpdates.push(updatesFromSender[0]);
-  })
+  });
+  return newUpdates;
 }
 
-function processUpdate(update, idx, updates) {
-  // edit items with matching itemId; add items with no matching itemId; remove items in existing list that are not matched 
-  return update;
+function processUpdate(update) {
+  showDebug(["processUpdate", update])
+  // find item with matching itemId
+  let friend = globalStore.savedData.friends.find(fri => (fri.email == update.sender.email));
+  if (friend !== undefined) {
+    // process DOM
+    let items = Array.from(update.content.getElementsByClassName("single-item"));
+    items = items.map(item => {
+      return {
+        id: item.getElementsByClassName("item-id")[0].textContent,
+        header: item.getElementsByClassName("item-header")[0].textContent,
+        content: item.getElementsByClassName("item-content")[0].textContent
+      };
+    });
+    // remove items with itemId not existed in the update items
+    let allIds = items.map(item => item.id);
+    friend.items = friend.items.filter(item => allIds.includes(item.id));
+    // edit items with matching itemId
+    friend.items.forEach(item => {
+      let newItem = items.find(it => it.id == item.itemId);
+      item.item = newItem.header;
+      item.desc = newItem.content;
+    });
+    // add items with no matching itemId
+    let idsInFriendItems = friend.items.map(item => item.itemId);
+    items
+      .filter(item => !idsInFriendItems.includes(item.id))
+      .forEach(item => {
+        idsInFriendItems = friend.items.map(item => item.itemId);
+        friend.items.push(newFriendItem(item.id, item.header, item.content, "friend"));
+      });
+    showDebug(["processUpdate", "updated items", friend.email, copyObj(friend.items)]);
+  }
+  return (friend == undefined) ? [] : friend.items;
 }
 
 function setLastChecked() {

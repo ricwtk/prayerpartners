@@ -132,7 +132,7 @@ Vue.component('edit-item-overlay', {
       if (this.sectionType == "mine") {
         this.newItem = copyObj(newMineItem);
       } else { // if (this.sectionType == "friend")
-        this.newItem = copyObj(newFriendItem);
+        this.newItem = newFriendItem();
       }
       this.newItem = Object.assign({}, this.newItem, {
         edit: false,
@@ -634,7 +634,7 @@ Vue.component('section-list', {
           if (itemToEdit == undefined) {
             var newItem;
             if (this.sectionTypeData.sType == 'friend') {
-              newItem = copyObj(newFriendItem);
+              newItem = newFriendItem();
             } else {
               newItem = copyObj(newMineItem);
             }

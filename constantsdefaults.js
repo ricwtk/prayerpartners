@@ -57,13 +57,15 @@ function newFriend(name, email) {
   }
 }
 
-var newFriendItem = {
-  itemId: null,
-  item: null,
-  desc: null,
-  owner: null,
-  order: null
-};
+function newFriendItem(id, title, desc, owner) {
+  return {
+    itemId: id || generateId([]),
+    item: title || null,
+    desc: desc || null,
+    owner: owner || "mine",
+    order: null
+  }
+}
 
 function newMessageData() {
   return {
