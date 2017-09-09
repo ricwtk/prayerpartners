@@ -26,7 +26,13 @@ var defaultData = {
     items: []
   },
   friends: [],
-  friendRequests: []
+  friendRequests: [],
+  ui: {
+    sectionStyle: {
+      width: "300px",
+      height: "200px"
+    },
+  }
 };
 
 function newMineItem() {

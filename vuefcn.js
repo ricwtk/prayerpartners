@@ -3,10 +3,7 @@ var globalStore = new Vue({
     showSignIn: true,
     showMenu: true,
     savedData: defaultData,
-    sectionStyle: {
-      width: "300px",
-      height: "200px"
-    },
+    timeOfChange: null
   }
 });
 
@@ -43,7 +40,7 @@ Vue.component('add-new-friend-section', {
   },
   computed: {
     sectionStyle: () => {
-      return globalStore.sectionStyle;
+      return globalStore.savedData.ui.sectionStyle;
     }
   },
   methods: {
@@ -434,7 +431,7 @@ Vue.component('section-list', {
   },
   computed: {
     sectionStyle: () => {
-      return globalStore.sectionStyle;
+      return globalStore.savedData.ui.sectionStyle;
     },
     allowOrder: function () {
       switch (this.sectionTypeData.sType) {
@@ -875,8 +872,8 @@ Vue.component("site-menu", {
     return {
       showEditProfile: false,
       showAbout: false,
-      widthOfSection: Number(globalStore.sectionStyle.width.replace("px", "")),
-      heightOfSection: Number(globalStore.sectionStyle.height.replace("px", ""))
+      widthOfSection: Number(globalStore.savedData.ui.sectionStyle.width.replace("px", "")),
+      heightOfSection: Number(globalStore.savedData.ui.sectionStyle.height.replace("px", ""))
     }
   },
   computed: {
@@ -901,15 +898,11 @@ Vue.component("site-menu", {
   },
   watch: {
     "widthOfSection": function () {
-      globalStore.sectionStyle.width = this.widthOfSectionWithUnit;
+      globalStore.savedData.ui.sectionStyle.width = this.widthOfSectionWithUnit;
     },
     "heightOfSection": function () {
-      globalStore.sectionStyle.height = this.heightOfSectionWithUnit;
+      globalStore.savedData.ui.sectionStyle.height = this.heightOfSectionWithUnit;
     }
-  },
-  created: function () {
-    globalStore.sectionStyle.width = this.widthOfSectionWithUnit;
-    globalStore.sectionStyle.height = this.heightOfSectionWithUnit;
   },
   methods: {
     signIn: () => {
@@ -923,6 +916,10 @@ Vue.component("site-menu", {
     },
     saveProfile: (newProfileName) => {
       globalStore.savedData.mine.name = newProfileName;
+      updateToDatabase();
+    },
+    saveUi: () => {
+      showDebug(["saveUi"]);
       updateToDatabase();
     },
   },
@@ -943,11 +940,11 @@ Vue.component("site-menu", {
       <about-overlay v-if="showAbout" @close="showAbout=false"></about-overlay>
       <span class="menu-item" id="section-width">
         Width of list ({{ widthOfSectionWithUnit }})<br>
-        <input id="input-section-width" type="range" min="300" max="1000" v-model="widthOfSection">
+        <input id="input-section-width" type="range" min="300" max="1000" v-model="widthOfSection" @mouseup="saveUi">
       </span>
       <span class="menu-item" id="section-height">
         Height of list ({{ heightOfSectionWithUnit }})<br>
-        <input id="input-section-height" type="range" min="200" max="500" v-model="heightOfSection">
+        <input id="input-section-height" type="range" min="200" max="500" v-model="heightOfSection" @mouseup="saveUi">
       </span>
       <template v-for="friendRequest in friendRequests">
         <friend-request 
