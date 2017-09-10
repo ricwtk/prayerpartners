@@ -3,8 +3,22 @@ var globalStore = new Vue({
     showSignIn: true,
     showMenu: true,
     savedData: defaultData,
-    showLoading: true
+    showLoading: true,
+    toastMessage: "testing toast message"
   }
+});
+
+Vue.component('toast-notification', {
+  computed: {
+    toastMessage: () => globalStore.toastMessage,
+  },
+  template: `
+    <div class="toast decor-toast">
+      <div class="toast-content decor-toast-content">
+        {{ toastMessage }}
+      </div>
+    </div>
+  `
 });
 
 Vue.component('loading-overlay', {
@@ -973,7 +987,6 @@ var app = new Vue({
     showList: 'single',
   },
   computed: {
-    showLoading: () => globalStore.showLoading,
     myItems: function () {
       var myitems = globalStore.savedData.mine.items.filter(item => !item.archived);
       myitems.sort(function (a, b) {
@@ -1049,3 +1062,10 @@ var app_head = new Vue({
     }
   },
 });
+
+var app_global = new Vue({
+  el: '#global',
+  computed: {
+    showLoading: () => globalStore.showLoading,
+  }
+})

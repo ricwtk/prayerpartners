@@ -19,6 +19,7 @@ function initApi() {
 // check signed in status, show sign in screen or direct to the main screen
 function signedIn(signinState) {
   showDebug(["signedIn", signinState]);
+  globalStore.showLoading = true;
   if (signinState) {
     // document.getElementById("signin-overlay").classList.add("hide");
     globalStore.showSignIn = false;
@@ -28,6 +29,7 @@ function signedIn(signinState) {
     // document.getElementById("signin-overlay").classList.remove("hide");
     globalStore.showSignIn = true;
     globalStore.showMenu = true;
+    globalStore.showLoading = false;
   }
   // showDebug([document.getElementById("signin-overlay")]);
 }

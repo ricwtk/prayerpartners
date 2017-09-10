@@ -314,6 +314,18 @@ button {
   }
 }
 
+.toast {
+  position: fixed;
+  right: 0px;
+  bottom: 0px;
+  padding: 10px;
+  max-width: 100%;
+}
+
+.toast-content {
+  padding: 10px;
+}
+
 .decor-header,
 .decor-menu {
   background-color: #009688;
@@ -380,4 +392,11 @@ button {
 
 .decor-sep {
   background-color: #b2dfdb;
+}
+
+.decor-toast-content {
+  background-color: #000000;
+  color: #ffffff;
+  opacity: 0.7;
+  border-radius: .2em;
 }
