@@ -338,6 +338,50 @@ button {
   padding: 10px;
 }
 
+a,
+a:visited {
+  display: inline-block;
+  padding: 5px;
+}
+
+a,
+a:visited {
+  text-decoration: none;
+  color: inherit;
+  background-color: #e0f2f1;
+}
+
+a:hover {
+  color: #e0f2f1;
+  background-color: #009688;
+}
+
+#about-content {
+  background-color: rgba(255, 255, 255, 1);
+  border: 1px solid #b2dfdb;
+  padding: 10px;
+}
+
+#about-content div {
+  padding: 2px;
+}
+
+#about-appname {
+  font-size: 150%;
+}
+
+button {
+  background-color: #e0f2f1;
+  color: #009688;
+  border: 1px solid #009688;
+}
+
+button:hover {
+  background-color: #009688;
+  color: #e0f2f1;
+  border: 1px solid #e0f2f1;
+}
+
 .decor-header,
 .decor-menu {
   background-color: #009688;
@@ -353,12 +397,6 @@ button {
 .decor-menuitem:hover,
 .decor-sectionactionitem:hover {
   background-color: #b2dfdb;
-  color: #009688;
-}
-
-.decor-signinoverlay,
-.decor-aboutoverlay {
-  background-color: rgba(255, 255, 255, 0.8);
   color: #009688;
 }
 

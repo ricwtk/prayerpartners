@@ -53,12 +53,13 @@ Vue.component('about-overlay', {
   },
   template: `
     <div class="overlay decor-overlay">
-      <div class="overlay-content">
-        Prayer Partners<br>
-        Developer: Richard Wong ricwtk@gmail.com<br>
-        Source code: Github link<br>
-        Use Github tracker or email me to report any issue or suggest any enhancement
-        <br>
+      <div class="overlay-content" id="about-content">
+        <div id="about-appname">Prayer Partners</div>
+        <div class="sep"></div><div class="sep"></div>
+        <div>Developer: Richard Wong <a href="mailto:ricwtk@gmail.com" target="_blank">ricwtk@gmail.com</a></div>
+        <div><a href="https://github.com/ricwtk/prayerpartners"  target="_blank">Source code on Github &#x1f517;</a></div>
+        <div>Use <a href="https://github.com/ricwtk/prayerpartners/issues"  target="_blank">Github issue tracker &#x1f517;</a> or email me to report any issue or suggest any enhancement</div>
+        <div class="sep"></div>
         <button type="button" @click="closeThis">Close</button>
       </div>
     </div>

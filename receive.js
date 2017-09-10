@@ -88,11 +88,8 @@ function extractRelevantMessages(resultArrays) {
 function processMessages(messages) {
   showDebug(["processMessages", messages]);
   // accepts > invites > updates
-  showToast("process accepts");
   let accepts = messages.accepts.filter(uniqueFilter).map(msg => processAccept(msg));
-  showToast("process invites");
   let invites = messages.invites.filter(uniqueFilter).map(msg => processInvite(msg));
-  showToast("process updates");
   let updates = (messages.updates.length == 0) ? messages.updates : extractUpdates(messages.updates).map(msg => processUpdate(msg));
   // extract dates from accepts, invites, and updates
   function getDates(el) {
@@ -141,6 +138,7 @@ function genericUniqueFilter(el, idx, arr) {
 
 function processInvite(invite) {
   showDebug(["processInvite", invite]);
+  showToast("process invites");
   let friReq = globalStore.savedData.friendRequests.map(friR => friR.email);
   if (!friReq.includes(invite.sender.email)) {
     addFriendRequest(invite.sender.name, invite.sender.email);
@@ -150,6 +148,7 @@ function processInvite(invite) {
 
 function processAccept(accept) {
   showDebug(["processAccept", accept]);
+  showToast("process accepts");
   // if not in friend list, add to friend list
   let friends = globalStore.savedData.friends.map(fri => fri.email);
   if (!friends.includes(accept.sender.email)) {
@@ -183,6 +182,7 @@ function extractUpdates(updates) {
 
 function processUpdate(update) {
   showDebug(["processUpdate", update])
+  showToast("process updates");
   // find item with matching itemId
   let friend = globalStore.savedData.friends.find(fri => (fri.email == update.sender.email));
   if (friend !== undefined) {
