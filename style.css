@@ -242,13 +242,12 @@ button {
 }
 
 .overlay-input,
-.edit-item-title,
 .edit-item-content {
   /*width: 100%;*/
   flex-grow: 1;
 }
 
-.edit-item-title {
+.overlay-input {
   padding: 10px;
 }
 
@@ -305,6 +304,11 @@ button {
   height: 1px;
   margin-top: 5px;
   margin-bottom: 5px;
+}
+
+.horizontal-sep {
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .loading-icon {

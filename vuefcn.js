@@ -204,7 +204,8 @@ Vue.component('edit-item-overlay', {
     <div class="edit-item-overlay decor-edititemoverlay">
       <div class="edit-item-wrapper">
         <div class="edit-item-overlay-label">Prayer item:</div>
-        <input class="edit-item-title" type="text" v-bind:value="item.item ? item.item:''" v-model="newItemTitle">
+        <input class="overlay-input" type="text" v-bind:value="item.item ? item.item:''" v-model="newItemTitle">
+        <div class="sep"></div>
         <div class="edit-item-overlay-label">Long description:</div>
         <textarea class="edit-item-content" rows="10" v-model="newItemDesc">{{ item.desc ? item.desc:'' }}</textarea>
         <div class="sep"></div>
@@ -358,12 +359,9 @@ Vue.component('add-tag-overlay', {
     <div class="overlay decor-overlay">
       <div class="overlay-wrapper">
         <div class="overlay-label">Tags:</div>
-        <div class="overlay-row">
-          <div class="overlay-label" title="Separate multiple tags by comma (,)">New tag(s): &nbsp;</div>
-          <input class="overlay-input" type="text" v-model="newTags">
-          <div class="overlay-actions">
-            <button type="button" @click="addNewTag">Add</button>
-          </div>
+        <div v-if="tagList.length == 0">
+          No existing tag available. Add new tag(s) with input below by separating tags with comma (,). 
+          <br>New tags will only be updated after exit edit mode.
         </div>
         <div class="tags-content">
           <template v-for="tag in tagList">
@@ -374,6 +372,15 @@ Vue.component('add-tag-overlay', {
             </single-tag>
           </template>
         </div>
+        <div class="overlay-row">
+          <div class="overlay-label" title="Separate multiple tags by comma (,)">New tag(s): &nbsp;</div>
+          <input class="overlay-input" type="text" v-model="newTags" title="Separate multiple tags by comma (,)">
+          <div class="horizontal-sep"></div>
+          <div class="overlay-actions">
+            <button type="button" @click="addNewTag">Add</button>
+          </div>
+        </div>
+        <div class="sep"></div>
         <div class="overlay-actions">
           <button type="button" @click="closeThis">&#x1f7a8; Close</button>
         </div>
