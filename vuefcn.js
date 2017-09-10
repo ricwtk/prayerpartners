@@ -4,7 +4,21 @@ var globalStore = new Vue({
     showMenu: true,
     savedData: defaultData,
     showLoading: true,
-    toastMessage: "testing toast message"
+    toastMessage: "",
+    showToast: false,
+    toastTimeoutFn: null,
+  },
+  watch: {
+    toastMessage: function () {
+      showDebug(["toast-notification", this.toastMessage]);
+      this.showToast = true;
+      if (this.toastTimeoutFn !== null) {
+        clearTimeout(this.toastTimeoutFn);
+      }
+      this.toastTimeoutFn = setTimeout(() => {
+        this.showToast = false;
+      }, 2000);
+    }
   }
 });
 
@@ -76,6 +90,7 @@ Vue.component('add-new-friend-section', {
       } else {
         addToFriend(this.newFriendName, null);
         showDebug(["Save '" + this.newFriendName + "' to friend list"]);
+        showToast("added " + this.newFriendName + " as friend");
         this.newFriendName = '';
         this.showOverlay = false;
       }
@@ -102,10 +117,12 @@ Vue.component('add-new-friend-section', {
       // else, send invite email
       sendInvite(this.newFriendEmail).then(() => {
         showDebug(["Invite is sent to '" + this.newFriendEmail + "'"]);
+        showToast("sent invite to " + this.newFriendEmail);
         this.newFriendEmail = '';
         this.showOverlay = false;
       }, () => {
         this.addEmailError = true;
+        showToast("error adding " + this.newFriendEmail);
         showDebug(["Error adding " + this.newFriendEmail]);
       });
     }
@@ -190,6 +207,7 @@ Vue.component('edit-item-overlay', {
         <input class="edit-item-title" type="text" v-bind:value="item.item ? item.item:''" v-model="newItemTitle">
         <div class="edit-item-overlay-label">Long description:</div>
         <textarea class="edit-item-content" rows="10" v-model="newItemDesc">{{ item.desc ? item.desc:'' }}</textarea>
+        <div class="sep"></div>
         <div class="edit-item-overlay-actions">
           <button type="button" @click="saveThis">&#x1f4be; Save</button>
           <button type="button" @click="closeThis">&#x21b6; Cancel</button>
@@ -699,7 +717,9 @@ Vue.component('section-list', {
         item.order = index;
       })
       updateToDatabase();
-      updateAndSendSharedList(friendsToUpdate);
+      if (friendsToUpdate.length > 0) {
+        updateAndSendSharedList(friendsToUpdate);
+      }
       this.edit = false;
     },
     cancelEdit: function () {
@@ -1067,5 +1087,6 @@ var app_global = new Vue({
   el: '#global',
   computed: {
     showLoading: () => globalStore.showLoading,
+    showToast: () => globalStore.showToast
   }
 })

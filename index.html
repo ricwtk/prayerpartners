@@ -115,7 +115,9 @@
 
   <div id="global">
     <loading-overlay v-if="showLoading"></loading-overlay>
-    <toast-notification></toast-notification>
+    <transition name="fade">
+      <toast-notification v-if="showToast"></toast-notification>
+    </transition>
   </div>
 
   <script src="constantsdefaults.js"></script>

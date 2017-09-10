@@ -24,12 +24,14 @@ function signedIn(signinState) {
     // document.getElementById("signin-overlay").classList.add("hide");
     globalStore.showSignIn = false;
     globalStore.showMenu = false;
+    showToast("signed in");
     initSystem();
   } else {
     // document.getElementById("signin-overlay").classList.remove("hide");
     globalStore.showSignIn = true;
     globalStore.showMenu = true;
     globalStore.showLoading = false;
+    showToast("not signed in");
   }
   // showDebug([document.getElementById("signin-overlay")]);
 }
@@ -68,8 +70,10 @@ function readOrCreateData(searchResult) {
   var files = searchResult.result.files;
   showDebug(["readOrCreateData", files]);
   if (files.length > 0) {
+    showToast("read from saved data");
     return readFileContent(files[0].id);
   } else {
+    showToast("initialise system for first time log in");
     globalStore.savedData = defaultData;
     var basicProfile = gapi.auth2.getAuthInstance().currentUser.get().getBasicProfile();
     globalStore.savedData.mine.name = basicProfile.getName();

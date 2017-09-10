@@ -9,6 +9,10 @@ function showDebug(debugString) {
   }
 }
 
+function showToast(toastString) {
+  globalStore.toastMessage = toastString;
+}
+
 function copyObj(object) {
   return JSON.parse(JSON.stringify(object));
 }
@@ -56,6 +60,7 @@ function acceptFriendRequest(email) {
   if (!allFriends.includes(friReq.email)) {
     addToFriend(friReq.name, friReq.email);
   }
+  showToast("added " + email + " as friend");
 }
 
 function addNewFriend(name, email) {

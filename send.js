@@ -71,6 +71,7 @@ function sendUpdate(sendTo, updates) {
 
 function updateAndSendSharedList(friendList) {
   showDebug(["updateAndSendSharedList", friendList]);
+  showToast("send updates of shared items to friends");
   // loop through friendlist
   friendList.forEach(friend => {
     // extract items shared with the friend

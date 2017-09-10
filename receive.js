@@ -1,5 +1,6 @@
 function readFromGmail() {
   showDebug(["readFromGmail"]);
+  showToast("access inbox");
   var dateQuery;
   if (globalStore.savedData.lastDateChecked == null) {
     dateQuery = '';
@@ -87,8 +88,11 @@ function extractRelevantMessages(resultArrays) {
 function processMessages(messages) {
   showDebug(["processMessages", messages]);
   // accepts > invites > updates
+  showToast("process accepts");
   let accepts = messages.accepts.filter(uniqueFilter).map(msg => processAccept(msg));
+  showToast("process invites");
   let invites = messages.invites.filter(uniqueFilter).map(msg => processInvite(msg));
+  showToast("process updates");
   let updates = (messages.updates.length == 0) ? messages.updates : extractUpdates(messages.updates).map(msg => processUpdate(msg));
   // extract dates from accepts, invites, and updates
   function getDates(el) {
@@ -211,22 +215,6 @@ function processUpdate(update) {
     showDebug(["processUpdate", "updated items", friend.email, copyObj(friend.items)]);
   }
   return update;
-}
-
-function setLastChecked() {
-
-}
-
-function displayBody(res) {
-  console.log(res);
-  // console.log(Base64.fromBase64(res.result.raw));
-  console.log(getHeader(res.result.payload.headers, "To"));
-  console.log(getHeader(res.result.payload.headers, "From"));
-  console.log(new Date(getHeader(res.result.payload.headers, "Date")));
-  console.log(getHeader(res.result.payload.headers, "Received"));
-  console.log(getBody(res.result.payload));
-  // console.log(res.result.raw.replace(/-/g, '+').replace(/_/g, '/').replace(/\s/g, ''));
-  // console.log(atob(res.result.raw.replace(/-/g, '+').replace(/_/g, '/').replace(/\s/g, '')));
 }
 
 
