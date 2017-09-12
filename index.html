@@ -3,9 +3,7 @@
 <html>
 
 <head>
-  <!-- <meta name="google-signin-client_id" content=" 885265693601-e44cq3b3nu153cc8ib9c4jcq6kahvte9.apps.googleusercontent.com ">
-    <script src="https://apis.google.com/js/platform.js" async defer></script> -->
-  <script src="vue.js"></script>
+  <script src="vue.min.js"></script>
   <script src="base64.js"></script>
   <script src="MimeMessage.js"></script>
   <link rel="stylesheet" type="text/css" href="style.css" />
@@ -16,43 +14,6 @@
     <site-head @toggle="toggleMenu"></site-head>
     <site-menu v-if="showMenu"></site-menu>
   </div>
-  <!-- <div id="header" class="decor-header">
-      <span id="pagetitle">Prayer Partners</span>
-      <span id="menutoggle" class="decor-menuitem">&#9776;</span>
-    </div>
-    <div id="menu" class="decor-menu hide">
-      <div v-if="showSignIn" id="signin-overlay" class="overlay decor-overlay">
-        <div class="signin-button decor-menuitem" id="signin-google" @click="handleAuthClick">Sign in with Google</div>
-      </div>  
-      <span class="menu-item" id="signed-in-as" :title="userEmail" @click="showEditProfile=true">Signed in as {{ userName }}</span>
-      <edit-profile-overlay 
-        v-if="showEditProfile" 
-        v-on:save="saveProfile"
-        v-on:close="showEditProfile=false">
-      </edit-profile-overlay>
-      <span class="menu-item decor-menuitem" id="signout-google" @click="">Sign out</span>
-      <span class="menu-item decor-menuitem" id="disconnect-google">Disconnect</span>
-      <span class="menu-item decor-menuitem" id="open-about" @click="showAbout=true">About Prayer Partners</span>
-      <about-overlay v-if="showAbout" @close="showAbout=false"></about-overlay>
-      <span class="menu-item" id="section-width">
-        Width of list ({{ widthOfSection }})<br>
-        <input id="input-section-width" type="range" min="20" max="100">
-      </span>
-      <span class="menu-item" id="section-height">
-        Height of list ({{ heightOfSection }})<br>
-        <input id="input-section-height" type="range" min="200" max="500">
-      </span>
-      <span class="menu-item friend-invite">
-        <span class="friend-invite-identity">
-          <span class="friend-invite-name">Friend's name</span><br>
-          <span class="friend-invite-email">Friend's email</span>
-        </span>
-        <span class="friend-invite-actions">
-          <span class="friend-invite-accept decor-menuitem">&#x1f7a1;</span>
-          <span class="friend-invite-reject decor-menuitem">&#x1f7a8;</span>
-        </span>
-      </span>
-    </div>  -->
 
   <div id="main">
     <div class="group">
@@ -104,11 +65,6 @@
         </template>
         <add-new-friend-section>
         </add-new-friend-section>
-        <!-- <div class="section decor-section section-add-new-wrapper" v-bind:style="sectionStyle">
-            <div class="section-add-new item-menu decor-itemmenu" title="Add new prayer list for a friend">
-              <div class="section-add-new-text">&#x1f7a1;</div>
-            </div>
-          </div> -->
       </div>
     </div>
   </div>

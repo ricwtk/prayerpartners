@@ -57,8 +57,11 @@ Vue.component('about-overlay', {
         <div id="about-appname">Prayer Partners</div>
         <div class="sep"></div><div class="sep"></div>
         <div>Developer: Richard Wong <a href="mailto:ricwtk@gmail.com" target="_blank">ricwtk@gmail.com</a></div>
-        <div><a href="https://github.com/ricwtk/prayerpartners"  target="_blank">Source code on Github &#x1f517;</a></div>
         <div>Use <a href="https://github.com/ricwtk/prayerpartners/issues"  target="_blank">Github issue tracker &#x1f517;</a> or email me to report any issue or suggest any enhancement</div>
+        <div>
+          <a href="https://github.com/ricwtk/prayerpartners"  target="_blank">Source code on Github &#x1f517;</a>
+          <a href="https://ricwtk.github.io/prayerpartners/privacypolicy.html" target="_blank">Privacy policy &#x1f517;</a>
+        </div>
         <div class="sep"></div>
         <button type="button" @click="closeThis">Close</button>
       </div>
@@ -856,6 +859,7 @@ Vue.component("edit-profile-overlay", {
           <div class="overlay-label">Change display name from "{{ userName }}" to &nbsp;</div>
           <input class="overlay-input" type="text" v-model="newUserName">
         </div>
+        <div class="sep"></div>
         <div class="overlay-actions">
           <button type="button" @click="saveThis">&#x1f4be; Save</button>
           <button type="button" @click="closeThis">&#x21b6; Cancel</button>
@@ -980,7 +984,7 @@ Vue.component("site-menu", {
       <div v-if="showSignIn" id="signin-overlay" class="overlay decor-overlay">
         <div class="signin-button decor-menuitem" id="signin-google" @click="signIn">Sign in with Google</div>
       </div>  
-      <span class="menu-item" id="signed-in-as" :title="userEmail" @click="showEditProfile=true">Signed in as {{ userName }}</span>
+      <span class="menu-item decor-menuitem" id="signed-in-as" :title="userEmail" @click="showEditProfile=true">Signed in as {{ userName }}</span>
       <edit-profile-overlay 
         v-if="showEditProfile" 
         v-on:save="saveProfile"
