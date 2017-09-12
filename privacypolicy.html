@@ -2,17 +2,50 @@
 
 <head>
   <meta charset="utf-8">
+  <style>
+    @import url('https://fonts.googleapis.com/css?family=Roboto+Slab');
+    html {
+      font-family: "Roboto Slab", serif;
+    }
+
+    body {
+      padding: 0px;
+      margin: 0px;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .content {
+      max-width: 80%;
+      padding: 10px;
+      border: 1px solid #b2dfdb;
+      color: #009688;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .title {
+      font-size: 150%;
+    }
+  </style>
 </head>
 
 <body>
-  PrayerPartners
-  <ul>
-    <li>stores user data to app folder in Google Drive</li>
-    <li>reads from Gmail inbox to extract emails sent by other users using this app</li>
-    <li>sends accepts, invites, and updates through Gmail to another user authorised by the current user. Accepts and invites
-      contain the email address of the current user. Updates contain the email address of the current user and the data created
-      using the web app, and shared by the current user.</li>
-  </ul>
+  <div class="content">
+    <div class="title">Prayer Partners</div>
+    <ul>
+      <li>stores user data to app folder in Google Drive</li>
+      <li>reads from Gmail inbox to extract emails sent by other users using this app</li>
+      <li>sends accepts, invites, and updates through Gmail to another user authorised by the current user. Accepts and invites
+        contain the email address of the current user. Updates contain the email address of the current user and the data
+        created using the web app, and shared by the current user.</li>
+    </ul>
+  </div>
 </body>
 
 </html>

@@ -26,7 +26,8 @@ function generateMessage(act, sendTo, sharedItems = []) {
     .replace("%aboutText%", aboutText)
     .replace("%verbalAction%", verbalAction[act])
     .replace("%action%", action[act])
-    .replace("%msgContent%", genContent(act, sharedItems));
+    .replace("%msgContent%", genContent(act, sharedItems))
+    .replace("%randomId%", generateId([]));
   showDebug(["generateMessage", newMsg]);
 
   if (MimeMessage.validMimeMessage(newMsg)) {

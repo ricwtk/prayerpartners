@@ -60,7 +60,7 @@ Vue.component('about-overlay', {
         <div>Use <a href="https://github.com/ricwtk/prayerpartners/issues"  target="_blank">Github issue tracker &#x1f517;</a> or email me to report any issue or suggest any enhancement</div>
         <div>
           <a href="https://github.com/ricwtk/prayerpartners"  target="_blank">Source code on Github &#x1f517;</a>
-          <a href="https://ricwtk.github.io/prayerpartners/privacypolicy.html" target="_blank">Privacy policy &#x1f517;</a>
+          <a href="./privacypolicy.html" target="_blank">Privacy policy &#x1f517;</a>
         </div>
         <div class="sep"></div>
         <button type="button" @click="closeThis">Close</button>
