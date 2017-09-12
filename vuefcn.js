@@ -970,6 +970,9 @@ Vue.component("site-menu", {
     disconnect: () => {
       handleDisconnectClick();
     },
+    goToGuide: () => {
+      window.open("./guide.html", "_blank");
+    },
     saveProfile: (newProfileName) => {
       globalStore.savedData.mine.name = newProfileName;
       updateToDatabase();
@@ -992,6 +995,7 @@ Vue.component("site-menu", {
       </edit-profile-overlay>
       <span class="menu-item decor-menuitem" id="signout-google" @click="signOut">Sign out</span>
       <span class="menu-item decor-menuitem" id="disconnect-google" @click="disconnect">Disconnect</span>
+      <span class="menu-item decor-menuitem" id="go-to-guide" @click="goToGuide">Guide</span>
       <span class="menu-item decor-menuitem" id="open-about" @click="showAbout=true">About Prayer Partners</span>
       <about-overlay v-if="showAbout" @close="showAbout=false"></about-overlay>
       <span class="menu-item" id="section-width">
