@@ -27,6 +27,7 @@ var defaultData = {
   },
   friends: [],
   friendRequests: [],
+  groups: [],
   ui: {
     sectionStyle: {
       width: "300px",
