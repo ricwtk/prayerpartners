@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <script src="vue.js"></script>
+  <script src="marked.js"></script>
   <link rel="stylesheet" type="text/css" href="./guide/style.css" />
 </head>
 
@@ -19,7 +20,7 @@
       </template>
     </div>
 
-    <div id="content">
+    <div id="content" v-html="testMd">
       morethingasvhdl rvhevanfsdnfaoivdfn oeafoisdn;o ifand ;jsoiafmjoisdaj oif
       <!-- <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>      morethign -->
     </div>

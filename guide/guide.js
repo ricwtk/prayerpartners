@@ -87,6 +87,9 @@ new Vue({
   el: "#main",
   data: {
     menu: [],
+    testMd: marked("# abc", {
+      sanitize: true
+    })
   },
   computed: {
     showMenu: () => globalStore.showMenu
