@@ -1,0 +1,56 @@
+[{
+  "name": "Initialisation",
+  "file": "initialisation",
+  "children": [{
+    "name": "Sign in with Google",
+    "location": "signingoogle"
+  }]
+}, {
+  "name": "Your own lists",
+  "file": "ownlists",
+  "children": [{
+    "name": "Active list",
+    "location": "active"
+  }, {
+    "name": "Edit mode",
+    "location": "edit"
+  }, {
+    "name": "Archive list",
+    "location": "archive"
+  }, {
+    "name": "Display modes",
+    "location": "display"
+  }]
+}, {
+  "name": "Friends' lists",
+  "file": "friendlists",
+  "children": [{
+    "name": "Add new friend with email",
+    "location": "addemail"
+  }, {
+    "name": "Add new friend (local)",
+    "location": "addlocal"
+  }, {
+    "name": "Edit mode",
+    "location": "edit"
+  }]
+}, {
+  "name": "Menu",
+  "file": "menu",
+  "children": [{
+    "name": "Profile settings",
+    "location": "profilesettings"
+  }, {
+    "name": "Guide",
+    "location": "guide"
+  }, {
+    "name": "About",
+    "location": "about"
+  }, {
+    "name": "UI settings",
+    "location": "uisettings"
+  }, {
+    "name": "Friend requests",
+    "location": "friendrequests"
+  }]
+}]
