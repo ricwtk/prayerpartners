@@ -158,7 +158,11 @@ function initSystem() {
     .then(() => {
       showDebug(["finish initialisation"]);
       globalStore.showLoading = false;
-    }, finalError);
+    }, e => {
+      showDebug(["finish initialisation"]);
+      globalStore.showLoading = false;
+      finalError(e);
+    });
   // readFromGmail()
   //   .then(getMessageWithId, chainError)
   //   .then(displayBody, chainError)
