@@ -186,33 +186,38 @@ function processUpdate(update) {
   // find item with matching itemId
   let friend = globalStore.savedData.friends.find(fri => (fri.email == update.sender.email));
   if (friend !== undefined) {
-    // process DOM
-    let items = Array.from(update.content.getElementsByClassName("single-item"));
-    items = items.map(item => {
-      return {
-        id: item.getElementsByClassName("item-id")[0].textContent,
-        header: item.getElementsByClassName("item-header")[0].textContent,
-        content: item.getElementsByClassName("item-content")[0].textContent
-      };
-    });
-    // remove items with itemId not existed in the update items
-    let allIds = items.map(item => item.id);
-    friend.items = friend.items.filter(item => allIds.includes(item.id));
-    // edit items with matching itemId
-    friend.items.forEach(item => {
-      let newItem = items.find(it => it.id == item.itemId);
-      item.item = newItem.header;
-      item.desc = newItem.content;
-    });
-    // add items with no matching itemId
-    let idsInFriendItems = friend.items.map(item => item.itemId);
-    items
-      .filter(item => !idsInFriendItems.includes(item.id))
-      .forEach(item => {
-        idsInFriendItems = friend.items.map(item => item.itemId);
-        friend.items.push(newFriendItem(item.id, item.header, item.content, "friend"));
+    // if update.content is null, i.e. no items, remove all items
+    if (update.content == null) {
+      friend.items = [];
+    } else {
+      // process DOM
+      let items = Array.from(update.content.getElementsByClassName("single-item"));
+      items = items.map(item => {
+        return {
+          id: item.getElementsByClassName("item-id")[0].textContent,
+          header: item.getElementsByClassName("item-header")[0].textContent,
+          content: item.getElementsByClassName("item-content")[0].textContent
+        };
       });
-    showDebug(["processUpdate", "updated items", friend.email, copyObj(friend.items)]);
+      // remove items with itemId not existed in the update items
+      let allIds = items.map(item => item.id);
+      friend.items = friend.items.filter(item => allIds.includes(item.id));
+      // edit items with matching itemId
+      friend.items.forEach(item => {
+        let newItem = items.find(it => it.id == item.itemId);
+        item.item = newItem.header;
+        item.desc = newItem.content;
+      });
+      // add items with no matching itemId
+      let idsInFriendItems = friend.items.map(item => item.itemId);
+      items
+        .filter(item => !idsInFriendItems.includes(item.id))
+        .forEach(item => {
+          idsInFriendItems = friend.items.map(item => item.itemId);
+          friend.items.push(newFriendItem(item.id, item.header, item.content, "friend"));
+        });
+      showDebug(["processUpdate", "updated items", friend.email, copyObj(friend.items)]);
+    }
   }
   return update;
 }
