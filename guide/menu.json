@@ -12,9 +12,6 @@
     "name": "Active list",
     "location": "active"
   }, {
-    "name": "Edit mode",
-    "location": "edit"
-  }, {
     "name": "Archive list",
     "location": "archive"
   }, {
@@ -22,7 +19,7 @@
     "location": "display"
   }]
 }, {
-  "name": "Friends' lists",
+  "name": "Friends' list",
   "file": "friendlists",
   "children": [{
     "name": "Add new friend with email",
@@ -53,4 +50,7 @@
     "name": "Friend requests",
     "location": "friendrequests"
   }]
+}, {
+  "name": "Extra",
+  "file": "extra"
 }]

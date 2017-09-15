@@ -141,17 +141,19 @@ Vue.component('add-new-friend-section', {
           <div class="overlay-label">Invite with email (only Google account is supported, require response)</div>
           <div class="overlay-row">
             <input class="overlay-input" type="text" v-model="newFriendEmail">
+            <div class="horizontal-sep"></div>
             <button type="button" @click="addEmail">Invite</button>
           </div>
           <div v-if="addEmailError" class="overlay-error decor-overlayerror">Friend is already in the list. Change email.</div>
-          <div class="overlay-label">Add private list for friend</div>
+          <div class="overlay-label">Add local list for friend</div>
           <div class="overlay-row">
             <input class="overlay-input" type="text" v-model="newFriendName">
+            <div class="horizontal-sep"></div>
             <button type="button" @click="addPrivate">Add</button>
           </div>
           <div v-if="addPrivateError" class="overlay-error decor-overlayerror">Friend's name exists. Change name.</div>
           <div class="overlay-actions">
-            <button type="button" @click="showOverlay=false">&#x21b6; Cancel</button>
+            <button type="button" @click="showOverlay=false">&#x1f7a8; Close</button>
           </div>
         </div>
       </div>

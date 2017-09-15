@@ -18,7 +18,7 @@ body {
   color: #e0f2f1;
   padding: 10px;
   font-size: 130%;
-  position: sticky;
+  /* position: sticky; */
   top: 0;
   z-index: 1;
 }
@@ -36,11 +36,10 @@ body {
 }
 
 #content {
-  padding: 5px;
-  flex-shrink: 5;
+  padding: 5px 15px;
 }
 
-#menu {
+#navmenu {
   border-right: 1px solid #009688;
   background-color: #009688;
   color: #e0f2f1;
@@ -75,8 +74,71 @@ body {
 }
 
 @media screen and (max-width: 800px) {
-  #menu {
+  #navmenu {
     position: absolute;
     left: 0;
   }
+}
+
+#navbutton {
+  display: flex;
+  justify-content: space-between;
+}
+
+button {
+  background-color: #e0f2f1;
+  color: #009688;
+  border: 1px solid #009688;
+  padding: 10px;
+}
+
+button:hover {
+  background-color: #009688;
+  color: #e0f2f1;
+  border: 1px solid #e0f2f1;
+}
+
+a,
+a:visited {
+  text-decoration: none;
+  color: #009688;
+  font-weight: bold;
+  border-bottom: 1px dashed #009688;
+}
+
+a:hover {
+  border-top: 1px dashed #009688;
+}
+
+#signinbutton,
+.listhead,
+.actions {
+  display: inline-block;
+  padding: 10px;
+}
+
+#signinbutton {
+  background-color: #009688;
+  color: #e0f2f1;
+}
+
+.listhead {
+  background-color: #009688;
+  color: #e0f2f1;
+}
+
+.actions {
+  background-color: #ffffff;
+  color: #000;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  border: 1px solid #e0f2f1;
+  padding: 5px;
 }

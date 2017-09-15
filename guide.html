@@ -2,8 +2,9 @@
 
 <head>
   <meta charset="utf-8">
-  <script src="vue.js"></script>
-  <script src="marked.js"></script>
+  <script src="vue.min.js"></script>
+  <!-- <script src="marked.js"></script> -->
+  <script src="https://cdn.rawgit.com/showdownjs/showdown/1.7.4/dist/showdown.min.js"></script>
   <link rel="stylesheet" type="text/css" href="./guide/style.css" />
 </head>
 
@@ -14,15 +15,15 @@
   </div>
 
   <div id="main">
-    <div id="menu" v-if="showMenu">
+    <div id="navmenu" v-if="showMenu">
       <template v-for="item in menu">
-        <menu-item :item="item" :level="1" :file="item.file ? item.file : ''" :location="item.location ? item.location : ''"></menu-item>
+        <menu-item :item="item" :level="1" :file="item.file ? item.file : ''"></menu-item>
       </template>
     </div>
 
-    <div id="content" v-html="testMd">
-      morethingasvhdl rvhevanfsdnfaoivdfn oeafoisdn;o ifand ;jsoiafmjoisdaj oif
-      <!-- <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>      morethign -->
+    <div id="content">
+      <div id="innerContent" v-html="testMd"></div>
+      <div id="navbutton"><button type="button">Previous</button><button type="button">Next</button></div>
     </div>
   </div>
 
