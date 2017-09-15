@@ -77,8 +77,8 @@ Vue.component("menu-item", {
       <div class="item-head-row" @click="toggleSubAndGoTo">
         <template v-for="n in (level-1)"><span class="indent"></span></template>
         <template v-if="item.children && item.children.length > 0">
-          <span v-if="showChildren">&#x25be;</span>
-          <span v-else>&#x25b8;</span>
+          <span v-if="showChildren"><i class="fa fa-caret-down"></i></span>
+          <span v-else><i class="fa fa-caret-right"></i></span>
         </template>
         <span class="indent"></span>
         <span class="item-head">{{ item.name }}</span>

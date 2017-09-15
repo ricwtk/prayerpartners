@@ -7,7 +7,7 @@
   <script src="vue.min.js"></script>
   <script src="base64.js"></script>
   <script src="MimeMessage.js"></script>
-  <link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/symbola" type="text/css" />
+  <link rel="stylesheet" type="text/css" href="./font-awesome-4.7.0/css/font-awesome.min.css" />
   <link rel="stylesheet" type="text/css" href="style.css" />
 </head>
 
@@ -22,9 +22,9 @@
       <div class="group-header decor-groupheader">
         <div class="group-title decor-grouptitle">Mine</div>
         <div class="group-action decor-groupaction">
-          <span class="group-action-item decor-groupactionitem" title="Show as tag list" @click="showList='tag'">&#x1f516;</span>
-          <span class="group-action-item decor-groupactionitem" title="Show as friends list" @click="showList='friend'">&#x1f46a;</span>
-          <span class="group-action-item decor-groupactionitem" title="Show as single list" @click="showList='single'">&#x2254;</span>
+          <span class="group-action-item decor-groupactionitem" title="Show as tag list" @click="showList='tag'"><i class="fa fa-tags"></i></span>
+          <span class="group-action-item decor-groupactionitem" title="Show as friends list" @click="showList='friend'"><i class="fa fa-users"></i></span>
+          <span class="group-action-item decor-groupactionitem" title="Show as single list" @click="showList='single'"><i class="fa fa-list"></i></span>
         </div>
       </div>
       <div class="section-group">

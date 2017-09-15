@@ -39,7 +39,7 @@ Vue.component('loading-overlay', {
   template: `
     <div class="overlay decor-overlay">
       <div class="overlay-content">
-        <div class="loading-icon">&#x2026;</div>
+        <div class="loading-icon"><i class="fa fa-ellipsis-h"></i></div>
       </div>
     </div>
   `
@@ -57,10 +57,10 @@ Vue.component('about-overlay', {
         <div id="about-appname">Prayer Partners</div>
         <div class="sep"></div><div class="sep"></div>
         <div>Developer: Richard Wong <a href="mailto:ricwtk@gmail.com" target="_blank">ricwtk@gmail.com</a></div>
-        <div>Use <a href="https://github.com/ricwtk/prayerpartners/issues"  target="_blank">Github issue tracker &#x1f517;</a> or email me to report any issue or suggest any enhancement</div>
+        <div>Use <a href="https://github.com/ricwtk/prayerpartners/issues"  target="_blank">Github issue tracker <i class="fa fa-link"></i></a> or email me to report any issue or suggest any enhancement</div>
         <div>
-          <a href="https://github.com/ricwtk/prayerpartners"  target="_blank">Source code on Github &#x1f517;</a>
-          <a href="./privacypolicy.html" target="_blank">Privacy policy &#x1f517;</a>
+          <a href="https://github.com/ricwtk/prayerpartners"  target="_blank">Source code on Github <i class="fa fa-link"></i></a>
+          <a href="./privacypolicy.html" target="_blank">Privacy policy <i class="fa fa-link"></i></a>
         </div>
         <div class="sep"></div>
         <div>
@@ -69,6 +69,7 @@ Vue.component('about-overlay', {
           <a href="https://github.com/dankogai/js-base64" target="_blank">base64.js</a>, 
           <a href="" target="_blank">MimeMessage.js</a>, 
           <a href="https://github.com/showdownjs/showdown" target="_blank">Showdown.js</a>
+          <a href="http://fontawesome.io/" target="_blank">FontAwesome</a>
         </div>
         <button type="button" @click="closeThis">Close</button>
       </div>
@@ -141,7 +142,7 @@ Vue.component('add-new-friend-section', {
   template: `
     <div class="section decor-section section-add-new-wrapper" v-bind:style="sectionStyle">
       <div class="section-add-new item-menu decor-itemmenu" title="Add new prayer list for a friend" @click="showOverlay=true">
-        <div class="section-add-new-text">&#x1f7a1;</div>
+        <div class="section-add-new-text"><i class="fa fa-plus"></i></div>
       </div>
       <div v-if="showOverlay" class="overlay decor-overlay">
         <div class="overlay-wrapper">
@@ -160,7 +161,7 @@ Vue.component('add-new-friend-section', {
           </div>
           <div v-if="addPrivateError" class="overlay-error decor-overlayerror">Friend's name exists. Change name.</div>
           <div class="overlay-actions">
-            <button type="button" @click="showOverlay=false">&#x1f7a8; Close</button>
+            <button type="button" @click="showOverlay=false"><i class="fa fa-times"></i> Close</button>
           </div>
         </div>
       </div>
@@ -223,8 +224,8 @@ Vue.component('edit-item-overlay', {
         <textarea class="edit-item-content" rows="10" v-model="newItemDesc">{{ item.desc ? item.desc:'' }}</textarea>
         <div class="sep"></div>
         <div class="edit-item-overlay-actions">
-          <button type="button" @click="saveThis">&#x1f4be; Save</button>
-          <button type="button" @click="closeThis">&#x21b6; Cancel</button>
+          <button type="button" @click="saveThis"><i class="fa fa-save"></i> Save</button>
+          <button type="button" @click="closeThis"><i class="fa fa-undo"></i> Cancel</button>
         </div>
       </div>
     </div>
@@ -289,7 +290,7 @@ Vue.component('share-with-overlay', {
           </template>
         </div>
         <div class="overlay-actions">
-          <button type="button" @click="closeThis">&#x1f7a8; Close</button>
+          <button type="button" @click="closeThis"><i class="fa fa-times"></i> Close</button>
         </div>
       </div>
     </div>
@@ -395,7 +396,7 @@ Vue.component('add-tag-overlay', {
         </div>
         <div class="sep"></div>
         <div class="overlay-actions">
-          <button type="button" @click="closeThis">&#x1f7a8; Close</button>
+          <button type="button" @click="closeThis"><i class="fa fa-times"></i> Close</button>
         </div>
       </div>
     </div>
@@ -442,18 +443,18 @@ Vue.component('single-item', {
         <span class="item-actions">
           <template v-if="edit">
             <template v-for="action in editActions">
-              <span v-if="action === 'e'" class="item-archive item-menu decor-itemmenu" title="Edit" @click="showEdit=true">&#x1f589;</span>
-              <span v-else-if="action === 'u'" class="item-archive item-menu decor-itemmenu" title="Unarchive" @click="setUnarchived">&#x21a9;</span>
-              <span v-else-if="action === 'a'" class="item-archive item-menu decor-itemmenu" title="Archive" @click="setArchived">&#x21aa;</span>
-              <span v-else-if="action === 'r'" class="item-delete item-menu decor-itemmenu" title="Remove from list" @click="removeFromList">&#x2262;</span>
-              <span v-else-if="action === 'd'" class="item-delete item-menu decor-itemmenu" title="Delete" @click="deleteItem">&#x1f7a8;</span>
-              <span v-else-if="action === 's'" class="item-share item-menu decor-itemmenu" title="Share" @click="showShareWith=true">&#x21cc;</span>
-              <span v-else-if="action === 't'" class="item-share item-menu decor-itemmenu" title="Tag" @click="showTagList=true">&#x1f516;</span>
+              <span v-if="action === 'e'" class="item-archive item-menu decor-itemmenu" title="Edit" @click="showEdit=true"><i class="fa fa-pencil"></i></span>
+              <span v-else-if="action === 'u'" class="item-archive item-menu decor-itemmenu" title="Unarchive" @click="setUnarchived"><i class="fa fa-angle-double-left"></i></span>
+              <span v-else-if="action === 'a'" class="item-archive item-menu decor-itemmenu" title="Archive" @click="setArchived"><i class="fa fa-angle-double-right"></i></span>
+              <span v-else-if="action === 'r'" class="item-delete item-menu decor-itemmenu" title="Remove from list" @click="removeFromList"><i class="fa fa-outdent"></i></span>
+              <span v-else-if="action === 'd'" class="item-delete item-menu decor-itemmenu" title="Delete" @click="deleteItem"><i class="fa fa-times"></i></span>
+              <span v-else-if="action === 's'" class="item-share item-menu decor-itemmenu" title="Share" @click="showShareWith=true"><i class="fa fa-share-alt"></i></span>
+              <span v-else-if="action === 't'" class="item-share item-menu decor-itemmenu" title="Tag" @click="showTagList=true"><i class="fa fa-tags"></i></span>
             </template>
           </template>
           <template v-else-if="allowOrder">
-            <span class="item-archive item-menu decor-itemmenu" title="Up" @click="moveUp">&#x25b2;</span>
-            <span class="item-delete item-menu decor-itemmenu" title="Down" @click="moveDown">&#x25bc;</span>
+            <span class="item-archive item-menu decor-itemmenu" title="Up" @click="moveUp"><i class="fa fa-chevron-up"></i></span>
+            <span class="item-delete item-menu decor-itemmenu" title="Down" @click="moveDown"><i class="fa fa-chevron-down"></i></span>
           </template>
         </span>
       </div>
@@ -754,7 +755,7 @@ Vue.component('section-list', {
     <div class="section decor-section" v-bind:style="sectionStyle">
       <div class="section-head decor-sectionhead">
         <div class="section-action decor-sectionaction" v-if="edit && allowEditName">
-          <span @click="showEditName = true" class="section-action-item decor-sectionactionitem" title="Edit name">&#x1f589;</span>
+          <span @click="showEditName = true" class="section-action-item decor-sectionactionitem" title="Edit name"><i class="fa fa-pencil"></i></span>
           <edit-name-overlay 
             v-if="showEditName" 
             :name="sectionTypeData.data.name" 
@@ -765,11 +766,11 @@ Vue.component('section-list', {
         <div class="section-title decor-sectiontitle" v-bind:title="sectionTooltip">{{ sectionTitle }}</div>
         <div class="section-action decor-sectionaction">
           <template v-if="edit">
-            <span v-if="allowRemove" @click="removeSection" class="section-action-item decor-sectionactionitem" title="Remove">&#x1f464;&#x2093;</span>
-            <span @click="saveEdit" class="section-action-item decor-sectionactionitem" title="Update">&#x1f4be;</span>
-            <span @click="cancelEdit" class="section-action-item decor-sectionactionitem" title="Cancel">&#x21b6;</span>
+            <span v-if="allowRemove" @click="removeSection" class="section-action-item decor-sectionactionitem" title="Remove"><i class="fa fa-user-times"></i></span>
+            <span @click="saveEdit" class="section-action-item decor-sectionactionitem" title="Update"><i class="fa fa-save"></i></span>
+            <span @click="cancelEdit" class="section-action-item decor-sectionactionitem" title="Cancel"><i class="fa fa-undo"></i></span>
           </template>
-          <span v-else @click="edit=true" class="section-action-item decor-sectionactionitem" title="Edit">&#x1f589;</span>
+          <span v-else @click="edit=true" class="section-action-item decor-sectionactionitem" title="Edit"><i class="fa fa-pencil"></i></span>
         </div>
       </div>
       <div class="section-content decor-sectioncontent">
@@ -788,7 +789,7 @@ Vue.component('section-list', {
           </single-item>
         </template>        
         <div v-if="allowNew && edit" class="item">
-          <div class="item-add-new item-menu decor-itemmenu" title="Add new prayer item" @click="showAddNewItem=true">&#x1f7a1;</div>
+          <div class="item-add-new item-menu decor-itemmenu" title="Add new prayer item" @click="showAddNewItem=true"><i class="fa fa-plus"></i></div>
         </div>
         <edit-item-overlay 
           v-if="showAddNewItem" 
@@ -830,8 +831,8 @@ Vue.component("edit-name-overlay", {
           <input class="overlay-input" type="text" v-model="newName">
         </div>
         <div class="overlay-actions">
-          <button type="button" @click="saveThis">&#x1f4be; Save</button>
-          <button type="button" @click="closeThis">&#x21b6; Cancel</button>
+          <button type="button" @click="saveThis"><i class="fa fa-save"></i> Save</button>
+          <button type="button" @click="closeThis"><i class="fa fa-undo"></i> Cancel</button>
         </div>
       </div>
     </div>
@@ -885,8 +886,8 @@ Vue.component("edit-profile-overlay", {
         </div>
         <div class="sep"></div>
         <div class="overlay-actions">
-          <button type="button" @click="saveThis">&#x1f4be; Save</button>
-          <button type="button" @click="closeThis">&#x21b6; Cancel</button>
+          <button type="button" @click="saveThis"><i class="fa fa-save"></i> Save</button>
+          <button type="button" @click="closeThis"><i class="fa fa-undo"></i> Cancel</button>
         </div>
       </div>
     </div>
@@ -904,7 +905,7 @@ Vue.component("site-head", {
       <span id="pagetitle">Prayer Partners</span>
       <span id="menutoggle" 
         class="decor-menuitem"
-        @click="toggleMenu">&#9776;</span>
+        @click="toggleMenu"><i class="fa fa-bars"></i></span>
     </div>
   `
 });
@@ -940,8 +941,8 @@ Vue.component("friend-request", {
         <span class="friend-invite-email">{{ email }}</span>
       </span>
       <span class="friend-invite-actions">
-        <span class="friend-invite-accept decor-menuitem" @click="acceptRequest">&#x1f7a1;</span>
-        <span class="friend-invite-reject decor-menuitem" @click="rejectRequest">&#x1f7a8;</span>
+        <span class="friend-invite-accept decor-menuitem" @click="acceptRequest"><i class="fa fa-plus"></i></span>
+        <span class="friend-invite-reject decor-menuitem" @click="rejectRequest"><i class="fa fa-times"></i></span>
       </span>
     </span>
   `

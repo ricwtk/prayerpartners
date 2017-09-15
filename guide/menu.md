@@ -24,4 +24,4 @@ Change the slide bar to change the width and height of the list. These propertie
 
 ## Friend requests
 
-This section shows the friend requests you accepted. You can accept <span class="listhead">&#x1f7a1;</span> or reject <span class="listhead">&#x1f7a8;</span> the friend request. An acceptance email will be sent to the friend when you accept the request. No email will be sent to the friend when you reject the request.
+This section shows the friend requests you accepted. You can accept <span class="listhead"><i class="fa fa-plus"></i></span> or reject <span class="listhead"><i class="fa fa-times"></i></span> the friend request. An acceptance email will be sent to the friend when you accept the request. No email will be sent to the friend when you reject the request.
