@@ -22,16 +22,16 @@
       <div class="group-header decor-groupheader">
         <div class="group-title decor-grouptitle">Mine</div>
         <div class="group-action decor-groupaction">
+          <span class="group-action-item decor-groupactionitem" title="Show as single list" @click="showList='single'"><i class="fa fa-list"></i></span>
           <span class="group-action-item decor-groupactionitem" title="Show as tag list" @click="showList='tag'"><i class="fa fa-tags"></i></span>
           <span class="group-action-item decor-groupactionitem" title="Show as friends list" @click="showList='friend'"><i class="fa fa-users"></i></span>
-          <span class="group-action-item decor-groupactionitem" title="Show as single list" @click="showList='single'"><i class="fa fa-list"></i></span>
         </div>
       </div>
       <div class="section-group">
         <section-list v-if="showList == 'single'" section-tooltip="Active list" section-title="Active" :section-type-data="{ sType: 'mine', data: null }"
           v-bind:item-list="myItems">
         </section-list>
-        <template v-else-if="showList == 'friend'" v-for="friend in mySharedWithList">
+        <template v-else-if="showList == 'friend'">
           <section-list :section-tooltip="null" section-title="Unshared" :section-type-data="{ sType: 'mine-friend', data: null }"
             :item-list="myUnshared">
           </section-list>
