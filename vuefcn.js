@@ -63,6 +63,13 @@ Vue.component('about-overlay', {
           <a href="./privacypolicy.html" target="_blank">Privacy policy &#x1f517;</a>
         </div>
         <div class="sep"></div>
+        <div>
+          This project is developed with 
+          <a href="https://vuejs.org/" target="_blank">vue.js</a>, 
+          <a href="https://github.com/dankogai/js-base64" target="_blank">base64.js</a>, 
+          <a href="" target="_blank">MimeMessage.js</a>, 
+          <a href="https://github.com/showdownjs/showdown" target="_blank">Showdown.js</a>
+        </div>
         <button type="button" @click="closeThis">Close</button>
       </div>
     </div>
