@@ -91,7 +91,8 @@ button {
 
 .friend-invite {
   display: flex;
-  align-items: center
+  align-items: center;
+  flex-direction: row;
 }
 
 .friend-invite-identity {
