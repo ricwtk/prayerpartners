@@ -23,7 +23,10 @@
 
     <div id="content">
       <div id="innerContent" v-html="testMd"></div>
-      <div id="navbutton"><button type="button">Previous</button><button type="button">Next</button></div>
+      <div id="navbutton">
+        <button type="button" @click="goPrev" :style="prevStyle">Previous</button>
+        <button type="button" @click="goNext" :style="nextStyle">Next</button>
+      </div>
     </div>
   </div>
 

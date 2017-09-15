@@ -106,13 +106,66 @@ var main = new Vue({
   el: "#main",
   data: {
     menu: [],
-    testMdRaw: ""
+    testMdRaw: "",
+    currentFile: "",
+    prevFile: "",
+    nextFile: ""
   },
   computed: {
     showMenu: () => globalStore.showMenu,
     testMd: function () {
       // return marked(this.testMdRaw)
       return converter.makeHtml(this.testMdRaw);
+    },
+    prevStyle: function () {
+      return {
+        opacity: (this.prevFile) ? 1 : 0
+      }
+    },
+    nextStyle: function () {
+      return {
+        opacity: (this.nextFile) ? 1 : 0
+      }
+    }
+  },
+  methods: {
+    goPrev: function () {
+      window.location.href = window.location.pathname + "?" + formatItemQuery(this.prevFile.file);
+    },
+    goNext: function () {
+      window.location.href = window.location.pathname + "?" + formatItemQuery(this.nextFile.file);
+    }
+  },
+  watch: {
+    "currentFile": function () {
+      let idx = this.menu.findIndex(el => {
+        return el.file == this.currentFile
+      });
+      if (idx > 0) {
+        this.prevFile = this.menu[idx - 1];
+      } else {
+        this.prevFile = null;
+      }
+      if (idx > -1 && idx < this.menu.length - 1) {
+        this.nextFile = this.menu[idx + 1];
+      } else {
+        this.nextFile = null;
+      }
+    },
+    "menu": function () {
+      let idx = this.menu.findIndex(el => {
+        return el.file == this.currentFile
+      });
+      if (idx > 0) {
+        this.prevFile = this.menu[idx - 1];
+      } else {
+        this.prevFile = null;
+      }
+      if (idx > -1 && idx < this.menu.length - 1) {
+        this.nextFile = this.menu[idx + 1];
+      } else {
+        this.nextFile = null;
+      }
     }
   },
   created: function () {
@@ -132,12 +185,13 @@ var header = new Vue({
 })
 
 query = new URLSearchParams(window.location.search);
-showDebug([query.get("f"), query.get("l")]);
+// showDebug([query.get("f"), query.get("l")]);
 
 var fileToGet = "initialisation.md"
 if (query.get("f")) {
   fileToGet = query.get("f") + ".md";
 }
+main.currentFile = fileToGet.replace(".md", "");
 getContent(fileToGet).then(res => {
   // showDebug([res]);
   main.testMdRaw = res;
