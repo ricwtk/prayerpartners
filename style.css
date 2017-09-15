@@ -1,4 +1,12 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto+Slab');
+@font-face { 
+  font-family: "Roboto Slab"; 
+  font-style: normal; 
+  font-weight: 400; 
+  src: local("Roboto Slab Regular"), local("RobotoSlab-Regular"), url("https://fonts.gstatic.com/s/robotoslab/v6/y7lebkjgREBJK96VQi37Zo4P5ICox8Kq3LLUNMylGO4.woff2") format("woff2"); 
+  unicode-range: U+0-FF, U+131, U+152-153, U+2C6, U+2DA, U+2DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+1F589, u+1F46A; 
+}
+
 html,
 body {
   width: 100%;
