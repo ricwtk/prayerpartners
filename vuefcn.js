@@ -846,6 +846,14 @@ Vue.component("edit-profile-overlay", {
     this.newUserName = globalStore.savedData.mine.name;
   },
   methods: {
+    signOut: () => {
+      handleSignoutClick();
+      window.location.href = "";
+    },
+    disconnect: () => {
+      handleDisconnectClick();
+      window.location.href = "";
+    },
     saveThis: function () {
       this.$emit("save", this.newUserName);
       this.closeThis();
@@ -857,6 +865,13 @@ Vue.component("edit-profile-overlay", {
   template: `
     <div class="overlay decor-overlay">
       <div class="overlay-wrapper">
+        <div class="overlay-row account-actions">
+          <button type="button" @click="signOut">Sign out</button>
+          <div class="horizontal-sep"></div>
+          <button type="button" @click="disconnect">Disconnect</button>
+          <!--<button type="button">Reset database</button>-->
+        </div>
+        <div class="sep"></div>
         <div class="overlay-row">
           <div class="overlay-label">Change display name from "{{ userName }}" to &nbsp;</div>
           <input class="overlay-input" type="text" v-model="newUserName">
@@ -966,12 +981,6 @@ Vue.component("site-menu", {
     signIn: () => {
       handleAuthClick();
     },
-    signOut: () => {
-      handleSignoutClick();
-    },
-    disconnect: () => {
-      handleDisconnectClick();
-    },
     goToGuide: () => {
       window.open("./guide.html", "_blank");
     },
@@ -995,8 +1004,6 @@ Vue.component("site-menu", {
         v-on:save="saveProfile"
         v-on:close="showEditProfile=false">
       </edit-profile-overlay>
-      <span class="menu-item decor-menuitem" id="signout-google" @click="signOut">Sign out</span>
-      <span class="menu-item decor-menuitem" id="disconnect-google" @click="disconnect">Disconnect</span>
       <span class="menu-item decor-menuitem" id="go-to-guide" @click="goToGuide">Guide</span>
       <span class="menu-item decor-menuitem" id="open-about" @click="showAbout=true">About Prayer Partners</span>
       <about-overlay v-if="showAbout" @close="showAbout=false"></about-overlay>

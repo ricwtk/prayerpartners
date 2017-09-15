@@ -257,6 +257,14 @@ button {
   align-items: center;
 }
 
+.account-actions {
+  justify-content: center;
+}
+
+.account-actions button {
+  flex-grow: 1;
+}
+
 .edit-item-content {
   resize: vertical;
   padding: 10px;
