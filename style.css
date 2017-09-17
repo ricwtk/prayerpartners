@@ -479,3 +479,18 @@ button:hover {
 .fade-leave-to {
   opacity: 0;
 }
+
+#important-notice {
+  padding: 5px;
+  position: fixed;
+  opacity: .5;
+  background-color: #E91E63;
+  color: #FCE4EC;
+  z-index: 100;
+  bottom: 0;
+  left: 0;
+}
+
+#important-notice:hover {
+  opacity: 1;
+}
