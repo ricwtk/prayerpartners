@@ -233,6 +233,10 @@ button {
   flex-direction: row;
 }
 
+#signin-overlay {
+  flex-direction: column;
+}
+
 .overlay-wrapper,
 .edit-item-wrapper,
 .share-with-wrapper {

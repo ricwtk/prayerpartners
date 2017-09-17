@@ -61,6 +61,7 @@ Vue.component('about-overlay', {
         <div>
           <a href="https://github.com/ricwtk/prayerpartners"  target="_blank">Source code on Github <i class="fa fa-link"></i></a>
           <a href="./privacypolicy.html" target="_blank">Privacy policy <i class="fa fa-link"></i></a>
+          <a href="./permissionsexplained.html" target="_blank">Permissions explained <i class="fa fa-link"></i></a>
         </div>
         <div class="sep"></div>
         <div>
@@ -68,7 +69,7 @@ Vue.component('about-overlay', {
           <a href="https://vuejs.org/" target="_blank">vue.js</a>, 
           <a href="https://github.com/dankogai/js-base64" target="_blank">base64.js</a>, 
           <a href="" target="_blank">MimeMessage.js</a>, 
-          <a href="https://github.com/showdownjs/showdown" target="_blank">Showdown.js</a>
+          <a href="https://github.com/showdownjs/showdown" target="_blank">Showdown.js</a>,
           <a href="http://fontawesome.io/" target="_blank">FontAwesome</a>
         </div>
         <button type="button" @click="closeThis">Close</button>
@@ -992,6 +993,9 @@ Vue.component("site-menu", {
     goToGuide: () => {
       window.open("./guide.html", "_blank");
     },
+    goToPermissions: () => {
+      window.open("./permissionsexplained.html", "_blank");
+    },
     saveProfile: (newProfileName) => {
       globalStore.savedData.mine.name = newProfileName;
       updateToDatabase();
@@ -1005,6 +1009,13 @@ Vue.component("site-menu", {
     <div id="menu" class="decor-menu">
       <div v-if="showSignIn" id="signin-overlay" class="overlay decor-overlay">
         <div class="signin-button decor-menuitem" id="signin-google" @click="signIn">Sign in with Google</div>
+        <br>
+        <div class="sep"></div>
+        <div class="overlay-row">
+          <a href="./guide.html" target="_blank">Guide</a>
+          <div class="horizontal-sep"></div>
+          <a href="./permissionsexplained.html" target="_blank">Permissions explained</a>
+        </div>
       </div>  
       <span class="menu-item decor-menuitem" id="signed-in-as" :title="userEmail" @click="showEditProfile=true">Signed in as {{ userName }}</span>
       <edit-profile-overlay 
