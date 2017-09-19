@@ -1008,13 +1008,21 @@ Vue.component("site-menu", {
   template: `
     <div id="menu" class="decor-menu">
       <div v-if="showSignIn" id="signin-overlay" class="overlay decor-overlay">
-        <div class="signin-button decor-menuitem" id="signin-google" @click="signIn">Sign in with Google</div>
-        <br>
+        <div class="overlay-row">
+        Sign in with 
+        <div class="horizontal-sep"></div>
+        <i class="fa fa-google-plus-official signin-button"></i>
+        <i class="horizontal-sep"></i>
+        <i class="fa fa-facebook-official signin-button"></i>
+        <!--<div class="signin-button decor-menuitem" id="signin-google" @click="signIn"><i class="fa fa-google-plus-official"></i></div>
+        <div class="horizontal-sep"></div>
+        <div class="signin-button decor-menuitem" id="signin-facebook" @click="signIn"><i class="fa fa-facebook-official"></i></div>-->
+        </div>
         <div class="sep"></div>
         <div class="overlay-row">
           <a href="./guide.html" target="_blank">Guide</a>
-          <div class="horizontal-sep"></div>
-          <a href="./permissionsexplained.html" target="_blank">Permissions explained</a>
+          <!--<div class="horizontal-sep"></div>
+          <a href="./permissionsexplained.html" target="_blank">Permissions explained</a>-->
         </div>
       </div>  
       <span class="menu-item decor-menuitem" id="signed-in-as" :title="userEmail" @click="showEditProfile=true">Signed in as {{ userName }}</span>

@@ -32,14 +32,13 @@ button {
 
 .signin-button {
   /*width: 100%;*/
-  padding: 10px;
-  text-align: center;
+  font-size: 200%;
   cursor: pointer;
+  color: #009688;
 }
 
 .signin-button:hover {
-  background-color: #999999;
-  color: #ffffff;
+  font-size: 300%;
 }
 
 .close-button,
