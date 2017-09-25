@@ -40,9 +40,8 @@ window.onload = function () {
     } else {
       authInst = gapi.auth2.getAuthInstance();
       console.log("google log in status:", authInst.isSignedIn.get(), authInst.currentUser.get());
-      if (authInst.isSignedIn.get()) {
-        loginStatus.google.status = true;
-      }
+      loginStatus.google.status = authInst.isSignedIn.get();
+      console.log(loginStatus.google.status);
       loginStatus.google.checked = true;
     }
   };
@@ -53,32 +52,14 @@ window.onload = function () {
     if (!loginStatus.google.checked || !loginStatus.facebook.checked) {
       setTimeout(checkIfFinished, 10);
     } else {
-      attachStatusListeners();
       actOnStatus();
     }
   }
   checkIfFinished();
 }
 
-function attachStatusListeners() {
-  // facebook
-  if (loginStatus.facebook.status) {
-    FB.Event.subscribe("auth.logout", afterFbLogout);
-  } else {
-    FB.Event.subscribe("auth.login", afterFbLogin);
-  }
-  // google
-  gapi.auth2.getAuthInstance().isSignedIn.listen(signInStatus => {
-    if (signInStatus) {
-      afterGoogleLogin();
-    } else {
-      afterGoogleLogout();
-    }
-  });
-}
 
 function actOnStatus() {
-  // if facebook is logged in
   if (loginStatus.facebook.status) {
     afterFbLogin();
   } else if (loginStatus.google.status) {

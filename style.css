@@ -32,13 +32,18 @@ button {
 
 .signin-button {
   /*width: 100%;*/
-  font-size: 200%;
+  font-size: 500%;
   cursor: pointer;
   color: #009688;
+  transition: color .5s;
 }
 
-.signin-button:hover {
-  font-size: 300%;
+#signin-facebook:hover {
+  color: #4267b2;
+}
+
+#signin-google:hover {
+  color: #d34836;
 }
 
 .close-button,

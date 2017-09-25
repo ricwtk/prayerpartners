@@ -1,12 +1,18 @@
 var globalStore = new Vue({
   data: {
-    showSignIn: true,
+    fblogin: false,
+    googlelogin: false,
     showMenu: true,
     savedData: defaultData,
     showLoading: true,
     toastMessage: "",
     showToast: false,
     toastTimeoutFn: null,
+  },
+  computed: {
+    showSignIn: function () {
+      return !(this.fblogin || this.googlelogin);
+    }
   },
   watch: {
     toastMessage: function () {
@@ -855,9 +861,9 @@ Vue.component("edit-profile-overlay", {
     this.newUserName = globalStore.savedData.mine.name;
   },
   methods: {
-    signOut: () => {
-      handleSignoutClick();
-      window.location.href = "";
+    signOut: function () {
+      logout();
+      this.$emit("close");
     },
     disconnect: () => {
       handleDisconnectClick();
@@ -990,6 +996,12 @@ Vue.component("site-menu", {
     signIn: () => {
       handleAuthClick();
     },
+    signInG: () => {
+      googlelogin();
+    },
+    signInFb: () => {
+      fblogin();
+    },
     goToGuide: () => {
       window.open("./guide.html", "_blank");
     },
@@ -1011,9 +1023,9 @@ Vue.component("site-menu", {
         <div class="overlay-row">
         Sign in with 
         <div class="horizontal-sep"></div>
-        <i class="fa fa-google-plus-official signin-button"></i>
+        <i class="fa fa-google-plus-official signin-button" id="signin-google" title="Google" @click="signInG"></i>
         <i class="horizontal-sep"></i>
-        <i class="fa fa-facebook-official signin-button"></i>
+        <i class="fa fa-facebook-official signin-button" id="signin-facebook" title="Facebook" @click="signInFb"></i>
         <!--<div class="signin-button decor-menuitem" id="signin-google" @click="signIn"><i class="fa fa-google-plus-official"></i></div>
         <div class="horizontal-sep"></div>
         <div class="signin-button decor-menuitem" id="signin-facebook" @click="signIn"><i class="fa fa-facebook-official"></i></div>-->

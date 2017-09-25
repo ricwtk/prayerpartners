@@ -8,6 +8,16 @@ window.fbAsyncInit = function () {
     version: 'v2.10',
   });
   FB.AppEvents.logPageView();
+  // attach status listeners
+  FB.Event.subscribe("auth.statusChange", resp => {
+    if (resp.status != "connected") {
+      console.log("fb account is logged out");
+      afterFbLogout();
+    } else {
+      console.log("fb account is logged in");
+      afterFbLogin();
+    }
+  });
 };
 
 (function (d, s, id) {
@@ -27,6 +37,17 @@ function initGoogleApi() {
   gapi.load('auth2', function () {
     var auth2 = gapi.auth2.init({
       client_id: '885265693601-q38bh4n7s7rdrv6lpn4qbb6sbt065pum.apps.googleusercontent.com',
+    });
+    // attach status listeners
+    gapi.auth2.getAuthInstance().isSignedIn.listen(signInStatus => {
+      console.log("signInStatus", signInStatus);
+      if (signInStatus) {
+        console.log("google account is logged in");
+        afterGoogleLogin();
+      } else {
+        console.log("google account is logged out");
+        afterGoogleLogout();
+      }
     });
   });
 }
