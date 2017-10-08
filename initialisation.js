@@ -30,7 +30,7 @@ window.onload = function () {
       loginStatus.facebook.checked = true;
     });
   };
-  setTimeout(dblcheckFbLogin, 2000);
+  setTimeout(dblcheckFbLogin, 3000);
   checkFbLogin();
 
   // check if google is logged in
@@ -61,7 +61,7 @@ window.onload = function () {
 
 function actOnStatus() {
   if (loginStatus.facebook.status) {
-    afterFbLogin();
+    // afterFbLogin();
   } else if (loginStatus.google.status) {
     afterGoogleLogin();
   } else {}

@@ -1,5 +1,7 @@
 const DEBUG = true;
 
+var USERDATATABLE = "pp-userdata";
+
 var GOOGLE = {
   CLIENT_ID: "885265693601-q38bh4n7s7rdrv6lpn4qbb6sbt065pum.apps.googleusercontent.com",
   DISCOVERY_DOCS: [
@@ -36,6 +38,26 @@ var defaultData = {
   }
 };
 
+function newUserData(idp, userId, name, email, profilePicture) {
+  return {
+    idp: idp || null,
+    userId: userId || null,
+    name: name || null,
+    email: email || null,
+    profilePicture: profilePicture || null,
+    items: [],
+    friends: [],
+    friendRequests: [],
+    groups: [],
+    ui: {
+      sectionStyle: {
+        width: "300px",
+        height: "200px"
+      },
+    }
+  };
+}
+
 function newMineItem() {
   return {
     itemId: null,
@@ -48,19 +70,16 @@ function newMineItem() {
   };
 }
 
-function newFriendRequest(name, email) {
+function newFriendRequest(userId) {
   return {
-    name: name,
-    email: email,
+    userId: userId || null,
     rejected: false
   }
 }
 
-function newFriend(name, email) {
+function newFriend(userId) {
   return {
-    friendId: generateId(globalStore.savedData.friends.map(friend => friend.friendId)),
-    name: name,
-    email: email,
+    userId: userId || null,
     groups: [],
     items: []
   }
@@ -73,6 +92,15 @@ function newFriendItem(id, title, desc, owner) {
     desc: desc || null,
     owner: owner || "mine",
     order: null
+  }
+}
+
+function newNotification(toId, action, content) {
+  return {
+    fromId: globalStore.idpData.userId,
+    toId: toId,
+    action: action,
+    content: content
   }
 }
 

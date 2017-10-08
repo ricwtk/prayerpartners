@@ -85,12 +85,40 @@ button {
   max-width: 100%;
 }
 
-.menu-item {
+#menu-profile-picture-container {
+  width: 50px;
+  position: relative;
+  /* background-color: white; */
+}
+
+#menu-profile-picture {
+  width: 50px;
+  height: auto;
+  display: block;
+}
+
+#menu-profile-picture-overlay {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+}
+
+.menu-item-flex-row {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu-item,
+.menu-item-flex-row {
   display: flex;
-  flex-direction: column;
   padding: 10px;
   text-align: left;
   cursor: pointer;
+}
+
+.menu-item {
+  flex-direction: column;
 }
 
 .friend-invite {
@@ -263,6 +291,36 @@ button {
 
 .overlay-row {
   display: flex;
+  align-items: center;
+}
+
+#signed-in-display {
+  flex-direction: column;
+  text-align: left;
+}
+
+#signed-in-data {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+#signed-in-display-pic {
+  width: 100px;
+  height: auto;
+}
+
+#signed-in-text {
+  text-align: left;
+}
+
+#signed-in-idp {
+  font-size: 200%;
+}
+
+#signed-in-idp-display {
+  display: flex;
+  flex-direction: row;
   align-items: center;
 }
 

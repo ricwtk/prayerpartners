@@ -3,11 +3,19 @@ var globalStore = new Vue({
     fblogin: false,
     googlelogin: false,
     showMenu: true,
-    savedData: defaultData,
+    savedData: newUserData(),
     showLoading: true,
     toastMessage: "",
     showToast: false,
     toastTimeoutFn: null,
+    idpData: {
+      idp: null,
+      userId: null,
+      name: null,
+      email: null,
+      profilePicture: null,
+      profileLink: null
+    }
   },
   computed: {
     showSignIn: function () {
@@ -338,7 +346,7 @@ Vue.component('add-tag-overlay', {
   computed: {
     tagList: function () {
       let tags = [];
-      globalStore.savedData.mine.items.forEach(item => {
+      globalStore.savedData.items.forEach(item => {
         tags = tags.concat(item.tags.filter(tag => tags.indexOf(tag) < 0));
       });
       return tags;
@@ -371,7 +379,7 @@ Vue.component('add-tag-overlay', {
     }
   },
   // created: function() {
-  //   savedData.mine.items.forEach(item => {
+  //   savedData.items.forEach(item => {
   //     this.tagList = this.tagList.concat(item.tags.filter(tag => this.tagList.indexOf(tag) < 0));
   //   });
   //   this.tagList = copyObj(this.tagList);
@@ -689,7 +697,7 @@ Vue.component('section-list', {
         case "archive":
         case "mine-tag":
         case "mine-friend":
-          saveToItemList = globalStore.savedData.mine.items;
+          saveToItemList = globalStore.savedData.items;
           break;
         default:
           saveToItemList = this.itemList;
@@ -854,11 +862,27 @@ Vue.component("edit-profile-overlay", {
   },
   computed: {
     userName: function () {
-      return globalStore.savedData.mine.name;
+      return globalStore.savedData.name;
+    },
+    profilePic: () => {
+      return globalStore.savedData.profilePicture;
+    },
+    idpClass: () => {
+      return {
+        fa: true,
+        "fa-google-plus-official": globalStore.savedData.idp == "google",
+        "fa-facebook-official": globalStore.savedData.idp == "facebook"
+      };
+    },
+    userName: () => {
+      return globalStore.savedData.name;
+    },
+    userEmail: () => {
+      return globalStore.savedData.email;
     }
   },
   created: function () {
-    this.newUserName = globalStore.savedData.mine.name;
+    this.newUserName = globalStore.savedData.name;
   },
   methods: {
     signOut: function () {
@@ -880,13 +904,31 @@ Vue.component("edit-profile-overlay", {
   template: `
     <div class="overlay decor-overlay">
       <div class="overlay-wrapper">
+        <div class="overlay-row" id="signed-in-display">
+          <div id="signed-in-box">
+            <b>Signed in as</b>
+            <div id="signed-in-data">
+              <img :src="profilePic" id="signed-in-display-pic">
+              <div class="horizontal-sep"></div>
+              <div id="signed-in-text">
+                <div id="signed-in-idp-display">
+                  <i :class="idpClass" id="signed-in-idp"></i>
+                  <div class="horizontal-sep"></div>
+                  {{ userName }}
+                </div>
+                <div class="sep"></div>
+                <div>{{ userEmail }}</div>
+              </div>
+            </div>  
+          </div>
+        </div>
         <div class="overlay-row account-actions">
           <button type="button" @click="signOut">Sign out</button>
           <div class="horizontal-sep"></div>
-          <button type="button" @click="disconnect">Disconnect</button>
+          <!--<button type="button" @click="disconnect">Disconnect</button>-->
           <!--<button type="button">Reset database</button>-->
         </div>
-        <div class="sep"></div>
+        <!--<div class="sep"></div>
         <div class="overlay-row">
           <div class="overlay-label">Change display name from "{{ userName }}" to &nbsp;</div>
           <input class="overlay-input" type="text" v-model="newUserName">
@@ -895,7 +937,7 @@ Vue.component("edit-profile-overlay", {
         <div class="overlay-actions">
           <button type="button" @click="saveThis"><i class="fa fa-save"></i> Save</button>
           <button type="button" @click="closeThis"><i class="fa fa-undo"></i> Cancel</button>
-        </div>
+        </div>-->
       </div>
     </div>
   `
@@ -975,13 +1017,25 @@ Vue.component("site-menu", {
       return globalStore.showSignIn;
     },
     userName: () => {
-      return globalStore.savedData.mine.name;
+      return globalStore.idpData.name;
+      // return globalStore.savedData.name;
     },
     userEmail: () => {
-      return globalStore.savedData.mine.email;
+      return globalStore.idpData.email;
+      // return globalStore.savedData.email;
+    },
+    profilePic: () => {
+      return globalStore.idpData.profilePicture;
     },
     friendRequests: () => {
       return globalStore.savedData.friendRequests;
+    },
+    idpDisplay: () => {
+      return {
+        fa: true,
+        'fa-google-plus-official': globalStore.savedData.idp == "google",
+        'fa-facebook-official': globalStore.savedData.idp == "facebook"
+      }
     }
   },
   watch: {
@@ -1009,7 +1063,7 @@ Vue.component("site-menu", {
       window.open("./permissionsexplained.html", "_blank");
     },
     saveProfile: (newProfileName) => {
-      globalStore.savedData.mine.name = newProfileName;
+      globalStore.savedData.name = newProfileName;
       updateToDatabase();
     },
     saveUi: () => {
@@ -1037,7 +1091,12 @@ Vue.component("site-menu", {
           <a href="./permissionsexplained.html" target="_blank">Permissions explained</a>-->
         </div>
       </div>  
-      <span class="menu-item decor-menuitem" id="signed-in-as" :title="userEmail" @click="showEditProfile=true">Signed in as {{ userName }}</span>
+      <span class="menu-item-flex-row decor-menuitem" id="signed-in-as" :title="userEmail" @click="showEditProfile=true">Signed in as 
+        <div id="menu-profile-picture-container">
+          <img :src="profilePic" :alt="userName" id="menu-profile-picture">
+          <div id="menu-profile-picture-overlay" :class="idpDisplay"></div>
+        </div>
+      </span>
       <edit-profile-overlay 
         v-if="showEditProfile" 
         v-on:save="saveProfile"
@@ -1072,14 +1131,14 @@ var app = new Vue({
   },
   computed: {
     myItems: function () {
-      var myitems = globalStore.savedData.mine.items.filter(item => !item.archived);
+      var myitems = globalStore.savedData.items.filter(item => !item.archived);
       myitems.sort(function (a, b) {
         return a.order - b.order;
       })
       return myitems;
     },
     myArchived: function () {
-      return globalStore.savedData.mine.items.filter(item => item.archived);
+      return globalStore.savedData.items.filter(item => item.archived);
     },
     mySharedWithList: function () {
       // var shareableFriends = savedData.friends.filter(friend => friend.email);
@@ -1088,7 +1147,7 @@ var app = new Vue({
         return {
           name: friend.name,
           email: friend.email,
-          items: globalStore.savedData.mine.items.filter(item => (item.sharedWith.includes(friend.email)))
+          items: globalStore.savedData.items.filter(item => (item.sharedWith.includes(friend.email)))
         };
       });
       showDebug(["allFriends", allFriends]);
@@ -1102,24 +1161,24 @@ var app = new Vue({
       return allFriends;
     },
     myUnshared: function () {
-      return globalStore.savedData.mine.items.filter(item => (item.sharedWith.length == 0));
+      return globalStore.savedData.items.filter(item => (item.sharedWith.length == 0));
     },
     myTags: function () {
       var tags = [];
-      globalStore.savedData.mine.items.forEach(item => {
+      globalStore.savedData.items.forEach(item => {
         tags = tags.concat(item.tags.filter(tag => tags.indexOf(tag) < 0));
       });
       var allTags = tags.map(tag => {
         return {
           name: tag,
-          items: globalStore.savedData.mine.items.filter(item => (item.tags.includes(tag)))
+          items: globalStore.savedData.items.filter(item => (item.tags.includes(tag)))
         };
       });
       showDebug(["allTags", copyObj(allTags)])
       return allTags;
     },
     myUntagged: function () {
-      return globalStore.savedData.mine.items.filter(item => (item.tags.length == 0));
+      return globalStore.savedData.items.filter(item => (item.tags.length == 0));
     }
   },
   methods: {

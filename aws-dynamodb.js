@@ -1,12 +1,35 @@
 function afterFbLogin() {
-  new Promise((resolve, reject) => {
-    console.log("afterFbLogin");
-    // Add the Facebook access token to the Cognito credentials login map.
-    AWS.config.credentials.params.Logins = {};
-    AWS.config.credentials.params.Logins['graph.facebook.com'] = FB.getAuthResponse().accessToken;
-    globalStore.fblogin = true;
-    resolve(true);
-  }).then(afterLogIn);
+  console.log("afterFbLogin");
+  // Add the Facebook access token to the Cognito credentials login map.
+  let authResp = FB.getAuthResponse();
+  AWS.config.credentials = new AWS.WebIdentityCredentials({
+    RoleArn: 'arn:aws:iam::195032713377:role/UsersForPrayerPartnersFacebook',
+    ProviderId: 'graph.facebook.com', // Omit this for Google
+    WebIdentityToken: authResp.accessToken // Access token from identity provider
+  });
+  FB.api("/me", {
+      fields: "id,email,name,link",
+    },
+    function (meResp) {
+      if (meResp && !meResp.error) {
+        console.log(meResp);
+        FB.api("/me/picture", function (picResp) {
+          console.log(picResp);
+          globalStore.idpData = {
+            idp: 'facebook',
+            userId: 'fb_' + meResp.id,
+            name: meResp.name,
+            email: meResp.email || null,
+            profilePicture: picResp.data.url,
+            profileLink: meResp.link || null
+          };
+          afterLogIn();
+          globalStore.fblogin = true;
+        });
+      }
+    }
+  );
+
 }
 
 function afterFbLogout() {
@@ -14,17 +37,33 @@ function afterFbLogout() {
 }
 
 function afterGoogleLogin() {
-  new Promise((resolve, reject) => {
-    console.log("afterGoogleLogin");
-    let googleUser = gapi.auth2.getAuthInstance().currentUser.get();
-    let profile = googleUser.getBasicProfile();
-    console.log("Logged in as", profile.getEmail());
-    let authResp = googleUser.getAuthResponse();
-    AWS.config.credentials.params.Logins = {};
-    AWS.config.credentials.params.Logins['accounts.google.com'] = authResp['id_token'];
-    globalStore.googlelogin = true;
-    resolve(true);
-  }).then(afterLogIn);
+  console.log("afterGoogleLogin");
+  gapi.client.load('plus', 'v1', function () {
+    let request = gapi.client.plus.people.get({
+      'userId': 'me'
+    });
+    request.execute((meResp) => {
+      new Promise((resolve, reject) => {
+        console.log("Logged in as", meResp.displayName);
+        globalStore.idpData = {
+          idp: "google",
+          userId: "g_" + meResp.id,
+          name: meResp.displayName,
+          email: meResp.emails[0].value,
+          profilePicture: meResp.image.url,
+          profileLink: meResp.url
+        };
+        let googleUser = gapi.auth2.getAuthInstance().currentUser.get();
+        let authResp = googleUser.getAuthResponse();
+        AWS.config.credentials = new AWS.WebIdentityCredentials({
+          RoleArn: 'arn:aws:iam::195032713377:role/UsersForPrayerPartnersGoogle',
+          WebIdentityToken: authResp['id_token'] // Access token from identity provider
+        });
+        globalStore.googlelogin = true;
+        resolve(true);
+      }).then(afterLogIn);
+    });
+  });
 }
 
 function afterGoogleLogout() {
@@ -41,26 +80,53 @@ function afterLogIn() {
       }
     });
     resolve(true);
-  }).then(readItem, console.log);
+  }).then(readData, console.log);
 }
 
-function readItem() {
-  var table = "Movies";
-  var year = 2015;
-  var title = "The Big New Movie";
+function readData() {
+  let table = USERDATATABLE;
 
-  var params = {
+  let params = {
     TableName: table,
     Key: {
-      "year": year,
-      "title": title
+      "userId": globalStore.idpData.userId + ""
     }
   };
+  console.log(params);
+  docClient = new AWS.DynamoDB.DocumentClient();
   docClient.get(params, function (err, data) {
     if (err) {
-      console.log("Unable to read item: " + "\n" + JSON.stringify(err, undefined, 2));
+      console.log("Unable to read item: ", err);
     } else {
-      console.log("GetItem succeeded: " + "\n" + JSON.stringify(data, undefined, 2));
+      console.log("GetItem succeeded: ", data);
+      if (Object.keys(data).length === 0 && data.constructor === Object) {
+        createData();
+        readData();
+      } else {
+        console.log(data);
+        globalStore.savedData = data.Item;
+        // save data to globalStore
+        // update name, email, profilePicture from idp if changed
+        // update database
+      }
+    }
+  });
+}
+
+function createData() {
+  // create user personal data
+  // create user public data
+  let firsttimedata = newUserData(globalStore.idpData.idp, globalStore.idpData.userId, globalStore.idpData.name, globalStore.idpData.email, globalStore.idpData.profilePicture);
+  let params = {
+    TableName: USERDATATABLE,
+    Item: firsttimedata
+  };
+
+  docClient.put(params, function (err, data) {
+    if (err) {
+      console.log("Unable to add item: ", err);
+    } else {
+      console.log("PutItem succeeded: ", data);
     }
   });
 }

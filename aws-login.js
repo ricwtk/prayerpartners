@@ -4,11 +4,11 @@ var dynamodb, docClient;
 function initAWS() {
   console.log("initAWS");
   AWS.config.region = 'us-east-1';
-  AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-    IdentityPoolId: 'us-east-1:455a20ab-254e-4738-8e6c-cfdcaf54dc79',
-  });
-  dynamodb = new AWS.DynamoDB();
-  docClient = new AWS.DynamoDB.DocumentClient();
+  // AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+  //   IdentityPoolId: 'us-east-1:455a20ab-254e-4738-8e6c-cfdcaf54dc79',
+  // });
+  // dynamodb = new AWS.DynamoDB();
+  // docClient = new AWS.DynamoDB.DocumentClient();
 }
 
 // facebook
@@ -18,6 +18,9 @@ function fblogin() {
     if (response.authResponse) {} else {
       console.log('There was a problem logging you in.');
     }
+  }, {
+    scope: 'email',
+    return_scopes: true,
   });
 }
 
@@ -40,10 +43,7 @@ function googlelogin() {
   let authInst = gapi.auth2.getAuthInstance();
   authInst.signIn({
     scope: "profile email"
-  }).then(googleUser => {
-    console.log(googleUser.getBasicProfile().getName());
-    console.log(googleUser.getId()); // unique id
-  }, error => {
+  }).then(googleUser => {}, error => {
     console.log(error)
   });
 }

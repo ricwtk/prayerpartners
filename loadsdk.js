@@ -34,10 +34,11 @@ window.fbAsyncInit = function () {
 // google
 function initGoogleApi() {
   console.log("initGoogleApi");
-  gapi.load('auth2', function () {
-    var auth2 = gapi.auth2.init({
+  gapi.load('client:auth2', function () {
+    gapi.auth2.init({
       client_id: '885265693601-q38bh4n7s7rdrv6lpn4qbb6sbt065pum.apps.googleusercontent.com',
     });
+
     // attach status listeners
     gapi.auth2.getAuthInstance().isSignedIn.listen(signInStatus => {
       console.log("signInStatus", signInStatus);
