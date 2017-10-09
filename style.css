@@ -18,6 +18,16 @@ button {
   padding: 5px;
 }
 
+#global {
+  position: fixed;
+  z-index: 100;
+}
+
+#overlay-holder {
+  position: fixed;
+  z-index: 50;
+}
+
 .signin-overlay,
 #about-overlay {
   width: 100%;
@@ -316,6 +326,7 @@ button {
 
 #signed-in-idp {
   font-size: 200%;
+  cursor: pointer;
 }
 
 #signed-in-idp-display {

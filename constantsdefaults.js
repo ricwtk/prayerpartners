@@ -38,13 +38,14 @@ var defaultData = {
   }
 };
 
-function newUserData(idp, userId, name, email, profilePicture) {
+function newUserData(idp, userId, name, email, profilePicture, profileLink) {
   return {
     idp: idp || null,
     userId: userId || null,
     name: name || null,
     email: email || null,
     profilePicture: profilePicture || null,
+    profileLink: profileLink || null,
     items: [],
     friends: [],
     friendRequests: [],

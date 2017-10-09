@@ -116,17 +116,26 @@ function readData() {
 function createData() {
   // create user personal data
   // create user public data
-  let firsttimedata = newUserData(globalStore.idpData.idp, globalStore.idpData.userId, globalStore.idpData.name, globalStore.idpData.email, globalStore.idpData.profilePicture);
+  let firsttimedata = newUserData(globalStore.idpData.idp, globalStore.idpData.userId, globalStore.idpData.name, globalStore.idpData.email, globalStore.idpData.profilePicture, globalStore.idpData.profileLink);
+  saveDataToTable(firsttimedata, USERDATATABLE);
+}
+
+
+function updateToDatabase() {
+  saveDataToTable(copyObj(globalStore.savedData), USERDATATABLE);
+}
+
+function saveDataToTable(data, table) {
   let params = {
-    TableName: USERDATATABLE,
-    Item: firsttimedata
+    TableName: table,
+    Item: data
   };
 
-  docClient.put(params, function (err, data) {
+  docClient.put(params, function (err, retdata) {
     if (err) {
       console.log("Unable to add item: ", err);
     } else {
-      console.log("PutItem succeeded: ", data);
+      console.log("PutItem succeeded: ", retdata);
     }
   });
 }

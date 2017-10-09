@@ -2,9 +2,11 @@ var globalStore = new Vue({
   data: {
     fblogin: false,
     googlelogin: false,
-    showMenu: true,
+    showMenu: false,
     savedData: newUserData(),
     showLoading: true,
+    showEditProfile: false,
+    showAbout: false,
     toastMessage: "",
     showToast: false,
     toastTimeoutFn: null,
@@ -20,7 +22,7 @@ var globalStore = new Vue({
   computed: {
     showSignIn: function () {
       return !(this.fblogin || this.googlelogin);
-    }
+    },
   },
   watch: {
     toastMessage: function () {
@@ -885,17 +887,14 @@ Vue.component("edit-profile-overlay", {
     this.newUserName = globalStore.savedData.name;
   },
   methods: {
+    goToProfile: function () {
+      if (globalStore.savedData.profileLink !== null) {
+        window.open(globalStore.savedData.profileLink, "_blank");
+      }
+    },
     signOut: function () {
       logout();
       this.$emit("close");
-    },
-    disconnect: () => {
-      handleDisconnectClick();
-      window.location.href = "";
-    },
-    saveThis: function () {
-      this.$emit("save", this.newUserName);
-      this.closeThis();
     },
     closeThis: function () {
       this.$emit("close");
@@ -912,32 +911,20 @@ Vue.component("edit-profile-overlay", {
               <div class="horizontal-sep"></div>
               <div id="signed-in-text">
                 <div id="signed-in-idp-display">
-                  <i :class="idpClass" id="signed-in-idp"></i>
+                  <i :class="idpClass" id="signed-in-idp" @click="goToProfile"></i>
                   <div class="horizontal-sep"></div>
                   {{ userName }}
                 </div>
                 <div class="sep"></div>
                 <div>{{ userEmail }}</div>
               </div>
-            </div>  
+            </div>
+            <div class="sep"></div>
+            <div class="overlay-row account-actions"><button type="button" @click="signOut">Sign out</button></div>
+            <div class="sep"></div>
+            <div class="overlay-row account-actions"><button type="button" @click="closeThis">Close</button></div>
           </div>
         </div>
-        <div class="overlay-row account-actions">
-          <button type="button" @click="signOut">Sign out</button>
-          <div class="horizontal-sep"></div>
-          <!--<button type="button" @click="disconnect">Disconnect</button>-->
-          <!--<button type="button">Reset database</button>-->
-        </div>
-        <!--<div class="sep"></div>
-        <div class="overlay-row">
-          <div class="overlay-label">Change display name from "{{ userName }}" to &nbsp;</div>
-          <input class="overlay-input" type="text" v-model="newUserName">
-        </div>
-        <div class="sep"></div>
-        <div class="overlay-actions">
-          <button type="button" @click="saveThis"><i class="fa fa-save"></i> Save</button>
-          <button type="button" @click="closeThis"><i class="fa fa-undo"></i> Cancel</button>
-        </div>-->
       </div>
     </div>
   `
@@ -997,6 +984,40 @@ Vue.component("friend-request", {
   `
 });
 
+Vue.component("unsigned-in-overlay", {
+  methods: {
+    signInG: () => {
+      googlelogin();
+    },
+    signInFb: () => {
+      fblogin();
+    },
+    goToGuide: () => {
+      window.open("./guide.html", "_blank");
+    },
+    goToPermissions: () => {
+      window.open("./permissionsexplained.html", "_blank");
+    },
+  },
+  template: `
+    <div id="signin-overlay" class="overlay decor-overlay">
+      <div class="overlay-row">
+      Sign in with 
+      <div class="horizontal-sep"></div>
+      <i class="fa fa-google-plus-official signin-button" id="signin-google" title="Google" @click="signInG"></i>
+      <i class="horizontal-sep"></i>
+      <i class="fa fa-facebook-official signin-button" id="signin-facebook" title="Facebook" @click="signInFb"></i>
+      </div>
+      <div class="sep"></div>
+      <div class="overlay-row">
+        <a href="./guide.html" target="_blank">Guide</a>
+        <!--<div class="horizontal-sep"></div>
+        <a href="./permissionsexplained.html" target="_blank">Permissions explained</a>-->
+      </div>
+    </div>
+  `
+});
+
 Vue.component("site-menu", {
   data: function () {
     return {
@@ -1012,9 +1033,6 @@ Vue.component("site-menu", {
     },
     heightOfSectionWithUnit: function () {
       return this.heightOfSection.toString() + "px";
-    },
-    showSignIn: () => {
-      return globalStore.showSignIn;
     },
     userName: () => {
       return globalStore.idpData.name;
@@ -1047,24 +1065,17 @@ Vue.component("site-menu", {
     }
   },
   methods: {
+    openEditProfile: () => {
+      globalStore.showEditProfile = true;
+    },
+    openAbout: () => {
+      globalStore.showAbout = true;
+    },
     signIn: () => {
       handleAuthClick();
     },
-    signInG: () => {
-      googlelogin();
-    },
-    signInFb: () => {
-      fblogin();
-    },
     goToGuide: () => {
       window.open("./guide.html", "_blank");
-    },
-    goToPermissions: () => {
-      window.open("./permissionsexplained.html", "_blank");
-    },
-    saveProfile: (newProfileName) => {
-      globalStore.savedData.name = newProfileName;
-      updateToDatabase();
     },
     saveUi: () => {
       showDebug(["saveUi"]);
@@ -1073,38 +1084,14 @@ Vue.component("site-menu", {
   },
   template: `
     <div id="menu" class="decor-menu">
-      <div v-if="showSignIn" id="signin-overlay" class="overlay decor-overlay">
-        <div class="overlay-row">
-        Sign in with 
-        <div class="horizontal-sep"></div>
-        <i class="fa fa-google-plus-official signin-button" id="signin-google" title="Google" @click="signInG"></i>
-        <i class="horizontal-sep"></i>
-        <i class="fa fa-facebook-official signin-button" id="signin-facebook" title="Facebook" @click="signInFb"></i>
-        <!--<div class="signin-button decor-menuitem" id="signin-google" @click="signIn"><i class="fa fa-google-plus-official"></i></div>
-        <div class="horizontal-sep"></div>
-        <div class="signin-button decor-menuitem" id="signin-facebook" @click="signIn"><i class="fa fa-facebook-official"></i></div>-->
-        </div>
-        <div class="sep"></div>
-        <div class="overlay-row">
-          <a href="./guide.html" target="_blank">Guide</a>
-          <!--<div class="horizontal-sep"></div>
-          <a href="./permissionsexplained.html" target="_blank">Permissions explained</a>-->
-        </div>
-      </div>  
-      <span class="menu-item-flex-row decor-menuitem" id="signed-in-as" :title="userEmail" @click="showEditProfile=true">Signed in as 
+      <span class="menu-item-flex-row decor-menuitem" id="signed-in-as" :title="userEmail" @click="openEditProfile">Signed in as 
         <div id="menu-profile-picture-container">
           <img :src="profilePic" :alt="userName" id="menu-profile-picture">
           <div id="menu-profile-picture-overlay" :class="idpDisplay"></div>
         </div>
       </span>
-      <edit-profile-overlay 
-        v-if="showEditProfile" 
-        v-on:save="saveProfile"
-        v-on:close="showEditProfile=false">
-      </edit-profile-overlay>
       <span class="menu-item decor-menuitem" id="go-to-guide" @click="goToGuide">Guide</span>
-      <span class="menu-item decor-menuitem" id="open-about" @click="showAbout=true">About Prayer Partners</span>
-      <about-overlay v-if="showAbout" @close="showAbout=false"></about-overlay>
+      <span class="menu-item decor-menuitem" id="open-about" @click="openAbout">About Prayer Partners</span>
       <span class="menu-item" id="section-width">
         Width of list ({{ widthOfSectionWithUnit }})<br>
         <input id="input-section-width" type="range" min="300" max="1000" v-model="widthOfSection" @mouseup="saveUi">
@@ -1212,4 +1199,25 @@ var app_global = new Vue({
     showLoading: () => globalStore.showLoading,
     showToast: () => globalStore.showToast
   }
-})
+});
+
+var app_overlay = new Vue({
+  el: '#overlay-holder',
+  computed: {
+    showAbout: () => globalStore.showAbout,
+    showSignIn: () => globalStore.showSignIn,
+    saveProfile: (newProfileName) => {
+      globalStore.savedData.name = newProfileName;
+      updateToDatabase();
+    },
+    showEditProfile: () => globalStore.showEditProfile,
+  },
+  methods: {
+    closeEditProfile: () => {
+      globalStore.showEditProfile = false;
+    },
+    closeAbout: () => {
+      globalStore.showAbout = false;
+    },
+  }
+});
