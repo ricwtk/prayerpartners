@@ -117,7 +117,7 @@ Vue.component('add-new-friend-section', {
         this.addPrivateError = true;
         showDebug([this.newFriendName + " is in existing friend list"]);
       } else {
-        addToFriend(this.newFriendName, null);
+        addToFriend(null, this.newFriendName);
         showDebug(["Save '" + this.newFriendName + "' to friend list"]);
         showToast("added " + this.newFriendName + " as friend");
         this.newFriendName = '';

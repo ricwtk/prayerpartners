@@ -80,7 +80,7 @@ function afterLogIn() {
       }
     });
     resolve(true);
-  }).then(readData, console.log);
+  }).then(readData, console.log).then(getAllUsers, console.log);
 }
 
 function readData() {
@@ -137,5 +137,36 @@ function saveDataToTable(data, table) {
     } else {
       console.log("PutItem succeeded: ", retdata);
     }
+  });
+}
+
+function getAllUsers() {
+  let params = {
+    TableName: USERDATATABLE,
+    AttributesToGet: [
+      "userId",
+      "email",
+      "name",
+      "profileLink",
+      "profilePicture"
+    ]
+    // KeyConditionExpression: 'begins_with(userId, :id)',
+    // ExpressionAttributeValues: {
+    //   ':id': 'g'
+    // }
+    // AttributesToGet: [
+    //   "userId"
+    // ],
+    // KeyConditions: {
+    //   "userId": {
+    //     ComparisonOperator: "BEGINS_WITH",
+    //     AttributeValueList: [
+    //       "fb"
+    //     ]
+    //   }
+    // }
+  };
+  docClient.scan(params, function (err, data) {
+    console.log(err, data);
   });
 }

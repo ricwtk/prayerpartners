@@ -47,9 +47,9 @@ function removeFriendRequest(email) {
   return globalStore.savedData.friendRequests.splice(idx, 1)[0];
 }
 
-function addToFriend(name, email) {
-  showDebug(["addToFriend", name, email]);
-  let friend = newFriend(name, email);
+function addToFriend(id, name) {
+  showDebug(["addToFriend", id, name]);
+  let friend = newFriend(id, name);
   globalStore.savedData.friends.push(friend);
 }
 
