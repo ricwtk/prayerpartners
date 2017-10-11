@@ -150,6 +150,16 @@ button {
   padding: 5px;
 }
 
+#search-friend-overlay {
+  height: 100%;
+}
+
+#search-friend-list {
+  border: 1px solid #b2dfdb;
+  height: 100px;
+  flex-grow: 1;
+}
+
 #main {
   width: calc(100% - 10px);
   /* height: 1000px; */

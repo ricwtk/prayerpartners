@@ -162,8 +162,22 @@ Vue.component('add-new-friend-section', {
         <div class="section-add-new-text"><i class="fa fa-plus"></i></div>
       </div>
       <div v-if="showOverlay" class="overlay decor-overlay">
-        <div class="overlay-wrapper">
-          <div class="overlay-label">Invite with email (only Google account is supported, require response)</div>
+        <div class="overlay-wrapper" id="search-friend-overlay">
+          <div class="sep"></div>
+          <div class="overlay-row">
+            <div class="overlay-label">Add friend</div>
+            <div class="horizontal-sep"></div>
+            <input class="overlay-input" type="text">
+            <div class="horizontal-sep"></div>
+            <button type="button">Add local</button>
+          </div>
+          <div class="sep"></div>
+          <div class="overlay-row" id="search-friend-list">
+          </div>
+          <div class="sep"></div>
+          <button type="button" @click="showOverlay=false" style="width:100%"><i class="fa fa-times"></i> Close</button>
+          <div class="sep"></div>
+          <!--<div class="overlay-label">Add friend</div>
           <div class="overlay-row">
             <input class="overlay-input" type="text" v-model="newFriendEmail">
             <div class="horizontal-sep"></div>
@@ -179,7 +193,7 @@ Vue.component('add-new-friend-section', {
           <div v-if="addPrivateError" class="overlay-error decor-overlayerror">Friend's name exists. Change name.</div>
           <div class="overlay-actions">
             <button type="button" @click="showOverlay=false"><i class="fa fa-times"></i> Close</button>
-          </div>
+          </div>-->
         </div>
       </div>
     </div>
