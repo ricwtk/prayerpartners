@@ -117,6 +117,7 @@ function createData() {
   // create user personal data
   // create user public data
   let firsttimedata = newUserData(globalStore.idpData.idp, globalStore.idpData.userId, globalStore.idpData.name, globalStore.idpData.email, globalStore.idpData.profilePicture, globalStore.idpData.profileLink);
+  firsttimedata.searchField = getSearchField(firsttimedata.name, firsttimedata.email);
   saveDataToTable(firsttimedata, USERDATATABLE);
 }
 
@@ -143,28 +144,21 @@ function saveDataToTable(data, table) {
 function getAllUsers() {
   let params = {
     TableName: USERDATATABLE,
-    AttributesToGet: [
+    ProjectionExpression: [
       "userId",
       "email",
-      "name",
+      "#name",
       "profileLink",
-      "profilePicture"
-    ]
-    // KeyConditionExpression: 'begins_with(userId, :id)',
-    // ExpressionAttributeValues: {
-    //   ':id': 'g'
-    // }
-    // AttributesToGet: [
-    //   "userId"
-    // ],
-    // KeyConditions: {
-    //   "userId": {
-    //     ComparisonOperator: "BEGINS_WITH",
-    //     AttributeValueList: [
-    //       "fb"
-    //     ]
-    //   }
-    // }
+      "profilePicture",
+      "searchField"
+    ],
+    FilterExpression: "contains(searchField, :name)",
+    ExpressionAttributeNames: {
+      "#name": "name"
+    },
+    ExpressionAttributeValues: {
+      ":name": "w"
+    },
   };
   docClient.scan(params, function (err, data) {
     console.log(err, data);

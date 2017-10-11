@@ -15,28 +15,6 @@ var GOOGLE = {
   ].join(" ")
 };
 
-// var threadId = 
-
-var defaultData = {
-  lastDateChecked: null,
-  lastInternalDateChecked: null,
-  mine: {
-    personId: null,
-    name: null,
-    email: null,
-    personIdAtFriends: [],
-    items: []
-  },
-  friends: [],
-  friendRequests: [],
-  groups: [],
-  ui: {
-    sectionStyle: {
-      width: "300px",
-      height: "200px"
-    },
-  }
-};
 
 function newUserData(idp, userId, name, email, profilePicture, profileLink) {
   return {
@@ -55,7 +33,8 @@ function newUserData(idp, userId, name, email, profilePicture, profileLink) {
         width: "300px",
         height: "200px"
       },
-    }
+    },
+    searchField: null
   };
 }
 

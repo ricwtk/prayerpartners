@@ -76,3 +76,10 @@ function addFriendRequest(name, email) {
   globalStore.savedData.friendRequests.push(friReq);
   return friReq;
 }
+
+function getSearchField(name, email) {
+  let sf = "";
+  if (name) sf += name.toLowerCase() + " ";
+  if (email) sf += email.toLowerCase();
+  return sf;
+}
