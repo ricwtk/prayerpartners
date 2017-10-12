@@ -102,12 +102,20 @@ Vue.component('add-new-friend-section', {
       newFriendEmail: '',
       newFriendName: '',
       addPrivateError: false,
-      addEmailError: false
+      addEmailError: false,
+      searchFriendString: ""
     }
   },
   computed: {
     sectionStyle: () => {
       return globalStore.savedData.ui.sectionStyle;
+    },
+    searchFriendList: function () {
+      if (this.searchFriendString == "") {
+        return "no search string";
+      } else {
+        return this.searchFriendString.split("").reverse().join("");
+      }
     }
   },
   methods: {
@@ -115,12 +123,12 @@ Vue.component('add-new-friend-section', {
       var friendList = globalStore.savedData.friends.map(friend => friend.name);
       if (friendList.includes(this.newFriendName)) {
         this.addPrivateError = true;
-        showDebug([this.newFriendName + " is in existing friend list"]);
+        showDebug([this.searchFriendString + " is in existing friend list"]);
       } else {
-        addToFriend(null, this.newFriendName);
-        showDebug(["Save '" + this.newFriendName + "' to friend list"]);
-        showToast("added " + this.newFriendName + " as friend");
-        this.newFriendName = '';
+        addToFriend(null, this.searchFriendString);
+        showDebug(["Save '" + this.searchFriendString + "' to friend list"]);
+        showToast("added " + this.searchFriendString + " as friend");
+        this.searchFriendString = "";
         this.showOverlay = false;
       }
       updateToDatabase();
@@ -167,12 +175,13 @@ Vue.component('add-new-friend-section', {
           <div class="overlay-row">
             <div class="overlay-label">Add friend</div>
             <div class="horizontal-sep"></div>
-            <input class="overlay-input" type="text">
+            <input class="overlay-input" type="text" v-model="searchFriendString">
             <div class="horizontal-sep"></div>
-            <button type="button">Add local</button>
+            <button type="button" @click="addPrivate">Add local</button>
           </div>
           <div class="sep"></div>
           <div class="overlay-row" id="search-friend-list">
+          {{ searchFriendList }}
           </div>
           <div class="sep"></div>
           <button type="button" @click="showOverlay=false" style="width:100%"><i class="fa fa-times"></i> Close</button>
