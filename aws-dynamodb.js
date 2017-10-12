@@ -80,7 +80,7 @@ function afterLogIn() {
       }
     });
     resolve(true);
-  }).then(readData, console.log).then(getAllUsers, console.log);
+  }).then(readData, console.log); //.then(getAllUsers, console.log);
 }
 
 function readData() {
@@ -162,5 +162,35 @@ function getAllUsers() {
   };
   docClient.scan(params, function (err, data) {
     console.log(err, data);
+  });
+}
+
+function searchUsers(queryStr, vueObj, resultVarStr) {
+  console.log("beforefounddata", vueObj[resultVarStr]);
+  let params = {
+    TableName: USERDATATABLE,
+    ProjectionExpression: [
+      "userId",
+      "email",
+      "#name",
+      "profileLink",
+      "profilePicture",
+      "searchField"
+    ],
+    FilterExpression: "contains(searchField, :name)",
+    ExpressionAttributeNames: {
+      "#name": "name"
+    },
+    ExpressionAttributeValues: {
+      ":name": queryStr.toLowerCase()
+    },
+  };
+  docClient.scan(params, function (err, data) {
+    if (err) {
+      console.log(err);
+      Vue.set(vueObj, resultVarStr, []);
+    } else {
+      Vue.set(vueObj, resultVarStr, data.Items);
+    }
   });
 }

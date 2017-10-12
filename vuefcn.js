@@ -103,18 +103,35 @@ Vue.component('add-new-friend-section', {
       newFriendName: '',
       addPrivateError: false,
       addEmailError: false,
-      searchFriendString: ""
+      searchFriendString: "",
+      searchFriendList: []
     }
   },
   computed: {
     sectionStyle: () => {
       return globalStore.savedData.ui.sectionStyle;
     },
-    searchFriendList: function () {
-      if (this.searchFriendString == "") {
-        return "no search string";
+    searchFriendResults: function () {
+      console.log("updated friend list", copyObj(this.searchFriendList));
+      let result = [];
+      if (this.searchFriendList.length < 1) {
+        result.push("no search string");
       } else {
-        return this.searchFriendString.split("").reverse().join("");
+        console.log("searchFriendResults", copyObj(this.searchFriendList));
+        this.searchFriendList.forEach((el, idx, arr) => {
+          result.push([el.searchField, el.userId].join(" "));
+        })
+      }
+      return result.join("<br>");
+    }
+  },
+  watch: {
+    "searchFriendString": function () {
+      if (this.searchFriendString == "") {
+        this.searchFriendList = [];
+      } else {
+        searchUsers(this.searchFriendString, this, "searchFriendList");
+        // this.searchFriendString.split("").reverse().join("");
       }
     }
   },
@@ -181,7 +198,12 @@ Vue.component('add-new-friend-section', {
           </div>
           <div class="sep"></div>
           <div class="overlay-row" id="search-friend-list">
-          {{ searchFriendList }}
+            <div v-if="searchFriendList.length < 1">
+            No search string
+            </div>
+            <template v-else v-for="friend in searchFriendList">
+              <a-friend :friendObj="friend"></a-friend>
+            </template>
           </div>
           <div class="sep"></div>
           <button type="button" @click="showOverlay=false" style="width:100%"><i class="fa fa-times"></i> Close</button>
@@ -208,6 +230,58 @@ Vue.component('add-new-friend-section', {
     </div>
   `
 });
+
+Vue.component('a-friend', {
+  props: ["friendObj"],
+  data: function () {
+    return {
+      nameLimit: 12
+    }
+  },
+  computed: {
+    idpClass: function () {
+      return {
+        fa: true,
+        "fa-google-plus-official": this.friendObj.userId.startsWith("g"),
+        "fa-facebook-official": this.friendObj.userId.startsWith("fb")
+      };
+    }
+  },
+  methods: {
+    limitString: function (string) {
+      if (string.length <= this.nameLimit) {
+        return string;
+      } else {
+        return string.substring(0, this.nameLimit) + "...";
+      }
+    },
+    onresize: function () {
+      let el = this.$el.lastChild;
+      let fsize = parseFloat(window.getComputedStyle(el, null).getPropertyValue('font-size'));
+      this.nameLimit = el.clientWidth / (fsize * .75);
+    }
+  },
+  mounted: function () {
+    window.addEventListener("resize", this.onresize);
+    this.onresize();
+  },
+  template: `
+    <div class="fr-wrapper">
+      <div class="fr-image"><img :src="friendObj.profilePicture"></img></div>
+      <div class="horizontal-sep"></div>
+      <div class="fr-label">
+        <div class="fr-name" :title="friendObj.name">
+          <span :class="idpClass"></span>
+          {{ limitString(friendObj.name) }}
+        </div>
+        <div class="fr-email" :title="friendObj.email">
+          {{ limitString(friendObj.email) }}
+        </div>
+        </div>
+      </div>
+    </div>
+  `
+})
 
 Vue.component('edit-item-overlay', {
   props: ["item", "action", "sectionType"], // action = [new, edit]

@@ -150,6 +150,38 @@ button {
   padding: 5px;
 }
 
+.fr-wrapper {
+  margin: 10px;
+  padding: 5px;
+  border: 1px solid #009688;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  max-width: 350px;
+  height: 100%;
+  max-height: 105px;
+}
+
+.fr-image {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  max-width: 105px;
+}
+
+.fr-image img {
+  flex-grow: 1;
+  object-fit: cover;
+}
+
+.fr-label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+}
+
 #search-friend-overlay {
   height: 100%;
 }
@@ -158,6 +190,10 @@ button {
   border: 1px solid #b2dfdb;
   height: 100px;
   flex-grow: 1;
+  justify-content: center;
+  flex-wrap: wrap;
+  overflow: scroll;
+  align-items: flex-start;
 }
 
 #main {
@@ -296,7 +332,7 @@ button {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  /*width: 100%;*/
+  /* width: 90%; */
 }
 
 .overlay-input,
@@ -312,6 +348,8 @@ button {
 .overlay-row {
   display: flex;
   align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 #signed-in-display {
@@ -536,6 +574,13 @@ button:hover {
   background-color: rgba(255, 255, 255, 0.95);
   color: #009688;
 }
+
+
+/* .overlay-wrapper {
+  background-color: rgba(255, 255, 255, 1);
+  color: #009688;
+  border: 2px solid #009688;
+} */
 
 .decor-overlayerror {
   background-color: #f44336;
