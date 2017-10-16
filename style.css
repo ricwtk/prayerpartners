@@ -171,7 +171,7 @@ button {
 
 .fr-image img {
   flex-grow: 1;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .fr-label {
@@ -180,6 +180,15 @@ button {
   justify-content: center;
   align-items: center;
   flex-grow: 1;
+}
+
+.fr-actions {
+  width: 100%;
+  /* max-width: 150px; */
+}
+
+.fr-actions button {
+  width: 100%;
 }
 
 #search-friend-overlay {

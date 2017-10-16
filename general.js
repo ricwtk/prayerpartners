@@ -11,6 +11,7 @@ function showDebug(debugString) {
 
 function showToast(toastString) {
   globalStore.toastMessage = toastString;
+  globalStore.initToast = true;
 }
 
 function copyObj(object) {

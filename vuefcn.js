@@ -7,6 +7,7 @@ var globalStore = new Vue({
     showLoading: true,
     showEditProfile: false,
     showAbout: false,
+    initToast: false,
     toastMessage: "",
     showToast: false,
     toastTimeoutFn: null,
@@ -25,16 +26,29 @@ var globalStore = new Vue({
     },
   },
   watch: {
-    toastMessage: function () {
-      showDebug(["toast-notification", this.toastMessage]);
-      this.showToast = true;
-      if (this.toastTimeoutFn !== null) {
-        clearTimeout(this.toastTimeoutFn);
+    initToast: function () {
+      if (this.initToast) {
+        this.initToast = false;
+        showDebug(["toast-notification", this.toastMessage]);
+        this.showToast = true;
+        if (this.toastTimeoutFn !== null) {
+          clearTimeout(this.toastTimeoutFn);
+        }
+        this.toastTimeoutFn = setTimeout(() => {
+          this.showToast = false;
+        }, 2000);
       }
-      this.toastTimeoutFn = setTimeout(() => {
-        this.showToast = false;
-      }, 2000);
-    }
+    },
+    // toastMessage: function () {
+    //   showDebug(["toast-notification", this.toastMessage]);
+    //   this.showToast = true;
+    //   if (this.toastTimeoutFn !== null) {
+    //     clearTimeout(this.toastTimeoutFn);
+    //   }
+    //   this.toastTimeoutFn = setTimeout(() => {
+    //     this.showToast = false;
+    //   }, 2000);
+    // }
   }
 });
 
@@ -133,22 +147,32 @@ Vue.component('add-new-friend-section', {
         searchUsers(this.searchFriendString, this, "searchFriendList");
         // this.searchFriendString.split("").reverse().join("");
       }
+    },
+    "showOverlay": function () {
+      if (this.showOverlay) {
+        let el = this.$el;
+        Vue.nextTick(() => this.$el.querySelector("#search-friend-input").focus());
+        window.addEventListener("keyup", this.keyupListener);
+      } else {
+        window.removeEventListener("keyup", this.keyupListener);
+      }
     }
   },
   methods: {
     addPrivate: function () {
-      var friendList = globalStore.savedData.friends.map(friend => friend.name);
-      if (friendList.includes(this.newFriendName)) {
-        this.addPrivateError = true;
-        showDebug([this.searchFriendString + " is in existing friend list"]);
+      let friendList = globalStore.savedData.friends.map(friend => friend.name);
+      if (friendList.includes(this.searchFriendString)) {
+        // this.addPrivateError = true;
+        console.log(this.searchFriendString + " is in existing friend list");
+        showToast(this.searchFriendString + " is in existing friend list");
       } else {
         addToFriend(null, this.searchFriendString);
-        showDebug(["Save '" + this.searchFriendString + "' to friend list"]);
+        console.log("Save '" + this.searchFriendString + "' to friend list");
         showToast("added " + this.searchFriendString + " as friend");
         this.searchFriendString = "";
         this.showOverlay = false;
+        updateToDatabase();
       }
-      updateToDatabase();
     },
     addEmail: function () {
       let friendEmailList = globalStore.savedData.friends.map(friend => friend.email);
@@ -179,6 +203,9 @@ Vue.component('add-new-friend-section', {
         showToast("error adding " + this.newFriendEmail);
         showDebug(["Error adding " + this.newFriendEmail]);
       });
+    },
+    keyupListener: function (e) {
+      if (e.keyCode == 27) this.showOverlay = false; // escape
     }
   },
   template: `
@@ -192,7 +219,7 @@ Vue.component('add-new-friend-section', {
           <div class="overlay-row">
             <div class="overlay-label">Add friend</div>
             <div class="horizontal-sep"></div>
-            <input class="overlay-input" type="text" v-model="searchFriendString">
+            <input class="overlay-input" type="text" v-model="searchFriendString" id="search-friend-input">
             <div class="horizontal-sep"></div>
             <button type="button" @click="addPrivate">Add local</button>
           </div>
@@ -277,6 +304,9 @@ Vue.component('a-friend', {
         <div class="fr-email" :title="friendObj.email">
           {{ limitString(friendObj.email) }}
         </div>
+        <div class="sep"></div>
+        <div class="fr-actions">
+          <button type="button"><i class="fa fa-plus"></i> Add</button>
         </div>
       </div>
     </div>
