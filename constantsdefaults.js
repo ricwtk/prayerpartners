@@ -1,6 +1,9 @@
 const DEBUG = true;
 
 var USERDATATABLE = "pp-userdata";
+var USERREQUESTTABLE = "pp-request";
+var USERACCEPTTABLE = "pp-accept";
+var USERUPDATESTABLE = "pp-updates";
 
 var GOOGLE = {
   CLIENT_ID: "885265693601-q38bh4n7s7rdrv6lpn4qbb6sbt065pum.apps.googleusercontent.com",

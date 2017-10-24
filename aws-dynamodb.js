@@ -80,7 +80,7 @@ function afterLogIn() {
       }
     });
     resolve(true);
-  }).then(readData, console.log); //.then(getAllUsers, console.log);
+  }).then(readData, console.log);
 }
 
 function readData() {
@@ -98,16 +98,19 @@ function readData() {
     if (err) {
       console.log("Unable to read item: ", err);
     } else {
-      console.log("GetItem succeeded: ", data);
+      console.log("GetItem succeeded: ", copyObj(data));
       if (Object.keys(data).length === 0 && data.constructor === Object) {
         createData();
         readData();
       } else {
-        console.log(data);
+        console.log(copyObj(data));
         globalStore.savedData = data.Item;
         // save data to globalStore
         // update name, email, profilePicture from idp if changed
         // update database
+        retrieveRequests();
+        retrieveAccepts();
+        retrieveUpdates();
       }
     }
   });
@@ -141,30 +144,6 @@ function saveDataToTable(data, table) {
   });
 }
 
-function getAllUsers() {
-  let params = {
-    TableName: USERDATATABLE,
-    ProjectionExpression: [
-      "userId",
-      "email",
-      "#name",
-      "profileLink",
-      "profilePicture",
-      "searchField"
-    ],
-    FilterExpression: "contains(searchField, :name)",
-    ExpressionAttributeNames: {
-      "#name": "name"
-    },
-    ExpressionAttributeValues: {
-      ":name": "w"
-    },
-  };
-  docClient.scan(params, function (err, data) {
-    console.log(err, data);
-  });
-}
-
 function searchUsers(queryStr, vueObj, resultVarStr) {
   console.log("beforefounddata", vueObj[resultVarStr]);
   let params = {
@@ -192,5 +171,66 @@ function searchUsers(queryStr, vueObj, resultVarStr) {
     } else {
       Vue.set(vueObj, resultVarStr, data.Items);
     }
+  });
+}
+
+function sendRequest(toUserId) {
+  console.log("sendRequest");
+  let pprequest = {
+    fromXToY: globalStore.savedData.userId + "_" + toUserId,
+    to: toUserId,
+    from: globalStore.savedData.userId
+  };
+  saveDataToTable(pprequest, USERREQUESTTABLE);
+  // sendNotification(toUserId, "request", "na");
+}
+
+function sendAccept(toUserId) {
+  console.log("sendAccept");
+  let ppaccept = {
+    fromXToY: globalStore.savedData.userId + "_" + toUserId,
+    to: toUserId
+  };
+  saveDataToTable(ppaccept, USERACCEPTTABLE);
+  // sendNotification(toUserId, "accept", "na");
+}
+
+function sendUpdates(toUserId, updates) {
+  console.log("sendUpdates");
+  let ppupdates = {
+    fromXToY: globalStore.savedData.userId + "_" + toUserId,
+    to: toUserId,
+    updates: updates
+  };
+  saveDataToTable(ppupdates, USERUPDATESTABLE);
+  // sendNotification(toUserId, "update", updates);
+}
+
+function retrieveRequests() {
+  retrieve(USERREQUESTTABLE);
+}
+
+function retrieveAccepts() {
+  retrieve(USERACCEPTTABLE);
+}
+
+function retrieveUpdates() {
+  retrieve(USERUPDATESTABLE);
+}
+
+function retrieve(table) {
+  let params = {
+    TableName: table,
+    IndexName: "to-index",
+    KeyConditionExpression: "#to = :me",
+    ExpressionAttributeNames: {
+      "#to": "to"
+    },
+    ExpressionAttributeValues: {
+      ":me": globalStore.savedData.userId
+    },
+  };
+  docClient.query(params, function (err, data) {
+    console.log(table, err, data);
   });
 }

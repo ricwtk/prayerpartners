@@ -286,6 +286,10 @@ Vue.component('a-friend', {
       let el = this.$el.lastChild;
       let fsize = parseFloat(window.getComputedStyle(el, null).getPropertyValue('font-size'));
       this.nameLimit = el.clientWidth / (fsize * .75);
+    },
+    addUser: function () {
+      sendRequest(this.friendObj.userId);
+      showToast("Sent friend request to " + this.friendObj.name);
     }
   },
   mounted: function () {
@@ -306,7 +310,7 @@ Vue.component('a-friend', {
         </div>
         <div class="sep"></div>
         <div class="fr-actions">
-          <button type="button"><i class="fa fa-plus"></i> Add</button>
+          <button type="button" @click="addUser"><i class="fa fa-plus"></i> Add</button>
         </div>
       </div>
     </div>
