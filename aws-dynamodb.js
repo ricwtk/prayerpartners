@@ -215,14 +215,20 @@ function sendUpdates(toUserId, updates) {
 
 function retrieveRequests() {
   retrieve(USERREQUESTTABLE, function (err, data) {
+    console.log("retrieveRequests", err, data);
     if (err) {
       console.log(err);
     } else {
+      let requestAdded = false;
       data.Items.forEach((item) => {
         let fr = newFriendRequest(item.from);
-        if (globalStore.savedData.friendRequests.findIndex((fReq) => fReq.userId == fr.userId) == -1)
+        if (globalStore.savedData.friendRequests.findIndex((fReq) => fReq.userId == fr.userId) == -1) {
           globalStore.savedData.friendRequests.push(newFriendRequest(item.from));
+          requestAdded = true;
+        }
+        if (requestAdded) updateToDatabase();
       });
+      removeRequests(data.Items);
     }
   });
 }
@@ -253,4 +259,32 @@ function retrieve(table, afterRetrieve) {
     };
   }
   docClient.query(params, afterRetrieve);
+}
+
+function removeRequests(requests) {
+  requests.map((req) => {
+    remove(USERREQUESTTABLE, req.fromXToY, (err, data) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Request deleted", data);
+      }
+    });
+  });
+
+}
+
+function remove(table, primaryKey, afterDelete) {
+  let params = {
+    TableName: table,
+    Key: {
+      fromXToY: primaryKey
+    }
+  };
+  if (!afterDelete) {
+    afterDelete = function (err, data) {
+      console.log(err, data);
+    }
+  }
+  docClient.delete(params, afterDelete);
 }
