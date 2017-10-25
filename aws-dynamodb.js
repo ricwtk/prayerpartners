@@ -105,9 +105,16 @@ function readData() {
       } else {
         console.log(copyObj(data));
         globalStore.savedData = data.Item;
-        // save data to globalStore
-        // update name, email, profilePicture from idp if changed
-        // update database
+        // update name, email, profilePicture, profileLink from idp if changed
+        let checkItems = ["name", "email", "profilePicture", "profileLink"];
+        let detailChanged = false;
+        checkItems.forEach((item) => {
+          if (globalStore.savedData[item] != globalStore.idpData[item]) {
+            globalStore.savedData[item] = globalStore.idpData[item];
+            detailChanged = true;
+          }
+        });
+        if (detailChanged) updateToDatabase(); // update database
         retrieveRequests();
         retrieveAccepts();
         retrieveUpdates();
@@ -207,7 +214,17 @@ function sendUpdates(toUserId, updates) {
 }
 
 function retrieveRequests() {
-  retrieve(USERREQUESTTABLE);
+  retrieve(USERREQUESTTABLE, function (err, data) {
+    if (err) {
+      console.log(err);
+    } else {
+      data.Items.forEach((item) => {
+        let fr = newFriendRequest(item.from);
+        if (globalStore.savedData.friendRequests.findIndex((fReq) => fReq.userId == fr.userId) == -1)
+          globalStore.savedData.friendRequests.push(newFriendRequest(item.from));
+      });
+    }
+  });
 }
 
 function retrieveAccepts() {
@@ -218,7 +235,7 @@ function retrieveUpdates() {
   retrieve(USERUPDATESTABLE);
 }
 
-function retrieve(table) {
+function retrieve(table, afterRetrieve) {
   let params = {
     TableName: table,
     IndexName: "to-index",
@@ -230,7 +247,10 @@ function retrieve(table) {
       ":me": globalStore.savedData.userId
     },
   };
-  docClient.query(params, function (err, data) {
-    console.log(table, err, data);
-  });
+  if (!afterRetrieve) {
+    afterRetrieve = function (err, data) {
+      console.log(table, err, data);
+    };
+  }
+  docClient.query(params, afterRetrieve);
 }
