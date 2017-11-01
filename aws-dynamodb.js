@@ -8,8 +8,8 @@ function afterFbLogin() {
     WebIdentityToken: authResp.accessToken // Access token from identity provider
   });
   FB.api("/me", {
-      fields: "id,email,name,link",
-    },
+    fields: "id,email,name,link",
+  },
     function (meResp) {
       if (meResp && !meResp.error) {
         console.log(meResp);
@@ -313,7 +313,7 @@ function removeRequests(requests) {
 
 function removeAccepts(accepts) {
   accepts.map((acpt) => {
-    remove(USERREQUESTTABLE, acpt.fromXToY, (err, data) => {
+    remove(USERACCEPTTABLE, acpt.fromXToY, (err, data) => {
       if (err) {
         console.log(err);
       } else {
