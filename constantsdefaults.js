@@ -55,8 +55,7 @@ function newMineItem() {
 
 function newFriendRequest(userId) {
   return {
-    userId: userId || null,
-    rejected: false
+    userId: userId || null
   }
 }
 

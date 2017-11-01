@@ -44,20 +44,14 @@ var globalStore = new Vue({
       }
     },
     friendRequests: function () {
-      getUsers(globalStore.savedData.friendRequests.map(frreq => frreq.userId), function (err, data) {
-        globalStore.friendRequestsDisplay = data.Responses[USERDATATABLE];
-      });
+      if (globalStore.savedData.friendRequests.length > 0) {
+        getUsers(globalStore.savedData.friendRequests.map(frreq => frreq.userId), function (err, data) {
+          globalStore.friendRequestsDisplay = data.Responses[USERDATATABLE];
+        });
+      } else {
+        globalStore.friendRequestsDisplay = [];
+      }
     }
-    // toastMessage: function () {
-    //   showDebug(["toast-notification", this.toastMessage]);
-    //   this.showToast = true;
-    //   if (this.toastTimeoutFn !== null) {
-    //     clearTimeout(this.toastTimeoutFn);
-    //   }
-    //   this.toastTimeoutFn = setTimeout(() => {
-    //     this.showToast = false;
-    //   }, 2000);
-    // }
   }
 });
 
@@ -1087,39 +1081,66 @@ Vue.component("site-head", {
 });
 
 Vue.component("friend-request", {
-  props: ["name", "email"],
+  props: ["user"],
   data: function () {
     return {}
   },
+  computed: {
+    idpDisplay: function () {
+      return {
+        fa: true,
+        'fa-google-plus-official': this.user.userId.startsWith("g"),
+        'fa-facebook-official': this.user.userId.startsWith("fb")
+      }
+    }
+  },
   methods: {
+    linkProfile: function () {
+      window.open(this.user.profileLink, "_blank");
+    },
     acceptRequest: function () {
       showDebug(["acceptRequest"]);
-      // send email to accept
-      sendAccept(this.email).then(() => {
-        acceptFriendRequest(this.email);
-        updateToDatabase();
-        showDebug(["Successfully accepted " + this.name + " (" + this.email + ") as friend"])
-      }, () => {
-        showDebug(["Error accepting " + this.name + " (" + this.email + ") as friend"])
-      });
+      // send notification to accept
+      sendAccept(this.user.userId);
+      // check if friend is already in friend list
+      if (!globalStore.savedData.friends.map(fri => fri.userId).includes(this.user.userId)) {
+        // add friend to my friend list
+        globalStore.savedData.friends.push(newFriend(this.user.userId, this.user.name));
+      }
+      // remove request from my friendrequests list
+      this.removeRequest();
+      updateToDatabase();
     },
     rejectRequest: function () {
       showDebug(["rejectRequest"]);
-      let indexOfRequest = globalStore.savedData.friendRequests.findIndex(friend => friend.email == this.email);
-      globalStore.savedData.friendRequests.rejected = true;
+      this.removeRequest();
       updateToDatabase();
+    },
+    removeRequest: function () {
+      console.log("removeRequest");
+      // remove request from my friendrequests list
+      let indexOfRequest = globalStore.savedData.friendRequests.findIndex(friend => friend.userId == this.user.userId);
+      globalStore.savedData.friendRequests.splice(indexOfRequest, 1);
     }
   },
   template: `
     <span class="menu-item friend-invite">
-      <span class="friend-invite-identity">
-        <span class="friend-invite-name">{{ name }}</span><br>
-        <span class="friend-invite-email">{{ email }}</span>
-      </span>
-      <span class="friend-invite-actions">
-        <span class="friend-invite-accept decor-menuitem" @click="acceptRequest"><i class="fa fa-plus"></i></span>
-        <span class="friend-invite-reject decor-menuitem" @click="rejectRequest"><i class="fa fa-times"></i></span>
-      </span>
+      <div class="friend-invite-identity">
+        <div class="friend-invite-pic">
+          <img :src="user.profilePicture" :alt="user.name" class="friend-invite-profile-picture">
+        </div>
+        <div class="horizontal-sep"></div>
+        <div class="friend-invite-text">
+          <div class="friend-invite-name"><i :class="idpDisplay"></i> {{ user.name }}</div>
+          <div class="friend-invite-email">{{ user.email }}</div>
+        </div>
+      </div>
+      <div class="horizontal-sep"></div>
+      <div class="friend-invite-actions">
+        <div class="friend-invite-link decor-menuitem" @click="linkProfile"><i class="fa fa-external-link"></i></div>
+        <div class="friend-invite-accept decor-menuitem" @click="acceptRequest"><i class="fa fa-plus"></i></div>
+        <div class="friend-invite-reject decor-menuitem" @click="rejectRequest"><i class="fa fa-times"></i></div>
+      </div>
     </span>
   `
 });
@@ -1242,9 +1263,7 @@ Vue.component("site-menu", {
       </span>
       <template v-for="friendRequest in friendRequests">
         <friend-request 
-          v-if="!friendRequest.rejected" 
-          :name="friendRequest.name"
-          :email="friendRequest.email">
+          :user="friendRequest">
         </friend-request>
       </template>
     </div>  

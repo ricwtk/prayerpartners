@@ -124,6 +124,9 @@ button {
   display: flex;
   padding: 10px;
   text-align: left;
+}
+
+.decor-menuitem {
   cursor: pointer;
 }
 
@@ -139,12 +142,32 @@ button {
 
 .friend-invite-identity {
   flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+.friend-invite-profile-picture {
+  width: 50px;
+  height: auto;
+  display: block;
+}
+
+.friend-invite-text {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .friend-invite-email {
   font-size: 85%;
 }
 
+.friend-invite-actions {
+  display: flex;
+  flex-direction: row;
+}
+
+.friend-invite-link,
 .friend-invite-accept,
 .friend-invite-reject {
   padding: 5px;
