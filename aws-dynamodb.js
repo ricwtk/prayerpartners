@@ -124,8 +124,6 @@ function readData() {
 }
 
 function createData() {
-  // create user personal data
-  // create user public data
   let firsttimedata = newUserData(globalStore.idpData.idp, globalStore.idpData.userId, globalStore.idpData.name, globalStore.idpData.email, globalStore.idpData.profilePicture, globalStore.idpData.profileLink);
   firsttimedata.searchField = getSearchField(firsttimedata.name, firsttimedata.email);
   saveDataToTable(firsttimedata, USERDATATABLE);
@@ -181,6 +179,33 @@ function searchUsers(queryStr, vueObj, resultVarStr) {
   });
 }
 
+function getUsers(userIds, afterGet) {
+  let params = {
+    RequestItems: {}
+  };
+  params.RequestItems[USERDATATABLE] = {
+    ProjectionExpression: [
+      "userId",
+      "email",
+      "#name",
+      "profileLink",
+      "profilePicture"
+    ],
+    ExpressionAttributeNames: {
+      "#name": "name"
+    },
+    Keys: userIds.map(uid => ({
+      userId: uid
+    }))
+  };
+  if (!afterGet) {
+    afterGet = function (err, data) {
+      console.log("getUser", err, data);
+    };
+  }
+  docClient.batchGet(params, afterGet);
+}
+
 function sendRequest(toUserId) {
   console.log("sendRequest");
   let pprequest = {
@@ -189,7 +214,6 @@ function sendRequest(toUserId) {
     from: globalStore.savedData.userId
   };
   saveDataToTable(pprequest, USERREQUESTTABLE);
-  // sendNotification(toUserId, "request", "na");
 }
 
 function sendAccept(toUserId) {
@@ -199,7 +223,6 @@ function sendAccept(toUserId) {
     to: toUserId
   };
   saveDataToTable(ppaccept, USERACCEPTTABLE);
-  // sendNotification(toUserId, "accept", "na");
 }
 
 function sendUpdates(toUserId, updates) {
@@ -210,7 +233,6 @@ function sendUpdates(toUserId, updates) {
     updates: updates
   };
   saveDataToTable(ppupdates, USERUPDATESTABLE);
-  // sendNotification(toUserId, "update", updates);
 }
 
 function retrieveRequests() {
@@ -223,18 +245,34 @@ function retrieveRequests() {
       data.Items.forEach((item) => {
         let fr = newFriendRequest(item.from);
         if (globalStore.savedData.friendRequests.findIndex((fReq) => fReq.userId == fr.userId) == -1) {
-          globalStore.savedData.friendRequests.push(newFriendRequest(item.from));
+          globalStore.savedData.friendRequests.push(fr);
           requestAdded = true;
         }
-        if (requestAdded) updateToDatabase();
       });
+      if (requestAdded) updateToDatabase();
       removeRequests(data.Items);
     }
   });
 }
 
 function retrieveAccepts() {
-  retrieve(USERACCEPTTABLE);
+  retrieve(USERACCEPTTABLE, function (err, data) {
+    console.log("retrieveAccepts", err, data);
+    if (err) {
+      console.log(err);
+    } else {
+      let acceptAdded = false;
+      data.Items.forEach((item) => {
+        let fr = newFriend(item.from);
+        if (globalStore.savedData.friends.findIndex((fReq) => fReq.userId == fr.userId) == -1) {
+          globalStore.savedData.friends.push(fr);
+          acceptAdded = true;
+        }
+      });
+      if (acceptAdded) updateToDatabase();
+      removeAccepts(data.Items);
+    }
+  });
 }
 
 function retrieveUpdates() {
@@ -271,7 +309,18 @@ function removeRequests(requests) {
       }
     });
   });
+}
 
+function removeAccepts(accepts) {
+  accepts.map((acpt) => {
+    remove(USERREQUESTTABLE, acpt.fromXToY, (err, data) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("Accept deleted", data);
+      }
+    });
+  });
 }
 
 function remove(table, primaryKey, afterDelete) {

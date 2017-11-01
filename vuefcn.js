@@ -18,12 +18,16 @@ var globalStore = new Vue({
       email: null,
       profilePicture: null,
       profileLink: null
-    }
+    },
+    friendRequestsDisplay: []
   },
   computed: {
     showSignIn: function () {
       return !(this.fblogin || this.googlelogin);
     },
+    friendRequests: function () {
+      return this.savedData.friendRequests ? this.savedData.friendRequests : [];
+    }
   },
   watch: {
     initToast: function () {
@@ -39,6 +43,11 @@ var globalStore = new Vue({
         }, 2000);
       }
     },
+    friendRequests: function () {
+      getUsers(globalStore.savedData.friendRequests.map(frreq => frreq.userId), function (err, data) {
+        globalStore.friendRequestsDisplay = data.Responses[USERDATATABLE];
+      });
+    }
     // toastMessage: function () {
     //   showDebug(["toast-notification", this.toastMessage]);
     //   this.showToast = true;
@@ -1177,7 +1186,7 @@ Vue.component("site-menu", {
       return globalStore.idpData.profilePicture;
     },
     friendRequests: () => {
-      return globalStore.savedData.friendRequests;
+      return globalStore.friendRequestsDisplay;
     },
     idpDisplay: () => {
       return {

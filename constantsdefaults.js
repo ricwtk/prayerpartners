@@ -60,9 +60,9 @@ function newFriendRequest(userId) {
   }
 }
 
-function newFriend(id, name) {
+function newFriend(userId, name) {
   return {
-    id: id || null,
+    userId: userId || null,
     name: name || null,
     groups: [],
     items: []
