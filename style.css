@@ -136,8 +136,8 @@ button {
 
 .friend-invite {
   display: flex;
-  align-items: center;
-  flex-direction: row;
+  align-items: stretch;
+  flex-direction: column;
 }
 
 .friend-invite-identity {
@@ -171,6 +171,8 @@ button {
 .friend-invite-accept,
 .friend-invite-reject {
   padding: 5px;
+  flex-grow: 1;
+  text-align: center;
 }
 
 .fr-wrapper {

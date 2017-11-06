@@ -1135,7 +1135,6 @@ Vue.component("friend-request", {
           <div class="friend-invite-email">{{ user.email }}</div>
         </div>
       </div>
-      <div class="horizontal-sep"></div>
       <div class="friend-invite-actions">
         <div class="friend-invite-link decor-menuitem" @click="linkProfile"><i class="fa fa-external-link"></i></div>
         <div class="friend-invite-accept decor-menuitem" @click="acceptRequest"><i class="fa fa-plus"></i></div>

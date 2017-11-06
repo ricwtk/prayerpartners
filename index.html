@@ -71,7 +71,7 @@
       </div>
       <div class="section-group">
         <template v-for="friend in myFriendList">
-          <section-list v-bind:section-tooltip="friend.id" v-bind:section-title="friend.name" :section-type-data="{ sType: 'friend', data: friend }"
+          <section-list v-bind:section-tooltip="friend.userId" v-bind:section-title="friend.name" :section-type-data="{ sType: 'friend', data: friend }"
             v-bind:item-list="friend.items" @remove="removeFriend">
           </section-list>
         </template>
