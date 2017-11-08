@@ -19,12 +19,15 @@ function copyObj(object) {
 }
 
 // id generator
-function generateId(blacklistId) {
+function generateId(blacklistId, prefix, suffix) {
+  prefix = prefix || "";
+  suffix = suffix || "";
   var idChars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   var idLength = 10;
   do {
     var idResult = '';
     for (var i = idLength; i > 0; --i) idResult += idChars[Math.floor(Math.random() * idChars.length)];
+    idResult = prefix + idResult + suffix;
   } while (blacklistId.includes(idResult))
   return idResult;
 }

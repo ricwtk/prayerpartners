@@ -46,8 +46,8 @@
             :item-list="myUnshared">
           </section-list>
           <template v-for="friend in mySharedWithList">
-            <section-list v-bind:section-tooltip="friend.email" v-bind:section-title="friend.name" :section-type-data="{ sType: 'mine-friend', data: null }"
-              v-bind:item-list="friend.items">
+            <section-list :section-tooltip="null" :section-title="friend.name" :section-type-data="{ sType: 'mine-friend', data: friend }"
+              :item-list="friend.items">
             </section-list>
           </template>
         </template>
@@ -71,7 +71,7 @@
       </div>
       <div class="section-group">
         <template v-for="friend in myFriendList">
-          <section-list v-bind:section-tooltip="friend.userId" v-bind:section-title="friend.name" :section-type-data="{ sType: 'friend', data: friend }"
+          <section-list :section-tooltip="null" :section-title="friend.name" :section-type-data="{ sType: 'friend', data: friend }"
             v-bind:item-list="friend.items" @remove="removeFriend">
           </section-list>
         </template>
@@ -103,6 +103,7 @@
   <!-- <script src="send.js"></script>
   <script src="receive.js"></script> -->
   <!-- <script src="googleaccount.js"></script> -->
+  <script src="vueComponents/sectionList.js"></script>
   <script src="vuefcn.js"></script>
   <!-- <script async defer src="https://apis.google.com/js/api.js" onload="this.onload=function(){};loadApi()" onreadystatechange="if (this.readyState === 'complete') this.onload()"></script> -->
   <script src="https://apis.google.com/js/api.js"></script>

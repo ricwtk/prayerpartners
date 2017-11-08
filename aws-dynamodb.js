@@ -225,6 +225,19 @@ function sendAccept(toUserId) {
   saveDataToTable(ppaccept, USERACCEPTTABLE);
 }
 
+function updateAndSendSharedList(friendList) {
+  console.log("updateAndSendSharedList", friendList);
+  showToast("send updates of shared items to" + JSON.stringify(friendList));
+  // loop through friendlist
+  friendList.forEach(friend => {
+    // extract items shared with the friend
+    let items = globalStore.savedData.items.filter(item => item.sharedWith.includes(friend));
+    // send items to the friend
+    sendUpdates(friend, items);
+  });
+
+}
+
 function sendUpdates(toUserId, updates) {
   console.log("sendUpdates");
   let ppupdates = {
