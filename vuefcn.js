@@ -33,7 +33,7 @@ var globalStore = new Vue({
     initToast: function () {
       if (this.initToast) {
         this.initToast = false;
-        showDebug(["toast-notification", this.toastMessage]);
+        if (DEBUG) console.log("toast-notification", this.toastMessage);
         this.showToast = true;
         if (this.toastTimeoutFn !== null) {
           clearTimeout(this.toastTimeoutFn);
@@ -129,12 +129,12 @@ Vue.component('add-new-friend-section', {
       return globalStore.savedData.ui.sectionStyle;
     },
     searchFriendResults: function () {
-      console.log("updated friend list", copyObj(this.searchFriendList));
+      if (DEBUG) console.log("updated friend list", copyObj(this.searchFriendList));
       let result = [];
       if (this.searchFriendList.length < 1) {
         result.push("no search string");
       } else {
-        console.log("searchFriendResults", copyObj(this.searchFriendList));
+        if (DEBUG) console.log("searchFriendResults", copyObj(this.searchFriendList));
         this.searchFriendList.forEach((el, idx, arr) => {
           result.push([el.searchField, el.userId].join(" "));
         })
@@ -167,11 +167,11 @@ Vue.component('add-new-friend-section', {
       let friendId = globalStore.savedData.friends.map(friend => friend.userId);
       if (friendList.includes(this.searchFriendString)) {
         // this.addPrivateError = true;
-        console.log(this.searchFriendString + " is in existing friend list");
+        if (DEBUG) console.log(this.searchFriendString + " is in existing friend list");
         showToast(this.searchFriendString + " is in existing friend list");
       } else {
         addToFriend(generateId(friendId, "pri_"), this.searchFriendString);
-        console.log("Save '" + this.searchFriendString + "' to friend list");
+        if (DEBUG) console.log("Save '" + this.searchFriendString + "' to friend list");
         showToast("added " + this.searchFriendString + " as friend");
         this.searchFriendString = "";
         this.showOverlay = false;
@@ -184,13 +184,13 @@ Vue.component('add-new-friend-section', {
       // if in friends list, notify and do not send invite
       if (friendEmailList.includes(this.newFriendEmail)) {
         this.addEmailError = true;
-        showDebug([this.newFriendEmail + " is in existing friend list"]);
+        if (DEBUG) console.log(this.newFriendEmail + " is in existing friend list");
         return null;
       }
       // else, if in friend requests list, send accept email, remove friend request, add to friends list
       if (friendRequestList.includes(this.newFriendEmail)) {
         sendAccept(this.newFriendEmail).then(() => {
-          showDebug(["'" + this.newFriendEmail + "' is added to friend list"]);
+          if (DEBUG) console.log("'" + this.newFriendEmail + "' is added to friend list");
           acceptFriendRequest(this.newFriendEmail);
           updateToDatabase();
         })
@@ -198,14 +198,14 @@ Vue.component('add-new-friend-section', {
       }
       // else, send invite email
       sendInvite(this.newFriendEmail).then(() => {
-        showDebug(["Invite is sent to '" + this.newFriendEmail + "'"]);
+        if (DEBUG) console.log("Invite is sent to '" + this.newFriendEmail + "'");
         showToast("sent invite to " + this.newFriendEmail);
         this.newFriendEmail = '';
         this.showOverlay = false;
       }, () => {
         this.addEmailError = true;
         showToast("error adding " + this.newFriendEmail);
-        showDebug(["Error adding " + this.newFriendEmail]);
+        if (DEBUG) console.log("Error adding " + this.newFriendEmail);
       });
     },
     keyupListener: function (e) {
@@ -360,7 +360,7 @@ Vue.component('edit-item-overlay', {
         this.item.edit = true;
       }
       this.closeThis();
-      showDebug([copyObj(globalStore.savedData)]);
+      if (DEBUG) console.log(copyObj(globalStore.savedData));
     },
     closeThis: function () {
       this.$emit('close');
@@ -430,15 +430,15 @@ Vue.component('add-tag-overlay', {
     },
     updateTagList: function (detail) {
       if (detail.isChecked) {
-        showDebug(["tag list: added '" + detail.tag + "'"]);
+        if (DEBUG) console.log("tag list: added '" + detail.tag + "'");
         this.item.tags.push(detail.tag);
       } else {
-        showDebug(["tag list: removed '" + detail.tag + "'"]);
+        if (DEBUG) console.log("tag list: removed '" + detail.tag + "'");
         var idx = this.item.tags.findIndex(x => (x == detail.tag));
         this.item.tags.splice(idx, 1);
       }
       this.item.edit = true;
-      showDebug([copyObj(this.item)]);
+      if (DEBUG) console.log(copyObj(this.item));
     },
     addNewTag: function () {
       var newTags = this.newTags.split(',');
@@ -711,7 +711,7 @@ Vue.component("friend-request", {
       window.open(this.user.profileLink, "_blank");
     },
     acceptRequest: function () {
-      showDebug(["acceptRequest"]);
+      if (DEBUG) console.log("acceptRequest");
       // send notification to accept
       sendAccept(this.user.userId);
       // check if friend is already in friend list
@@ -724,12 +724,12 @@ Vue.component("friend-request", {
       updateToDatabase();
     },
     rejectRequest: function () {
-      showDebug(["rejectRequest"]);
+      if (DEBUG) console.log("rejectRequest");
       this.removeRequest();
       updateToDatabase();
     },
     removeRequest: function () {
-      console.log("removeRequest");
+      if (DEBUG) console.log("removeRequest");
       // remove request from my friendrequests list
       let indexOfRequest = globalStore.savedData.friendRequests.findIndex(friend => friend.userId == this.user.userId);
       globalStore.savedData.friendRequests.splice(indexOfRequest, 1);
@@ -850,7 +850,7 @@ Vue.component("site-menu", {
       window.open("./guide.html", "_blank");
     },
     saveUi: () => {
-      showDebug(["saveUi"]);
+      if (DEBUG) console.log("saveUi");
       updateToDatabase();
     },
   },
@@ -906,7 +906,7 @@ var app = new Vue({
           items: globalStore.savedData.items.filter(item => (item.sharedWith.includes(friend.userId)))
         };
       });
-      showDebug(["allFriends", allFriends]);
+      if (DEBUG) console.log("allFriends", allFriends);
       return allFriends;
     },
     myFriendList: function () {
@@ -930,7 +930,7 @@ var app = new Vue({
           items: globalStore.savedData.items.filter(item => (item.tags.includes(tag)))
         };
       });
-      showDebug(["allTags", copyObj(allTags)])
+      if (DEBUG) console.log("allTags", copyObj(allTags));
       return allTags;
     },
     myUntagged: function () {
@@ -940,7 +940,7 @@ var app = new Vue({
   methods: {
     removeFriend: function (friendId) {
       var indexOfFriend = globalStore.savedData.friends.findIndex((friend) => friend.friendId == friendId);
-      showDebug(["remove '" + globalStore.savedData.friends[indexOfFriend].name + "' (id: " + globalStore.savedData.friends[indexOfFriend].friendId + ")"]);
+      if (DEBUG) console.log("remove '" + globalStore.savedData.friends[indexOfFriend].name + "' (id: " + globalStore.savedData.friends[indexOfFriend].friendId + ")");
       globalStore.savedData.friends.splice(indexOfFriend, 1);
       updateToDatabase();
     },

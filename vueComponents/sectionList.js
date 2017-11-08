@@ -119,7 +119,6 @@ Vue.component('section-list', {
       return itemList.filter(item => (item.order == itemOrder))[0];
     },
     syncClonedWithOri: function () {
-      // showDebug(["syncClonedWithOri", copyObj(this.itemList)]);
       this.clonedItemList = copyObj(this.itemList);
       this.clonedItemList = this.clonedItemList.map(item => {
         return Object.assign({}, item, {
@@ -136,7 +135,7 @@ Vue.component('section-list', {
       this.edit = false;
     },
     moveUp: function (itemId) {
-      showDebug(["move '" + itemId + "' up"]);
+      if (DEBUG) console.log("move '" + itemId + "' up");
       var itemToMove = this.findItemById(this.itemList, itemId);
       if (itemToMove.order !== 0) {
         var itemToSwap = this.findItemByOrder(this.itemList, itemToMove.order - 1);
@@ -146,7 +145,7 @@ Vue.component('section-list', {
       this.syncClonedWithOri();
     },
     moveDown: function (itemId) {
-      showDebug(["move '" + itemId + "' down"]);
+      if (DEBUG) console.log("move '" + itemId + "' down");
       var itemToMove = this.findItemById(this.itemList, itemId);
       var lastOrder = Math.max(...this.itemList.filter(item => (item.order > -1)).map(item => item.order));
       if (itemToMove.order !== lastOrder) {
@@ -157,7 +156,7 @@ Vue.component('section-list', {
       this.syncClonedWithOri();
     },
     setArchived: function (itemId) {
-      showDebug(["archived '" + itemId + "'"]);
+      if (DEBUG) console.log("archived '" + itemId + "'");
       var itemToEdit = this.findItemById(this.clonedItemList, itemId);
       itemToEdit.archived = true;
       itemToEdit.edit = true;
@@ -166,19 +165,19 @@ Vue.component('section-list', {
       itemToEdit.sharedWith = [];
     },
     setUnarchived: function (itemId) {
-      showDebug(["unarchived '" + itemId + "'"])
+      if (DEBUG) console.log("unarchived '" + itemId + "'");
       var itemToEdit = this.findItemById(this.clonedItemList, itemId);
       itemToEdit.archived = false;
       itemToEdit.edit = true;
     },
     deleteItem: function (itemId) {
-      showDebug(["delete '" + itemId + "'"]);
+      if (DEBUG) console.log("delete '" + itemId + "'");
       var itemToEdit = this.findItemById(this.clonedItemList, itemId);
       itemToEdit.deleted = true;
       itemToEdit.edit = true;
     },
     removeFromList: function (itemId) {
-      showDebug(["remove '" + itemId + "' from list"]);
+      if (DEBUG) console.log("remove '" + itemId + "' from list");
       var itemToEdit = this.findItemById(this.clonedItemList, itemId);
       if (this.sectionTypeData.sType == 'mine-friend') {
         var idx = itemToEdit.sharedWith.findIndex(x => (x == this.sectionTooltip));
@@ -187,7 +186,7 @@ Vue.component('section-list', {
         var idx = itemToEdit.tags.findIndex(x => (x == this.sectionTitle));
         itemToEdit.tags.splice(idx, 1);
       }
-      showDebug([copyObj(itemToEdit)]);
+      if (DEBUG) console.log(copyObj(itemToEdit));
       itemToEdit.edit = true;
     },
     createNew: function (newItem) {
@@ -197,11 +196,11 @@ Vue.component('section-list', {
       if (this.sectionTypeData.sType == "friend") {
         newItem.owner = "mine";
       }
-      showDebug(["add item: ", copyObj(newItem)]);
+      if (DEBUG) console.log("add item: ", copyObj(newItem));
       this.clonedItemList.splice(this.clonedItemList.length, 1, newItem);
     },
     saveEdit: function () {
-      showDebug(["update list", copyObj(this.clonedItemList)]);
+      if (DEBUG) console.log("update list", copyObj(this.clonedItemList));
       var saveToItemList;
       switch (this.sectionTypeData.sType) {
         case "mine":
@@ -344,10 +343,10 @@ Vue.component('share-with-overlay', {
     },
     updateShareWithList: function (detail) {
       if (detail.isChecked) {
-        showDebug(["sharedWith list: added '" + detail.userId + "'"]);
+        if (DEBUG) console.log("sharedWith list: added '" + detail.userId + "'");
         this.item.sharedWith.push(detail.userId);
       } else {
-        showDebug(["sharedWith list: removed '" + detail.userId + "'"]);
+        if (DEBUG) console.log("sharedWith list: removed '" + detail.userId + "'");
         var idx = this.item.sharedWith.findIndex(x => (x == detail.userId));
         this.item.sharedWith.splice(idx, 1);
       }

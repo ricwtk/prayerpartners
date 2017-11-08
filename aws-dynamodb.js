@@ -1,5 +1,5 @@
 function afterFbLogin() {
-  console.log("afterFbLogin");
+  if (DEBUG) console.log("afterFbLogin");
   // Add the Facebook access token to the Cognito credentials login map.
   let authResp = FB.getAuthResponse();
   AWS.config.credentials = new AWS.WebIdentityCredentials({
@@ -12,9 +12,9 @@ function afterFbLogin() {
   },
     function (meResp) {
       if (meResp && !meResp.error) {
-        console.log(meResp);
+        if (DEBUG) console.log(meResp);
         FB.api("/me/picture", function (picResp) {
-          console.log(picResp);
+          if (DEBUG) console.log(picResp);
           globalStore.idpData = {
             idp: 'facebook',
             userId: 'fb_' + meResp.id,
@@ -37,14 +37,14 @@ function afterFbLogout() {
 }
 
 function afterGoogleLogin() {
-  console.log("afterGoogleLogin");
+  if (DEBUG) console.log("afterGoogleLogin");
   gapi.client.load('plus', 'v1', function () {
     let request = gapi.client.plus.people.get({
       'userId': 'me'
     });
     request.execute((meResp) => {
       new Promise((resolve, reject) => {
-        console.log("Logged in as", meResp.displayName);
+        if (DEBUG) console.log("Logged in as", meResp.displayName);
         globalStore.idpData = {
           idp: "google",
           userId: "g_" + meResp.id,
@@ -75,12 +75,12 @@ function afterLogIn() {
     // Obtain AWS credentials
     AWS.config.credentials.get(err => {
       if (err) {
-        console.log(err);
+        if (DEBUG) console.log(err);
         reject(err);
       }
     });
     resolve(true);
-  }).then(readData, console.log);
+  }).then(readData, if (DEBUG) console.log);
 }
 
 function readData() {
@@ -92,18 +92,18 @@ function readData() {
       "userId": globalStore.idpData.userId + ""
     }
   };
-  console.log(params);
+  if (DEBUG) console.log(params);
   docClient = new AWS.DynamoDB.DocumentClient();
   docClient.get(params, function (err, data) {
     if (err) {
-      console.log("Unable to read item: ", err);
+      if (DEBUG) console.log("Unable to read item: ", err);
     } else {
-      console.log("GetItem succeeded: ", copyObj(data));
+      if (DEBUG) console.log("GetItem succeeded: ", copyObj(data));
       if (Object.keys(data).length === 0 && data.constructor === Object) {
         createData();
         readData();
       } else {
-        console.log(copyObj(data));
+        if (DEBUG) console.log(copyObj(data));
         globalStore.savedData = data.Item;
         // update name, email, profilePicture, profileLink from idp if changed
         let checkItems = ["name", "email", "profilePicture", "profileLink"];
@@ -142,15 +142,15 @@ function saveDataToTable(data, table) {
 
   docClient.put(params, function (err, retdata) {
     if (err) {
-      console.log("Unable to add item: ", err);
+      if (DEBUG) console.log("Unable to add item: ", err);
     } else {
-      console.log("PutItem succeeded: ", retdata);
+      if (DEBUG) console.log("PutItem succeeded: ", retdata);
     }
   });
 }
 
 function searchUsers(queryStr, vueObj, resultVarStr) {
-  console.log("beforefounddata", vueObj[resultVarStr]);
+  if (DEBUG) console.log("beforefounddata", vueObj[resultVarStr]);
   let params = {
     TableName: USERDATATABLE,
     ProjectionExpression: [
@@ -171,7 +171,7 @@ function searchUsers(queryStr, vueObj, resultVarStr) {
   };
   docClient.scan(params, function (err, data) {
     if (err) {
-      console.log(err);
+      if (DEBUG) console.log(err);
       Vue.set(vueObj, resultVarStr, []);
     } else {
       Vue.set(vueObj, resultVarStr, data.Items);
@@ -200,14 +200,14 @@ function getUsers(userIds, afterGet) {
   };
   if (!afterGet) {
     afterGet = function (err, data) {
-      console.log("getUser", err, data);
+      if (DEBUG) console.log("getUser", err, data);
     };
   }
   docClient.batchGet(params, afterGet);
 }
 
 function sendRequest(toUserId) {
-  console.log("sendRequest");
+  if (DEBUG) console.log("sendRequest");
   let pprequest = {
     fromXToY: globalStore.savedData.userId + "_" + toUserId,
     to: toUserId,
@@ -217,7 +217,7 @@ function sendRequest(toUserId) {
 }
 
 function sendAccept(toUserId) {
-  console.log("sendAccept");
+  if (DEBUG) console.log("sendAccept");
   let ppaccept = {
     fromXToY: globalStore.savedData.userId + "_" + toUserId,
     to: toUserId
@@ -226,7 +226,7 @@ function sendAccept(toUserId) {
 }
 
 function updateAndSendSharedList(friendList) {
-  console.log("updateAndSendSharedList", friendList);
+  if (DEBUG) console.log("updateAndSendSharedList", friendList);
   showToast("send updates of shared items to" + JSON.stringify(friendList));
   // loop through friendlist
   friendList.forEach(friend => {
@@ -239,7 +239,7 @@ function updateAndSendSharedList(friendList) {
 }
 
 function sendUpdates(toUserId, updates) {
-  console.log("sendUpdates");
+  if (DEBUG) console.log("sendUpdates");
   let ppupdates = {
     fromXToY: globalStore.savedData.userId + "_" + toUserId,
     to: toUserId,
@@ -250,9 +250,9 @@ function sendUpdates(toUserId, updates) {
 
 function retrieveRequests() {
   retrieve(USERREQUESTTABLE, function (err, data) {
-    console.log("retrieveRequests", err, data);
+    if (DEBUG) console.log("retrieveRequests", err, data);
     if (err) {
-      console.log(err);
+      if (DEBUG) console.log(err);
     } else {
       let requestAdded = false;
       data.Items.forEach((item) => {
@@ -270,9 +270,9 @@ function retrieveRequests() {
 
 function retrieveAccepts() {
   retrieve(USERACCEPTTABLE, function (err, data) {
-    console.log("retrieveAccepts", err, data);
+    if (DEBUG) console.log("retrieveAccepts", err, data);
     if (err) {
-      console.log(err);
+      if (DEBUG) console.log(err);
     } else {
       let acceptAdded = false;
       data.Items.forEach((item) => {
@@ -306,7 +306,7 @@ function retrieve(table, afterRetrieve) {
   };
   if (!afterRetrieve) {
     afterRetrieve = function (err, data) {
-      console.log(table, err, data);
+      if (DEBUG) console.log(table, err, data);
     };
   }
   docClient.query(params, afterRetrieve);
@@ -316,9 +316,9 @@ function removeRequests(requests) {
   requests.map((req) => {
     remove(USERREQUESTTABLE, req.fromXToY, (err, data) => {
       if (err) {
-        console.log(err);
+        if (DEBUG) console.log(err);
       } else {
-        console.log("Request deleted", data);
+        if (DEBUG) console.log("Request deleted", data);
       }
     });
   });
@@ -328,9 +328,9 @@ function removeAccepts(accepts) {
   accepts.map((acpt) => {
     remove(USERACCEPTTABLE, acpt.fromXToY, (err, data) => {
       if (err) {
-        console.log(err);
+        if (DEBUG) console.log(err);
       } else {
-        console.log("Accept deleted", data);
+        if (DEBUG) console.log("Accept deleted", data);
       }
     });
   });
@@ -345,7 +345,7 @@ function remove(table, primaryKey, afterDelete) {
   };
   if (!afterDelete) {
     afterDelete = function (err, data) {
-      console.log(err, data);
+      if (DEBUG) console.log(err, data);
     }
   }
   docClient.delete(params, afterDelete);
