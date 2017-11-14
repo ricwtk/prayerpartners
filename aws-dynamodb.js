@@ -80,7 +80,7 @@ function afterLogIn() {
       }
     });
     resolve(true);
-  }).then(readData, if (DEBUG) console.log);
+  }).then(readData, console.log);
 }
 
 function readData() {

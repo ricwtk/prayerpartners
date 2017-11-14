@@ -395,3 +395,80 @@ Vue.component('single-friend-to-share', {
     </span>
   `
 });
+
+Vue.component('single-item', {
+  props: ["item", "edit", "allowOrder", "editActions"],
+  data: function () {
+    return {
+      showDesc: false,
+      showShareWith: false,
+      showEdit: false,
+      showTagList: false
+    }
+  },
+  methods: {
+    toggleDesc: function () {
+      this.showDesc = !this.showDesc;
+    },
+    moveUp: function () {
+      this.$emit('moveUp', this.item.itemId);
+    },
+    moveDown: function () {
+      this.$emit('moveDown', this.item.itemId);
+    },
+    setArchived: function () {
+      this.$emit('setArchived', this.item.itemId);
+    },
+    setUnarchived: function () {
+      this.$emit('setUnarchived', this.item.itemId);
+    },
+    deleteItem: function () {
+      this.$emit('deleteItem', this.item.itemId);
+    },
+    removeFromList: function () {
+      this.$emit('removeFromList', this.item.itemId);
+    }
+  },
+  template: `
+    <div class="item">
+      <div class="item-head">
+        <span class="item-short-desc" @click="toggleDesc">{{ item.item }}</span>
+        <span class="item-actions">
+          <template v-if="edit">
+            <template v-for="action in editActions">
+              <span v-if="action === 'e'" class="item-archive item-menu decor-itemmenu" title="Edit" @click="showEdit=true"><i class="fa fa-pencil"></i></span>
+              <span v-else-if="action === 'u'" class="item-archive item-menu decor-itemmenu" title="Unarchive" @click="setUnarchived"><i class="fa fa-upload"></i></span>
+              <span v-else-if="action === 'a'" class="item-archive item-menu decor-itemmenu" title="Archive" @click="setArchived"><i class="fa fa-download"></i></span> <!--fa-angle-double-right-->
+              <span v-else-if="action === 'r'" class="item-delete item-menu decor-itemmenu" title="Remove from list" @click="removeFromList"><i class="fa fa-outdent"></i></span>
+              <span v-else-if="action === 'd'" class="item-delete item-menu decor-itemmenu" title="Delete" @click="deleteItem"><i class="fa fa-times"></i></span>
+              <span v-else-if="action === 's'" class="item-share item-menu decor-itemmenu" title="Share" @click="showShareWith=true"><i class="fa fa-share-alt"></i></span>
+              <span v-else-if="action === 't'" class="item-share item-menu decor-itemmenu" title="Tag" @click="showTagList=true"><i class="fa fa-tags"></i></span>
+            </template>
+          </template>
+          <template v-else-if="allowOrder">
+            <span class="item-archive item-menu decor-itemmenu" title="Up" @click="moveUp"><i class="fa fa-chevron-up"></i></span>
+            <span class="item-delete item-menu decor-itemmenu" title="Down" @click="moveDown"><i class="fa fa-chevron-down"></i></span>
+          </template>
+        </span>
+      </div>
+      <div v-if="showDesc" class="item-long-desc">{{ item.desc }}</div>
+      <edit-item-overlay 
+        v-if="showEdit" 
+        action="edit"
+        :item="item"
+        sectionType=""
+        @close="showEdit=false">
+      </edit-item-overlay>
+      <share-with-overlay 
+        v-if="showShareWith" 
+        @close="showShareWith=false"
+        :item="item">
+      </share-with-overlay>
+      <add-tag-overlay 
+        v-if="showTagList" 
+        @close="showTagList=false"
+        :item="item">
+      </add-tag-overlay>
+    </div>
+  `
+});
