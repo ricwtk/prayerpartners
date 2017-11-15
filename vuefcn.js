@@ -111,69 +111,6 @@ Vue.component('about-overlay', {
   `
 });
 
-Vue.component('edit-item-overlay', {
-  props: ["item", "action", "sectionType"], // action = [new, edit]
-  data: function () {
-    return {
-      newItem: null,
-      newItemTitle: "",
-      newItemDesc: "",
-      edited: false
-    }
-  },
-  created: function () {
-    if (this.action == "new") {
-      if (this.sectionType == "mine") {
-        this.newItem = newMineItem();
-      } else { // if (this.sectionType == "friend")
-        this.newItem = newFriendItem();
-      }
-      this.newItem = Object.assign({}, this.newItem, {
-        edit: false,
-        deleted: false
-      });
-    } else {
-      this.newItemTitle = this.item.item;
-      this.newItemDesc = this.item.desc;
-    }
-  },
-  methods: {
-    saveThis: function () {
-      if (this.action == "new") {
-        this.newItem.item = this.newItemTitle;
-        this.newItem.desc = this.newItemDesc;
-        this.newItem.edit = true;
-        this.$emit('createNew', this.newItem);
-      } else {
-        this.item.item = this.newItemTitle;
-        this.item.desc = this.newItemDesc;
-        this.item.edit = true;
-      }
-      this.closeThis();
-      if (DEBUG) console.log(copyObj(globalStore.savedData));
-    },
-    closeThis: function () {
-      this.$emit('close');
-    }
-  },
-  template: `
-    <div class="edit-item-overlay decor-edititemoverlay">
-      <div class="edit-item-wrapper">
-        <div class="edit-item-overlay-label">Prayer item:</div>
-        <input class="overlay-input" type="text" v-bind:value="item.item ? item.item:''" v-model="newItemTitle">
-        <div class="sep"></div>
-        <div class="edit-item-overlay-label">Long description:</div>
-        <textarea class="edit-item-content" rows="10" v-model="newItemDesc">{{ item.desc ? item.desc:'' }}</textarea>
-        <div class="sep"></div>
-        <div class="edit-item-overlay-actions">
-          <button type="button" @click="saveThis"><i class="fa fa-save"></i> Save</button>
-          <button type="button" @click="closeThis"><i class="fa fa-undo"></i> Cancel</button>
-        </div>
-      </div>
-    </div>
-  `
-});
-
 Vue.component('single-tag', {
   props: ["isChecked", "tag"],
   data: function () {
