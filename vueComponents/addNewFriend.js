@@ -61,7 +61,7 @@ Vue.component('add-new-friend-section', {
         if (DEBUG) console.log("Save '" + this.searchFriendString + "' to friend list");
         showToast("added " + this.searchFriendString + " as friend");
         this.searchFriendString = "";
-        this.showOverlay = false;
+        this.exitOverlay();
         updateToDatabase();
       }
     },
@@ -88,7 +88,7 @@ Vue.component('add-new-friend-section', {
         if (DEBUG) console.log("Invite is sent to '" + this.newFriendEmail + "'");
         showToast("sent invite to " + this.newFriendEmail);
         this.newFriendEmail = '';
-        this.showOverlay = false;
+        this.exitOverlay();
       }, () => {
         this.addEmailError = true;
         showToast("error adding " + this.newFriendEmail);
@@ -96,7 +96,11 @@ Vue.component('add-new-friend-section', {
       });
     },
     keyupListener: function (e) {
-      if (e.keyCode == 27) this.showOverlay = false; // escape
+      if (e.keyCode == 27) this.exitOverlay(); // escape
+    },
+    exitOverlay: function () {
+      this.showOverlay = false;
+      this.searchFriendString = "";
     }
   },
   template: `
@@ -124,7 +128,7 @@ Vue.component('add-new-friend-section', {
             </template>
           </div>
           <div class="sep"></div>
-          <button type="button" @click="showOverlay=false" style="width:100%"><i class="fa fa-times"></i> Close</button>
+          <button type="button" @click="exitOverlay" style="width:100%"><i class="fa fa-times"></i> Close</button>
           <div class="sep"></div>
         </div>
       </div>
