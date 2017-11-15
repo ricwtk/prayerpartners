@@ -142,6 +142,7 @@ Vue.component('section-list', {
         itemToSwap.order += 1;
         itemToMove.order -= 1;
       }
+      updateToDatabase();
       this.syncClonedWithOri();
     },
     moveDown: function (itemId) {
@@ -153,6 +154,7 @@ Vue.component('section-list', {
         itemToSwap.order -= 1;
         itemToMove.order += 1;
       }
+      updateToDatabase();
       this.syncClonedWithOri();
     },
     setArchived: function (itemId) {

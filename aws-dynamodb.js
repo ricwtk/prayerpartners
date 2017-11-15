@@ -313,13 +313,41 @@ function retrieveUpdates() {
     if (err) {
       if (DEBUG) console.log(err);
     } else {
-      // check if sent by a friend, discard if not
-      
-      // remove items with itemId not existed in the update items
-      // edit items with matching itemId
-      // clean orders
-      // add items with no matching itemId
-
+      data.Items.map(updates => {
+        let friend = globalStore.savedData.friends.find(fr => fr.userId == updates.from);
+        if (friend !== undefined) {
+          // remove items with itemId not existed in the update items
+          let allIds = updates.updates.map(update => update.itemId);
+          friend.items = friend.items.filter(item => allIds.includes(item.itemId) || item.owner == "mine");
+          // edit items with matching itemId
+          friend.items.forEach(item => {
+            if (item.owner != "mine") {
+              let newItem = updates.updates.find(it => it.itemId == item.itemId);
+              item.item = newItem.item;
+              item.desc = newItem.desc;
+            }
+          });
+          // clean orders
+          friend.items.sort(function (a, b) {
+            return a.order - b.order;
+          });
+          friend.items.forEach((it, idx, arr) => {
+            it.order = idx;
+          });
+          // add items with no matching itemId
+          let idsInFriendItems = friend.items.filter(item => item.owner != "mine").map(item => item.itemId);
+          let thisOrder = friend.items.length;
+          updates.updates
+            .filter(item => !idsInFriendItems.includes(item.itemId))
+            .forEach(item => {
+              idsInFriendItems = friend.items.filter(item => item.owner != "mine").map(item => item.itemId);
+              friend.items.push(newFriendItem(item.itemId, item.item, item.desc, "friend", thisOrder));
+              thisOrder += 1;
+            });
+          updateToDatabase();
+        }
+      });
+      removeUpdates(data.Items);
     }
   });
 }
@@ -363,6 +391,18 @@ function removeAccepts(accepts) {
         if (DEBUG) console.log(err);
       } else {
         if (DEBUG) console.log("Accept deleted", data);
+      }
+    });
+  });
+}
+
+function removeUpdates(updates) {
+  updates.map((updt) => {
+    remove(USERUPDATESTABLE, updt.fromXToY, (err, data) => {
+      if (err) {
+        if (DEBUG) console.log(err);
+      } else {
+        if (DEBUG) console.log("Update deleted", data);
       }
     });
   });

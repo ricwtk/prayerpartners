@@ -68,13 +68,13 @@ function newFriend(userId, name) {
   }
 }
 
-function newFriendItem(id, title, desc, owner) {
+function newFriendItem(id, title, desc, owner, order) {
   return {
     itemId: id || generateId([]),
     item: title || null,
     desc: desc || null,
     owner: owner || "mine",
-    order: null
+    order: order || 0
   }
 }
 
