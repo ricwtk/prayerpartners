@@ -233,7 +233,7 @@ Vue.component('add-new-friend-section', {
             No search string
             </div>
             <template v-else v-for="friend in searchFriendList">
-              <a-friend :friendObj="friend"></a-friend>
+              <a-user :userObj="friend"></a-user>
             </template>
           </div>
           <div class="sep"></div>
@@ -262,8 +262,8 @@ Vue.component('add-new-friend-section', {
   `
 });
 
-Vue.component('a-friend', {
-  props: ["friendObj"],
+Vue.component('a-user', {
+  props: ["userObj"],
   data: function () {
     return {
       nameLimit: 12
@@ -273,9 +273,14 @@ Vue.component('a-friend', {
     idpClass: function () {
       return {
         fa: true,
-        "fa-google-plus-official": this.friendObj.userId.startsWith("g"),
-        "fa-facebook-official": this.friendObj.userId.startsWith("fb")
+        "fa-google-plus-official": this.userObj.userId.startsWith("g"),
+        "fa-facebook-official": this.userObj.userId.startsWith("fb")
       };
+    },
+    isFriend: function() {
+      let friendIds = globalStore.savedData.friends.map(fr => fr.userId);
+      console.log(friendIds);
+      return friendIds.includes(this.userObj.userId);
     }
   },
   methods: {
@@ -292,8 +297,8 @@ Vue.component('a-friend', {
       this.nameLimit = el.clientWidth / (fsize * .75);
     },
     addUser: function () {
-      sendRequest(this.friendObj.userId);
-      showToast("Sent friend request to " + this.friendObj.name);
+      sendRequest(this.userObj.userId);
+      showToast("Sent friend request to " + this.userObj.name);
     }
   },
   mounted: function () {
@@ -302,19 +307,20 @@ Vue.component('a-friend', {
   },
   template: `
     <div class="fr-wrapper">
-      <div class="fr-image"><img :src="friendObj.profilePicture"></img></div>
+      <div class="fr-image"><img :src="userObj.profilePicture"></img></div>
       <div class="horizontal-sep"></div>
       <div class="fr-label">
-        <div class="fr-name" :title="friendObj.name">
+        <div class="fr-name" :title="userObj.name">
           <span :class="idpClass"></span>
-          {{ limitString(friendObj.name) }}
+          {{ limitString(userObj.name) }}
         </div>
-        <div class="fr-email" :title="friendObj.email">
-          {{ limitString(friendObj.email) }}
+        <div class="fr-email" :title="userObj.email">
+          {{ limitString(userObj.email) }}
         </div>
         <div class="sep"></div>
         <div class="fr-actions">
-          <button type="button" @click="addUser"><i class="fa fa-plus"></i> Add</button>
+          <button v-if="isFriend" type="button" disabled><i class="fa fa-user"></i>Connected</button>
+          <button v-else type="button" @click="addUser"><i class="fa fa-plus"></i> Add</button>
         </div>
       </div>
     </div>

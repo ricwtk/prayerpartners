@@ -161,12 +161,13 @@ function searchUsers(queryStr, vueObj, resultVarStr) {
       "profilePicture",
       "searchField"
     ],
-    FilterExpression: "contains(searchField, :name)",
+    FilterExpression: "contains(searchField, :name) and userId <> :myId",
     ExpressionAttributeNames: {
       "#name": "name"
     },
     ExpressionAttributeValues: {
-      ":name": queryStr.toLowerCase()
+      ":name": queryStr.toLowerCase(),
+      ":myId": globalStore.savedData.userId
     },
   };
   docClient.scan(params, function (err, data) {
