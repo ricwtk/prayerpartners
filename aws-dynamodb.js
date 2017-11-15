@@ -245,11 +245,13 @@ function sendUpdates(toUserId, updates) {
     fromXToY: globalStore.savedData.userId + "_" + toUserId,
     from: globalStore.savedData.userId,
     to: toUserId,
-    updates: {
-      item: updates.item,
-      itemId: updates.itemId,
-      desc: updates.desc
-    }
+    updates: updates.map(upd => {
+      return {
+        item: upd.item,
+        itemId: upd.itemId,
+        desc: upd.desc
+      }
+    })
   };
   saveDataToTable(ppupdates, USERUPDATESTABLE);
 }
