@@ -219,7 +219,8 @@ function sendAccept(toUserId) {
   if (DEBUG) console.log("sendAccept");
   let ppaccept = {
     fromXToY: globalStore.savedData.userId + "_" + toUserId,
-    to: toUserId
+    to: toUserId,
+    from: globalStore.savedData.userId
   };
   saveDataToTable(ppaccept, USERACCEPTTABLE);
 }
@@ -274,8 +275,8 @@ function retrieveRequests() {
       });
       if (requestAdded) updateToDatabase();
       removeRequests(data.Items);
+      retrieveAccepts();
     }
-    retrieveAccepts();
   });
 }
 
@@ -285,18 +286,24 @@ function retrieveAccepts() {
     if (err) {
       if (DEBUG) console.log(err);
     } else {
-      let acceptAdded = false;
-      data.Items.forEach((item) => {
-        let fr = newFriend(item.from);
-        if (globalStore.savedData.friends.findIndex((fReq) => fReq.userId == fr.userId) == -1) {
-          globalStore.savedData.friends.push(fr);
-          acceptAdded = true;
-        }
-      });
-      if (acceptAdded) updateToDatabase();
+      let allFriendIds = globalStore.savedData.friends.map(fr => fr.userId);
+      let friendToAdd = data.Items.filter(item => !allFriendIds.includes(item.from)).map(it => it.from);
       removeAccepts(data.Items);
+      if (friendToAdd.length > 0) {
+        getUsers(friendToAdd, (err, data) => {
+          let acceptAdded = false;
+          data.Responses[USERDATATABLE].forEach(user => {
+            let fr = newFriend(user.userId, user.name);
+            globalStore.savedData.friends.push(fr);
+            acceptAdded = true;
+          });
+          if (acceptAdded) updateToDatabase();
+          retrieveUpdates();
+        });
+      } else {
+        retrieveUpdates();
+      }
     }
-    retrieveUpdates();
   });
 }
 
