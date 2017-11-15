@@ -445,6 +445,15 @@ Vue.component('single-friend-to-share', {
   data: function () {
     return {}
   },
+  computed: {
+    idpClass: function () {
+      return {
+        fa: true,
+        "fa-google-plus-official": this.friend.userId.startsWith("g"),
+        "fa-facebook-official": this.friend.userId.startsWith("fb")
+      };
+    },
+  },
   methods: {
     toggleState: function () {
       this.$emit('change', {
@@ -455,7 +464,7 @@ Vue.component('single-friend-to-share', {
   },
   template: `
     <span class="friend-item" :title="friend.userId">
-      <input type="checkbox" :checked="isChecked" @change="toggleState"><span class="friend-item-name">{{ friend.name }}</span>
+      <input type="checkbox" :checked="isChecked" @change="toggleState"><span class="friend-item-name"><i :class="idpClass"></i> {{ friend.name }}</span>
     </span>
   `
 });
@@ -480,17 +489,44 @@ Vue.component('single-item', {
     moveDown: function () {
       this.$emit('moveDown', this.item.itemId);
     },
+    editItem: function () {
+      this.showEdit = true;
+    },
     setArchived: function () {
       this.$emit('setArchived', this.item.itemId);
+      this.remindSave("Archive");
     },
     setUnarchived: function () {
       this.$emit('setUnarchived', this.item.itemId);
+      this.remindSave("Unarchive");
     },
     deleteItem: function () {
       this.$emit('deleteItem', this.item.itemId);
+      this.remindSave("Delete");
     },
     removeFromList: function () {
       this.$emit('removeFromList', this.item.itemId);
+      this.remindSave("Remove from list");
+    },
+    editShareWith: function () {
+      this.showShareWith = true;
+    },
+    editTags: function () {
+      this.showTagList = true;
+    },
+    remindSave: function (action) {
+      showToast(action + " is temporary until saved");
+    }
+  },
+  watch: {
+    showEdit: function () {
+      if (!this.showEdit) this.remindSave("Edit");
+    },
+    showShareWith: function () {
+      if (!this.showShareWith) this.remindSave("Sharing edit");
+    },
+    showTagList: function () {
+      if (!this.showTagList) this.remindSave("Tag edit");
     }
   },
   template: `
@@ -500,13 +536,13 @@ Vue.component('single-item', {
         <span class="item-actions">
           <template v-if="edit">
             <template v-for="action in editActions">
-              <span v-if="action === 'e'" class="item-archive item-menu decor-itemmenu" title="Edit" @click="showEdit=true"><i class="fa fa-pencil"></i></span>
+              <span v-if="action === 'e'" class="item-archive item-menu decor-itemmenu" title="Edit" @click="editItem"><i class="fa fa-pencil"></i></span>
               <span v-else-if="action === 'u'" class="item-archive item-menu decor-itemmenu" title="Unarchive" @click="setUnarchived"><i class="fa fa-upload"></i></span>
               <span v-else-if="action === 'a'" class="item-archive item-menu decor-itemmenu" title="Archive" @click="setArchived"><i class="fa fa-download"></i></span> <!--fa-angle-double-right-->
               <span v-else-if="action === 'r'" class="item-delete item-menu decor-itemmenu" title="Remove from list" @click="removeFromList"><i class="fa fa-outdent"></i></span>
               <span v-else-if="action === 'd'" class="item-delete item-menu decor-itemmenu" title="Delete" @click="deleteItem"><i class="fa fa-times"></i></span>
-              <span v-else-if="action === 's'" class="item-share item-menu decor-itemmenu" title="Share" @click="showShareWith=true"><i class="fa fa-share-alt"></i></span>
-              <span v-else-if="action === 't'" class="item-share item-menu decor-itemmenu" title="Tag" @click="showTagList=true"><i class="fa fa-tags"></i></span>
+              <span v-else-if="action === 's'" class="item-share item-menu decor-itemmenu" title="Share" @click="editShareWith"><i class="fa fa-share-alt"></i></span>
+              <span v-else-if="action === 't'" class="item-share item-menu decor-itemmenu" title="Tag" @click="editTags"><i class="fa fa-tags"></i></span>
             </template>
           </template>
           <template v-else-if="allowOrder">

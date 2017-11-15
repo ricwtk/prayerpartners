@@ -61,8 +61,7 @@ Vue.component('toast-notification', {
   },
   template: `
     <div class="toast decor-toast">
-      <div class="toast-content decor-toast-content">
-        {{ toastMessage }}
+      <div class="toast-content decor-toast-content" v-html="toastMessage">
       </div>
     </div>
   `
