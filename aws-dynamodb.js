@@ -115,9 +115,7 @@ function readData() {
           }
         });
         if (detailChanged) updateToDatabase(); // update database
-        retrieveRequests();
-        retrieveAccepts();
-        retrieveUpdates();
+        retrieveRequestsAcceptsUpdates();
       }
     }
   });
@@ -256,6 +254,10 @@ function sendUpdates(toUserId, updates) {
   saveDataToTable(ppupdates, USERUPDATESTABLE);
 }
 
+function retrieveRequestsAcceptsUpdates() {
+  retrieveRequests();
+}
+
 function retrieveRequests() {
   retrieve(USERREQUESTTABLE, function (err, data) {
     if (DEBUG) console.log("retrieveRequests", err, data);
@@ -273,6 +275,7 @@ function retrieveRequests() {
       if (requestAdded) updateToDatabase();
       removeRequests(data.Items);
     }
+    retrieveAccepts();
   });
 }
 
@@ -293,6 +296,7 @@ function retrieveAccepts() {
       if (acceptAdded) updateToDatabase();
       removeAccepts(data.Items);
     }
+    retrieveUpdates();
   });
 }
 
@@ -303,6 +307,7 @@ function retrieveUpdates() {
       if (DEBUG) console.log(err);
     } else {
       // check if sent by a friend, discard if not
+      
       // remove items with itemId not existed in the update items
       // edit items with matching itemId
       // clean orders
