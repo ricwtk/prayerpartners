@@ -243,8 +243,13 @@ function sendUpdates(toUserId, updates) {
   if (DEBUG) console.log("sendUpdates");
   let ppupdates = {
     fromXToY: globalStore.savedData.userId + "_" + toUserId,
+    from: globalStore.savedData.userId,
     to: toUserId,
-    updates: updates
+    updates: {
+      item: updates.item,
+      itemId: updates.itemId,
+      desc: updates.desc
+    }
   };
   saveDataToTable(ppupdates, USERUPDATESTABLE);
 }
@@ -290,7 +295,19 @@ function retrieveAccepts() {
 }
 
 function retrieveUpdates() {
-  retrieve(USERUPDATESTABLE);
+  retrieve(USERUPDATESTABLE, function (err, data) {
+    if (DEBUG) console.log("retrieveUpdates", err, data);
+    if (err) {
+      if (DEBUG) console.log(err);
+    } else {
+      // check if sent by a friend, discard if not
+      // remove items with itemId not existed in the update items
+      // edit items with matching itemId
+      // clean orders
+      // add items with no matching itemId
+
+    }
+  });
 }
 
 function retrieve(table, afterRetrieve) {
