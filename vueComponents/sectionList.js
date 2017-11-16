@@ -479,6 +479,16 @@ Vue.component('single-item', {
       showTagList: false
     }
   },
+  computed: {
+    caret: function () {
+      return {
+        fa: true,
+        "fa-minus-square": this.showDesc,
+        "fa-plus-square": !this.showDesc,
+        faded: true
+      }
+    }
+  },
   methods: {
     toggleDesc: function () {
       this.showDesc = !this.showDesc;
@@ -532,7 +542,7 @@ Vue.component('single-item', {
   template: `
     <div class="item">
       <div class="item-head">
-        <span class="item-short-desc" @click="toggleDesc">{{ item.item }}</span>
+        <span class="item-short-desc" @click="toggleDesc"><i :class="caret"></i> {{ item.item }}</span>
         <span class="item-actions">
           <template v-if="edit">
             <template v-for="action in editActions">

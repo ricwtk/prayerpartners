@@ -193,7 +193,7 @@ Vue.component('a-user', {
         </div>
         <div class="sep"></div>
         <div class="fr-actions">
-          <button v-if="isFriend" type="button" disabled><i class="fa fa-user"></i>Connected</button>
+          <button v-if="isFriend" type="button" disabled><i class="fa fa-user"></i> Connected</button>
           <button v-else type="button" @click="addUser"><i class="fa fa-plus"></i> Add</button>
         </div>
       </div>

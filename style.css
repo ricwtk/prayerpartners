@@ -658,3 +658,8 @@ button:hover {
 #important-notice:hover {
   opacity: 1;
 }
+
+.faded {
+  color: #eeeeee;
+  font-size: 80%;
+}
