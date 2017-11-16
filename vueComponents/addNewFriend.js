@@ -153,7 +153,6 @@ Vue.component('a-user', {
     },
     isFriend: function() {
       let friendIds = globalStore.savedData.friends.map(fr => fr.userId);
-      console.log(friendIds);
       return friendIds.includes(this.userObj.userId);
     }
   },

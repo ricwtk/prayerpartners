@@ -87,3 +87,11 @@ function getSearchField(name, email) {
   if (email) sf += email.toLowerCase();
   return sf;
 }
+
+function limitStr(string, number) {
+  if (string.length <= number) {
+    return string;
+  } else {
+    return string.substring(0, number) + "...";
+  }
+}

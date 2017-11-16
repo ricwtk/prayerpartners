@@ -146,6 +146,12 @@ Vue.component('section-list', {
         return a.order - b.order;
       });
     },
+    sectionTitleOnClick: function() {
+      if (this.sectionTitleClass.clickable) {
+        globalStore.userShowInOverlay = this.sectionTypeData.data.userId;
+        globalStore.showFriend = true;
+      }
+    },
     removeSection: function () {
       this.$emit("remove", this.sectionTypeData.data.friendId);
       this.edit = false;
@@ -306,7 +312,7 @@ Vue.component('section-list', {
             @close="showEditName = false">
           </edit-name-overlay>
         </div>
-        <div :class="sectionTitleClass" v-bind:title="sectionTooltip"><i :class=idpClass></i> {{ sectionTitle }}</div>
+        <div :class="sectionTitleClass" v-bind:title="sectionTooltip" @click="sectionTitleOnClick"><i :class=idpClass></i> {{ sectionTitle }}</div>
         <div class="section-action decor-sectionaction">
           <template v-if="edit">
             <span v-if="allowRemove" @click="removeSection" class="section-action-item decor-sectionactionitem" title="Remove"><i class="fa fa-user-times"></i></span>

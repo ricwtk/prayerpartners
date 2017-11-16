@@ -19,7 +19,10 @@ var globalStore = new Vue({
       profilePicture: null,
       profileLink: null
     },
-    friendRequestsDisplay: []
+    friendRequestsDisplay: [],
+    userShowInOverlay: "",
+    userObjShowInOverlay: {},
+    showFriend: false
   },
   computed: {
     showSignIn: function () {
@@ -50,6 +53,13 @@ var globalStore = new Vue({
         });
       } else {
         globalStore.friendRequestsDisplay = [];
+      }
+    },
+    userShowInOverlay: function() {
+      if (this.userShowInOverlay.startsWith("g") || this.userShowInOverlay.startsWith("fb")) {
+        getUsers([this.userShowInOverlay], (err, data) => {
+          this.userObjShowInOverlay = data.Responses[USERDATATABLE][0];
+        });
       }
     }
   }
@@ -629,6 +639,7 @@ var app_overlay = new Vue({
       updateToDatabase();
     },
     showEditProfile: () => globalStore.showEditProfile,
+    showFriend: () => globalStore.showFriend
   },
   methods: {
     closeEditProfile: () => {
@@ -636,6 +647,9 @@ var app_overlay = new Vue({
     },
     closeAbout: () => {
       globalStore.showAbout = false;
+    },
+    closeFriend: () => {
+      globalStore.showFriend = false;
     },
   }
 });
