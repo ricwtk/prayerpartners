@@ -23,7 +23,6 @@ Vue.component('section-list', {
       };
     },
     sectionTitleClass: function() {
-      console.log(copyObj(this.sectionTypeData));
       let clickable = false;
       if (Array("friend", "mine-friend").includes(this.sectionTypeData.sType)) {
         if (this.sectionTypeData.data) {
