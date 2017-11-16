@@ -22,6 +22,23 @@ Vue.component('section-list', {
         "fa-facebook-official": user.userId.startsWith("fb")
       };
     },
+    sectionTitleClass: function() {
+      console.log(copyObj(this.sectionTypeData));
+      let clickable = false;
+      if (Array("friend", "mine-friend").includes(this.sectionTypeData.sType)) {
+        if (this.sectionTypeData.data) {
+          let userId = this.sectionTypeData.data.userId;
+          if (userId.startsWith("g") || userId.startsWith("fb")) {
+            clickable = true;
+          }
+        }
+      }
+      return {
+        "section-title": true,
+        "decor-sectiontitle": true,
+        "clickable": clickable
+      }
+    },
     allowOrder: function () {
       switch (this.sectionTypeData.sType) {
         case "mine":
@@ -290,7 +307,7 @@ Vue.component('section-list', {
             @close="showEditName = false">
           </edit-name-overlay>
         </div>
-        <div class="section-title decor-sectiontitle" v-bind:title="sectionTooltip"><i :class=idpClass></i> {{ sectionTitle }}</div>
+        <div :class="sectionTitleClass" v-bind:title="sectionTooltip"><i :class=idpClass></i> {{ sectionTitle }}</div>
         <div class="section-action decor-sectionaction">
           <template v-if="edit">
             <span v-if="allowRemove" @click="removeSection" class="section-action-item decor-sectionactionitem" title="Remove"><i class="fa fa-user-times"></i></span>
@@ -485,7 +502,7 @@ Vue.component('single-item', {
         fa: true,
         "fa-minus-square": this.showDesc,
         "fa-plus-square": !this.showDesc,
-        faded: true
+        "item-indicator": true
       }
     }
   },
@@ -542,7 +559,8 @@ Vue.component('single-item', {
   template: `
     <div class="item">
       <div class="item-head">
-        <span class="item-short-desc" @click="toggleDesc"><i :class="caret"></i> {{ item.item }}</span>
+        <span :class="caret"></span>
+        <span class="item-short-desc" @click="toggleDesc">{{ item.item }}</span>
         <span class="item-actions">
           <template v-if="edit">
             <template v-for="action in editActions">

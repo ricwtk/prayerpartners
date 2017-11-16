@@ -316,12 +316,19 @@ button {
 
 .item-head {
   display: flex;
-  padding: 10px 0px 10px 10px;
+  padding: 0px;
+  align-items: center;
 }
 
 .item-short-desc {
   flex-grow: 1;
   text-align: left;
+  padding: 10px 0px;
+}
+
+.item-actions {
+  display: flex;
+  flex-direction: row;
 }
 
 .item-long-desc {
@@ -340,6 +347,12 @@ button {
 .item-menu {
   padding: 10px;
   cursor: pointer;
+}
+
+.item-indicator {
+  color: #eeeeee;
+  font-size: 80%;
+  padding: 10px 5px 10px 10px;
 }
 
 .overlay,
@@ -659,7 +672,6 @@ button:hover {
   opacity: 1;
 }
 
-.faded {
-  color: #eeeeee;
-  font-size: 80%;
+.clickable {
+  cursor: pointer;
 }
