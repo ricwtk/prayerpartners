@@ -387,6 +387,18 @@ button {
   font-size: 90%;
 }
 
+.tag-list-in-text {
+  display: flex;
+}
+
+.tag-in-text {
+  background-color: #B2DFDB;
+  padding: 2px 10px;
+  color: #009688;
+  border-radius: 3px;
+  margin: 0px 5px;
+}
+
 
 /*.item-head:hover + .item-long-desc {
   visibility: visible;

@@ -610,7 +610,16 @@ Vue.component('single-item', {
           </template>
         </span>
       </div>
-      <div v-if="showDesc" class="item-long-desc">{{ item.desc }}</div>
+      <div v-if="showDesc" class="item-long-desc">
+        {{ item.desc }}
+        <div v-if="item.sharedWith && item.sharedWith.length > 0">Shared with </div>
+        <div v-if="item.tags && item.tags.length > 0" class="tag-list-in-text">
+          <span v-for="tag in item.tags" class="tag-in-text">
+            {{ tag }}
+          </span>
+          <span class="horizontal-sep"></span>
+        </div>
+      </div>
       <edit-item-overlay 
         v-if="showEdit" 
         action="edit"
