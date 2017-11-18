@@ -46,7 +46,7 @@
             :item-list="myUnshared">
           </section-list>
           <template v-for="friend in mySharedWithList">
-            <section-list :section-tooltip="null" :section-title="friend.name" :section-type-data="{ sType: 'mine-friend', data: friend }"
+            <section-list section-tooltip="Click to toggle details" :section-title="friend.name" :section-type-data="{ sType: 'mine-friend', data: friend }"
               :item-list="friend.items">
             </section-list>
           </template>
@@ -71,8 +71,12 @@
       </div>
       <div class="section-group">
         <template v-for="friend in myFriendList">
-          <section-list :section-tooltip="null" :section-title="friend.name" :section-type-data="{ sType: 'friend', data: friend }"
-            v-bind:item-list="friend.items" @remove="removeFriend">
+          <section-list 
+            :section-tooltip="(friend.userId.startsWith('g') || friend.userId.startsWith('fb') ? 'Click to toggle details' : null)" 
+            :section-title="friend.name" 
+            :section-type-data="{ sType: 'friend', data: friend }"
+            :item-list="friend.items" 
+            @remove="removeFriend">
           </section-list>
         </template>
         <add-new-friend-section>

@@ -136,6 +136,11 @@ Vue.component('section-list', {
     }
   },
   methods: {
+    directToSocial: function () {
+      if (this.userDetails) {
+        window.open(this.userDetails.profileLink, "_blank");
+      }
+    },
     findItemById: function (itemList, itemId) {
       return itemList.filter(item => (item.itemId == itemId))[0];
     },
@@ -308,7 +313,7 @@ Vue.component('section-list', {
     this.syncClonedWithOri();
   },
   template: `
-    <div class="section decor-section" :style="sectionStyle">
+    <div class="section decor-section">
       <div class="section-head decor-sectionhead">
         <div class="section-action decor-sectionaction" v-if="edit && allowEditName">
           <span @click="showEditName = true" class="section-action-item decor-sectionactionitem" title="Edit name"><i class="fa fa-pencil"></i></span>
@@ -330,18 +335,20 @@ Vue.component('section-list', {
         </div>
       </div>
       <div v-if="sectionTitleClass.clickable && showSectionDescription" class="section-description">
-        <div class="sd-img"><img :src="userDetails.profilePicture"></img></div>
-        <div class="sd-list">
-          <div class="sd-list-container">
-            <div :title="userDetails.name">
-              {{ limitStr(userDetails.name, 20) }} <i :class="idpClass"></i></i>
+        <div class="sd-container">
+          <div class="sd-img"><img :src="userDetails.profilePicture"></img></div>
+          <div class="sd-list">
+            <div class="sd-list-container">
+              <div :title="userDetails.name">
+                {{ limitStr(userDetails.name, 20) }} <i :class="idpClass"></i></i>
+              </div>
+              <div :title="userDetails.email">{{ limitStr(userDetails.email, 20) }}</div>
+              <div class="sd-button fa fa-external-link" @click="directToSocial"></div>
             </div>
-            <div :title="userDetails.email">{{ limitStr(userDetails.email, 20) }}</div>
-            <div class="sd-button fa fa-external-link"></div>
           </div>
         </div>
       </div>
-      <div class="section-content decor-sectioncontent">
+      <div class="section-content decor-sectioncontent" :style="sectionStyle">
         <template v-for="item in displayItemList">
           <single-item 
             v-bind:item="item"
