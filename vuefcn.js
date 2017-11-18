@@ -20,9 +20,7 @@ var globalStore = new Vue({
       profileLink: null
     },
     friendRequestsDisplay: [],
-    userShowInOverlay: "",
-    userObjShowInOverlay: {},
-    showFriend: false
+    connectedFriendsDetails: {}
   },
   computed: {
     showSignIn: function () {
@@ -30,6 +28,11 @@ var globalStore = new Vue({
     },
     friendRequests: function () {
       return this.savedData.friendRequests ? this.savedData.friendRequests : [];
+    },
+    connectedFriends: function () {
+      return this.savedData.friends
+        .filter(fr => fr.userId.startsWith("g") || fr.userId.startsWith("fb"))
+        .map(fr => fr.userId);
     }
   },
   watch: {
@@ -55,10 +58,10 @@ var globalStore = new Vue({
         globalStore.friendRequestsDisplay = [];
       }
     },
-    userShowInOverlay: function() {
-      if (this.userShowInOverlay.startsWith("g") || this.userShowInOverlay.startsWith("fb")) {
-        getUsers([this.userShowInOverlay], (err, data) => {
-          this.userObjShowInOverlay = data.Responses[USERDATATABLE][0];
+    connectedFriends: function () {
+      if (this.connectedFriends.length > 0){
+        getUsers(this.connectedFriends, (err, data) => {
+          this.connectedFriendsDetails = data.Responses[USERDATATABLE];
         });
       }
     }
@@ -638,8 +641,7 @@ var app_overlay = new Vue({
       globalStore.savedData.name = newProfileName;
       updateToDatabase();
     },
-    showEditProfile: () => globalStore.showEditProfile,
-    showFriend: () => globalStore.showFriend
+    showEditProfile: () => globalStore.showEditProfile
   },
   methods: {
     closeEditProfile: () => {
@@ -647,9 +649,6 @@ var app_overlay = new Vue({
     },
     closeAbout: () => {
       globalStore.showAbout = false;
-    },
-    closeFriend: () => {
-      globalStore.showFriend = false;
-    },
+    }
   }
 });

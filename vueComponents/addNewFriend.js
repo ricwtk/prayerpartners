@@ -184,8 +184,8 @@ Vue.component('a-user', {
       <div class="horizontal-sep"></div>
       <div class="fr-label">
         <div class="fr-name" :title="userObj.name">
-          <span :class="idpClass"></span>
           {{ limitString(userObj.name) }}
+          <span :class="idpClass"></span>
         </div>
         <div class="fr-email" :title="userObj.email">
           {{ limitString(userObj.email) }}

@@ -7,7 +7,8 @@ Vue.component('section-list', {
       showAddNewItem: false,
       clonedItemList: [],
       moving: null,
-      showEditName: false
+      showEditName: false,
+      showSectionDescription: false
     }
   },
   computed: {
@@ -121,6 +122,13 @@ Vue.component('section-list', {
           return myList;
       }
     },
+    userDetails: function () {
+      if (this.sectionTitleClass.clickable) {
+        return globalStore.connectedFriendsDetails.find(it => it.userId == this.sectionTypeData.data.userId);
+      } else {
+        return null;
+      }
+    }
   },
   watch: {
     'itemList': function () {
@@ -148,8 +156,7 @@ Vue.component('section-list', {
     },
     sectionTitleOnClick: function() {
       if (this.sectionTitleClass.clickable) {
-        globalStore.userShowInOverlay = this.sectionTypeData.data.userId;
-        globalStore.showFriend = true;
+        this.showSectionDescription = !this.showSectionDescription;
       }
     },
     removeSection: function () {
@@ -312,7 +319,7 @@ Vue.component('section-list', {
             @close="showEditName = false">
           </edit-name-overlay>
         </div>
-        <div :class="sectionTitleClass" v-bind:title="sectionTooltip" @click="sectionTitleOnClick"><i :class=idpClass></i> {{ sectionTitle }}</div>
+        <div :class="sectionTitleClass" :title="sectionTooltip" @click="sectionTitleOnClick">{{ sectionTitle }} <i :class=idpClass></i></div>
         <div class="section-action decor-sectionaction">
           <template v-if="edit">
             <span v-if="allowRemove" @click="removeSection" class="section-action-item decor-sectionactionitem" title="Remove"><i class="fa fa-user-times"></i></span>
@@ -320,6 +327,18 @@ Vue.component('section-list', {
             <span @click="cancelEdit" class="section-action-item decor-sectionactionitem" title="Cancel"><i class="fa fa-undo"></i></span>
           </template>
           <span v-else @click="edit=true" class="section-action-item decor-sectionactionitem" title="Edit"><i class="fa fa-pencil"></i></span>
+        </div>
+      </div>
+      <div v-if="sectionTitleClass.clickable && showSectionDescription" class="section-description">
+        <div class="sd-img"><img :src="userDetails.profilePicture"></img></div>
+        <div class="sd-list">
+          <div class="sd-list-container">
+            <div :title="userDetails.name">
+              {{ limitStr(userDetails.name, 20) }} <i :class="idpClass"></i></i>
+            </div>
+            <div :title="userDetails.email">{{ limitStr(userDetails.email, 20) }}</div>
+            <div class="sd-button fa fa-external-link"></div>
+          </div>
         </div>
       </div>
       <div class="section-content decor-sectioncontent">
