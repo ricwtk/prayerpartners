@@ -387,11 +387,16 @@ button {
   font-size: 90%;
 }
 
+.share-list-in-text {
+  display: flex;
+  color: #009688;
+}
+
 .tag-list-in-text {
   display: flex;
 }
 
-.tag-in-text {
+.user-in-text, .tag-in-text {
   background-color: #B2DFDB;
   padding: 2px 10px;
   color: #009688;

@@ -512,7 +512,7 @@ Vue.component('single-friend-to-share', {
   },
   template: `
     <span class="friend-item" :title="friend.userId">
-      <input type="checkbox" :checked="isChecked" @change="toggleState"><span class="friend-item-name"><i :class="idpClass"></i> {{ friend.name }}</span>
+      <input type="checkbox" :checked="isChecked" @change="toggleState"><span class="friend-item-name">{{ friend.name }} <i :class="idpClass"></i></span>
     </span>
   `
 });
@@ -574,6 +574,13 @@ Vue.component('single-item', {
     },
     remindSave: function (action) {
       showToast(action + " is temporary until saved");
+    },
+    getUserInText: function (userId) {
+      if (globalStore.connectedFriendsDetails.length > 0) {
+        let thisFriend = globalStore.connectedFriendsDetails.find(fr => fr.userId == userId);
+        let idp = userId.startsWith("g") ? "<i class='fa fa-google-plus-official'></i>" : "<i class='fa fa-facebook-official'></i>"
+        return thisFriend.name + " " + idp;
+      }
     }
   },
   watch: {
@@ -612,12 +619,17 @@ Vue.component('single-item', {
       </div>
       <div v-if="showDesc" class="item-long-desc">
         {{ item.desc }}
-        <div v-if="item.sharedWith && item.sharedWith.length > 0">Shared with </div>
+        <div v-if="item.sharedWith && item.sharedWith.length > 0" class="share-list-in-text">
+          Shared with 
+          <div v-for="userId in item.sharedWith" 
+            class="user-in-text" 
+            v-html="getUserInText(userId)">
+          </div>
+        </div>
         <div v-if="item.tags && item.tags.length > 0" class="tag-list-in-text">
-          <span v-for="tag in item.tags" class="tag-in-text">
+          <div v-for="tag in item.tags" class="tag-in-text">
             {{ tag }}
-          </span>
-          <span class="horizontal-sep"></span>
+          </div>
         </div>
       </div>
       <edit-item-overlay 

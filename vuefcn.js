@@ -20,7 +20,7 @@ var globalStore = new Vue({
       profileLink: null
     },
     friendRequestsDisplay: [],
-    connectedFriendsDetails: {}
+    connectedFriendsDetails: []
   },
   computed: {
     showSignIn: function () {
