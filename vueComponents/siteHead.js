@@ -14,70 +14,6 @@ Vue.component("site-head", {
   `
 });
 
-Vue.component("friend-request", {
-  props: ["user"],
-  data: function () {
-    return {}
-  },
-  computed: {
-    idpDisplay: function () {
-      return {
-        fa: true,
-        'fa-google-plus-official': this.user.userId.startsWith("g"),
-        'fa-facebook-official': this.user.userId.startsWith("fb")
-      }
-    }
-  },
-  methods: {
-    linkProfile: function () {
-      window.open(this.user.profileLink, "_blank");
-    },
-    acceptRequest: function () {
-      if (DEBUG) console.log("acceptRequest");
-      // send notification to accept
-      sendAccept(this.user.userId);
-      // check if friend is already in friend list
-      if (!globalStore.savedData.friends.map(fri => fri.userId).includes(this.user.userId)) {
-        // add friend to my friend list
-        globalStore.savedData.friends.push(newFriend(this.user.userId, this.user.name));
-      }
-      // remove request from my friendrequests list
-      this.removeRequest();
-      updateToDatabase();
-    },
-    rejectRequest: function () {
-      if (DEBUG) console.log("rejectRequest");
-      this.removeRequest();
-      updateToDatabase();
-    },
-    removeRequest: function () {
-      if (DEBUG) console.log("removeRequest");
-      // remove request from my friendrequests list
-      let indexOfRequest = globalStore.savedData.friendRequests.findIndex(friend => friend.userId == this.user.userId);
-      globalStore.savedData.friendRequests.splice(indexOfRequest, 1);
-    }
-  },
-  template: `
-    <span class="menu-item friend-invite">
-      <div class="friend-invite-identity">
-        <div class="friend-invite-pic">
-          <img :src="user.profilePicture" :alt="user.name" class="friend-invite-profile-picture">
-        </div>
-        <div class="horizontal-sep"></div>
-        <div class="friend-invite-text">
-          <div class="friend-invite-name"><i :class="idpDisplay"></i> {{ user.name }}</div>
-          <div class="friend-invite-email">{{ user.email }}</div>
-        </div>
-      </div>
-      <div class="friend-invite-actions">
-        <div class="friend-invite-link decor-menuitem" @click="linkProfile"><i class="fa fa-external-link"></i></div>
-        <div class="friend-invite-accept decor-menuitem" @click="acceptRequest"><i class="fa fa-plus"></i></div>
-        <div class="friend-invite-reject decor-menuitem" @click="rejectRequest"><i class="fa fa-times"></i></div>
-      </div>
-    </span>
-  `
-});
-
 Vue.component("site-menu", {
   data: function () {
     return {
@@ -125,9 +61,6 @@ Vue.component("site-menu", {
     }
   },
   methods: {
-    openEditProfile: () => {
-      globalStore.showEditProfile = true;
-    },
     openAbout: () => {
       globalStore.showAbout = true;
     },
@@ -145,12 +78,6 @@ Vue.component("site-menu", {
   template: `
     <div id="menu" class="decor-menu">
       <span class="menu-item-section">Signed in as</span>
-      <span class="menu-item-flex-row decor-menuitem" id="signed-in-as" :title="userEmail" @click="openEditProfile">Signed in as 
-        <div id="menu-profile-picture-container">
-          <img :src="profilePic" :alt="userName" id="menu-profile-picture">
-          <div id="menu-profile-picture-overlay" :class="idpDisplay"></div>
-        </div>
-      </span>
       <span class="menu-item">
         <user-details-actions :user="globalStore.savedData" actions="lo"></user-details-actions>
       </span>
@@ -168,9 +95,6 @@ Vue.component("site-menu", {
       <span class="menu-item decor-menuitem" id="open-about" @click="openAbout">About Prayer Partners</span>
       <span v-if="friendRequests.length > 0" class="menu-item-section">Friend requests</span>
       <span v-for="friendRequest in friendRequests" class="menu-item">
-        <!--<friend-request 
-          :user="friendRequest">
-        </friend-request>-->
         <user-details-actions 
           :user="friendRequest"
           actions="lcr">

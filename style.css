@@ -98,24 +98,6 @@ button {
   border: 0.5px solid #009688;
 }
 
-#menu-profile-picture-container {
-  width: 50px;
-  position: relative;
-  /* background-color: white; */
-}
-
-#menu-profile-picture {
-  width: 50px;
-  height: auto;
-  display: block;
-}
-
-#menu-profile-picture-overlay {
-  position: absolute;
-  right: 5px;
-  bottom: 5px;
-}
-
 .menu-item-section {
   font-size: 70%;
   color: #009688;
@@ -143,47 +125,6 @@ button {
   flex-direction: column;
 }
 
-.friend-invite {
-  display: flex;
-  align-items: stretch;
-  flex-direction: column;
-}
-
-.friend-invite-identity {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: row;
-}
-
-.friend-invite-profile-picture {
-  width: 50px;
-  height: auto;
-  display: block;
-}
-
-.friend-invite-text {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.friend-invite-email {
-  font-size: 85%;
-}
-
-.friend-invite-actions {
-  display: flex;
-  flex-direction: row;
-}
-
-.friend-invite-link,
-.friend-invite-accept,
-.friend-invite-reject {
-  padding: 5px;
-  flex-grow: 1;
-  text-align: center;
-}
-
 .user-search-wrapper {
   margin: 10px;
   padding: 5px;
@@ -197,47 +138,6 @@ button {
   border: 1px solid #009688;
   background-color: #009688;
   color: #e0f2f1;
-}
-
-.fr-wrapper {
-  margin: 10px;
-  padding: 5px;
-  border: 1px solid #009688;
-  display: inline-flex;
-  flex-direction: row;
-  width: 100%;
-  max-width: 350px;
-  height: 100%;
-  max-height: 105px;
-}
-
-.fr-image {
-  display: flex;
-  flex-direction: column;
-  width: 30%;
-  max-width: 105px;
-}
-
-.fr-image img {
-  flex-grow: 1;
-  object-fit: contain;
-}
-
-.fr-label {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
-}
-
-.fr-actions {
-  width: 100%;
-  /* max-width: 150px; */
-}
-
-.fr-actions button {
-  width: 100%;
 }
 
 #search-friend-overlay {

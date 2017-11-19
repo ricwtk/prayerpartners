@@ -5,7 +5,6 @@ var globalStore = new Vue({
     showMenu: false,
     savedData: newUserData(),
     showLoading: true,
-    showEditProfile: false,
     showAbout: false,
     initToast: false,
     toastMessage: "",
@@ -471,13 +470,9 @@ var app_overlay = new Vue({
     saveProfile: (newProfileName) => {
       globalStore.savedData.name = newProfileName;
       updateToDatabase();
-    },
-    showEditProfile: () => globalStore.showEditProfile
+    }
   },
   methods: {
-    closeEditProfile: () => {
-      globalStore.showEditProfile = false;
-    },
     closeAbout: () => {
       globalStore.showAbout = false;
     }
