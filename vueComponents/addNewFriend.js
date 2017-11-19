@@ -123,9 +123,13 @@ Vue.component('add-new-friend-section', {
             <div v-if="searchFriendList.length < 1">
             No search string
             </div>
-            <template v-else v-for="friend in searchFriendList">
-              <a-user :userObj="friend"></a-user>
-            </template>
+            <div v-else v-for="user in searchFriendList" class="user-search-wrapper">
+              <user-details-actions 
+                :user="user" 
+                actions="la" 
+                pPicStyle="width: 70px">
+              </user-details-actions>
+            </div>
           </div>
           <div class="sep"></div>
           <button type="button" @click="exitOverlay" style="width:100%"><i class="fa fa-times"></i> Close</button>
@@ -136,66 +140,66 @@ Vue.component('add-new-friend-section', {
   `
 });
 
-Vue.component('a-user', {
-  props: ["userObj"],
-  data: function () {
-    return {
-      nameLimit: 12
-    }
-  },
-  computed: {
-    idpClass: function () {
-      return {
-        fa: true,
-        "fa-google-plus-official": this.userObj.userId.startsWith("g"),
-        "fa-facebook-official": this.userObj.userId.startsWith("fb")
-      };
-    },
-    isFriend: function() {
-      let friendIds = globalStore.savedData.friends.map(fr => fr.userId);
-      return friendIds.includes(this.userObj.userId);
-    }
-  },
-  methods: {
-    limitString: function (string) {
-      if (string.length <= this.nameLimit) {
-        return string;
-      } else {
-        return string.substring(0, this.nameLimit) + "...";
-      }
-    },
-    onresize: function () {
-      let el = this.$el.lastChild;
-      let fsize = parseFloat(window.getComputedStyle(el, null).getPropertyValue('font-size'));
-      this.nameLimit = el.clientWidth / (fsize * .75);
-    },
-    addUser: function () {
-      sendRequest(this.userObj.userId);
-      showToast("Sent friend request to " + this.userObj.name);
-    }
-  },
-  mounted: function () {
-    window.addEventListener("resize", this.onresize);
-    this.onresize();
-  },
-  template: `
-    <div class="fr-wrapper">
-      <div class="fr-image"><img :src="userObj.profilePicture"></img></div>
-      <div class="horizontal-sep"></div>
-      <div class="fr-label">
-        <div class="fr-name" :title="userObj.name">
-          {{ limitString(userObj.name) }}
-          <span :class="idpClass"></span>
-        </div>
-        <div class="fr-email" :title="userObj.email">
-          {{ limitString(userObj.email) }}
-        </div>
-        <div class="sep"></div>
-        <div class="fr-actions">
-          <button v-if="isFriend" type="button" disabled><i class="fa fa-user"></i> Connected</button>
-          <button v-else type="button" @click="addUser"><i class="fa fa-plus"></i> Add</button>
-        </div>
-      </div>
-    </div>
-  `
-})
+// Vue.component('a-user', {
+//   props: ["userObj"],
+//   data: function () {
+//     return {
+//       nameLimit: 12
+//     }
+//   },
+//   computed: {
+//     idpClass: function () {
+//       return {
+//         fa: true,
+//         "fa-google-plus-official": this.userObj.userId.startsWith("g"),
+//         "fa-facebook-official": this.userObj.userId.startsWith("fb")
+//       };
+//     },
+//     isFriend: function() {
+//       let friendIds = globalStore.savedData.friends.map(fr => fr.userId);
+//       return friendIds.includes(this.userObj.userId);
+//     }
+//   },
+//   methods: {
+//     limitString: function (string) {
+//       if (string.length <= this.nameLimit) {
+//         return string;
+//       } else {
+//         return string.substring(0, this.nameLimit) + "...";
+//       }
+//     },
+//     onresize: function () {
+//       let el = this.$el.lastChild;
+//       let fsize = parseFloat(window.getComputedStyle(el, null).getPropertyValue('font-size'));
+//       this.nameLimit = el.clientWidth / (fsize * .75);
+//     },
+//     addUser: function () {
+//       sendRequest(this.userObj.userId);
+//       showToast("Sent friend request to " + this.userObj.name);
+//     }
+//   },
+//   mounted: function () {
+//     window.addEventListener("resize", this.onresize);
+//     this.onresize();
+//   },
+//   template: `
+//     <div class="fr-wrapper">
+//       <div class="fr-image"><img :src="userObj.profilePicture"></img></div>
+//       <div class="horizontal-sep"></div>
+//       <div class="fr-label">
+//         <div class="fr-name" :title="userObj.name">
+//           {{ limitString(userObj.name) }}
+//           <span :class="idpClass"></span>
+//         </div>
+//         <div class="fr-email" :title="userObj.email">
+//           {{ limitString(userObj.email) }}
+//         </div>
+//         <div class="sep"></div>
+//         <div class="fr-actions">
+//           <button v-if="isFriend" type="button" disabled><i class="fa fa-user"></i> Connected</button>
+//           <button v-else type="button" @click="addUser"><i class="fa fa-plus"></i> Add</button>
+//         </div>
+//       </div>
+//     </div>
+//   `
+// })

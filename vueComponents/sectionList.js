@@ -335,7 +335,12 @@ Vue.component('section-list', {
         </div>
       </div>
       <div v-if="sectionTitleClass.clickable && showSectionDescription" class="section-description">
-        <div class="sd-container">
+        <user-details-actions 
+          :user="userDetails"
+          actions="l"
+          p-pic-style="width: 70px">
+        </user-details-actions>
+        <!--<div class="sd-container">
           <div class="sd-img"><img :src="userDetails.profilePicture"></img></div>
           <div class="sd-list">
             <div class="sd-list-container">
@@ -346,7 +351,7 @@ Vue.component('section-list', {
               <div class="sd-button fa fa-external-link" @click="directToSocial"></div>
             </div>
           </div>
-        </div>
+        </div>-->
       </div>
       <div class="section-content decor-sectioncontent" :style="sectionStyle">
         <template v-for="item in displayItemList">

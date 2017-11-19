@@ -151,8 +151,8 @@ Vue.component("site-menu", {
           <div id="menu-profile-picture-overlay" :class="idpDisplay"></div>
         </div>
       </span>
-      <span class="menu-item-flex-row decor-menuitem">
-        <user-details-actions :user="globalStore.savedData" actions="al"></user-details-actions>
+      <span class="menu-item">
+        <user-details-actions :user="globalStore.savedData" actions="lo"></user-details-actions>
       </span>
       <span class="menu-item-section">UI settings</span>
       <span class="menu-item" id="section-width">
@@ -167,11 +167,15 @@ Vue.component("site-menu", {
       <span class="menu-item decor-menuitem" id="go-to-guide" @click="goToGuide">Guide</span>
       <span class="menu-item decor-menuitem" id="open-about" @click="openAbout">About Prayer Partners</span>
       <span v-if="friendRequests.length > 0" class="menu-item-section">Friend requests</span>
-      <template v-for="friendRequest in friendRequests">
-        <friend-request 
+      <span v-for="friendRequest in friendRequests" class="menu-item">
+        <!--<friend-request 
           :user="friendRequest">
-        </friend-request>
-      </template>
+        </friend-request>-->
+        <user-details-actions 
+          :user="friendRequest"
+          actions="lcr">
+        </user-details-actions>
+      </span>
     </div>  
   `
 });

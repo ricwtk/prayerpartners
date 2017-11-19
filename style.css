@@ -184,6 +184,21 @@ button {
   text-align: center;
 }
 
+.user-search-wrapper {
+  margin: 10px;
+  padding: 5px;
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%; 
+  max-width: 300px;
+  /* height: 100%; */
+  /* max-height: 105px; */
+  border: 1px solid #009688;
+  background-color: #009688;
+  color: #e0f2f1;
+}
+
 .fr-wrapper {
   margin: 10px;
   padding: 5px;
@@ -317,9 +332,29 @@ button {
   align-items: center;
 }
 
-.uda-img>img,
+.menu-item .uda-container,
+.user-search-wrapper .uda-container {
+  width: 100%;
+}
+
 .sd-img>img {
   width: 70px;
+}
+
+.uda-img {
+  position: relative;
+}
+
+.uda-img img {
+  width: 100%;
+  object-fit: contain;
+}
+
+.uda-idp-overlay {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  color: #009688;
 }
 
 .uda-list,
@@ -331,20 +366,42 @@ button {
   padding-left: 10px;
 }
 
-.uda-list-container
+.uda-list-container,
 .sd-list-container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  width: 100%;
 }
 
-.uda-button,
+.uda-email {
+  font-size: 85%;
+}
+
+.uda-actions {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
 .sd-button {
   cursor: pointer;
   width: 100%;
   padding: 5px;
   border: 0.5px solid #e0f2f1;
   border-radius: 3px;
+  justify-content: center;
+  display: flex;
+}
+
+.uda-button {
+  cursor: pointer;
+  padding: 5px;
+  /* border: 0.5px solid #e0f2f1; */
+  /* border-radius: 3px; */
+  justify-content: center;
+  display: flex;
+  flex-grow: 1;
 }
 
 .uda-button:hover,
