@@ -144,14 +144,17 @@ Vue.component("site-menu", {
   },
   template: `
     <div id="menu" class="decor-menu">
+      <span class="menu-item-section">Signed in as</span>
       <span class="menu-item-flex-row decor-menuitem" id="signed-in-as" :title="userEmail" @click="openEditProfile">Signed in as 
         <div id="menu-profile-picture-container">
           <img :src="profilePic" :alt="userName" id="menu-profile-picture">
           <div id="menu-profile-picture-overlay" :class="idpDisplay"></div>
         </div>
       </span>
-      <span class="menu-item decor-menuitem" id="go-to-guide" @click="goToGuide">Guide</span>
-      <span class="menu-item decor-menuitem" id="open-about" @click="openAbout">About Prayer Partners</span>
+      <span class="menu-item-flex-row decor-menuitem">
+        <user-details-actions :user="globalStore.savedData" actions="al"></user-details-actions>
+      </span>
+      <span class="menu-item-section">UI settings</span>
       <span class="menu-item" id="section-width">
         Width of list ({{ widthOfSectionWithUnit }})<br>
         <input id="input-section-width" type="range" min="300" max="1000" v-model="widthOfSection" @mouseup="saveUi">
@@ -160,6 +163,10 @@ Vue.component("site-menu", {
         Height of list ({{ heightOfSectionWithUnit }})<br>
         <input id="input-section-height" type="range" min="200" max="500" v-model="heightOfSection" @mouseup="saveUi">
       </span>
+      <span class="menu-item-section">Links</span>
+      <span class="menu-item decor-menuitem" id="go-to-guide" @click="goToGuide">Guide</span>
+      <span class="menu-item decor-menuitem" id="open-about" @click="openAbout">About Prayer Partners</span>
+      <span v-if="friendRequests.length > 0" class="menu-item-section">Friend requests</span>
       <template v-for="friendRequest in friendRequests">
         <friend-request 
           :user="friendRequest">

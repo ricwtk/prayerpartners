@@ -93,6 +93,9 @@ button {
   position: absolute;
   right: 5px;
   max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 0.5px solid #009688;
 }
 
 #menu-profile-picture-container {
@@ -111,6 +114,12 @@ button {
   position: absolute;
   right: 5px;
   bottom: 5px;
+}
+
+.menu-item-section {
+  font-size: 70%;
+  color: #009688;
+  background-color: #e0f2f1;
 }
 
 .menu-item-flex-row {
@@ -301,16 +310,19 @@ button {
   overflow: hidden;
 }
 
+.uda-container,
 .sd-container {
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
+.uda-img>img,
 .sd-img>img {
   width: 70px;
 }
 
+.uda-list,
 .sd-list {
   display: flex;
   flex-direction: column;
@@ -319,12 +331,14 @@ button {
   padding-left: 10px;
 }
 
+.uda-list-container
 .sd-list-container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
+.uda-button,
 .sd-button {
   cursor: pointer;
   width: 100%;
@@ -333,6 +347,7 @@ button {
   border-radius: 3px;
 }
 
+.uda-button:hover,
 .sd-button:hover {
   color: #009688;
   background-color: #e0f2f1;
