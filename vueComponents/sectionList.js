@@ -657,3 +657,90 @@ Vue.component('single-item', {
     </div>
   `
 });
+
+Vue.component('add-tag-overlay', {
+  props: ["item"],
+  data: function () {
+    return {
+      newTags: "",
+      // tagList: []
+    };
+  },
+  computed: {
+    tagList: function () {
+      let tags = [];
+      globalStore.savedData.items.forEach(item => {
+        tags = tags.concat(item.tags.filter(tag => tags.indexOf(tag) < 0));
+      });
+      tags = tags.concat(this.item.tags.filter(tag => tags.indexOf(tag) < 0));
+      return tags;
+    }
+  },
+  methods: {
+    closeThis: function () {
+      this.$emit('close');
+    },
+    updateTagList: function (detail) {
+      if (detail.isChecked) {
+        if (DEBUG) console.log("tag list: added '" + detail.tag + "'");
+        this.item.tags.push(detail.tag);
+      } else {
+        if (DEBUG) console.log("tag list: removed '" + detail.tag + "'");
+        var idx = this.item.tags.findIndex(x => (x == detail.tag));
+        this.item.tags.splice(idx, 1);
+      }
+      this.item.edit = true;
+      if (DEBUG) console.log(copyObj(this.item));
+    },
+    addNewTag: function () {
+      var newTags = this.newTags.split(',');
+      newTags = newTags
+        .filter((tag, idx, arr) => arr.indexOf(tag) == idx)
+        .filter(tag => !this.item.tags.includes(tag));
+      newTags.forEach(tag => {
+        this.updateTagList({
+          isChecked: true,
+          tag: tag
+        });
+      });
+    }
+  },
+  // created: function() {
+  //   savedData.items.forEach(item => {
+  //     this.tagList = this.tagList.concat(item.tags.filter(tag => this.tagList.indexOf(tag) < 0));
+  //   });
+  //   this.tagList = copyObj(this.tagList);
+  // },
+  template: `
+    <div class="overlay decor-overlay">
+      <div class="overlay-wrapper">
+        <div class="overlay-label">Tags:</div>
+        <div v-if="tagList.length == 0">
+          No existing tag available. Add new tag(s) with input below by separating tags with comma (,). 
+          <br>New tags will only be updated after exit edit mode.
+        </div>
+        <div class="tags-content">
+          <template v-for="tag in tagList">
+            <single-tag 
+              :isChecked="item.tags.includes(tag)" 
+              :tag="tag"
+              @change="updateTagList">
+            </single-tag>
+          </template>
+        </div>
+        <div class="overlay-row">
+          <div class="overlay-label" title="Separate multiple tags by comma (,)">New tag(s): &nbsp;</div>
+          <input class="overlay-input" type="text" v-model="newTags" title="Separate multiple tags by comma (,)">
+          <div class="horizontal-sep"></div>
+          <div class="overlay-actions">
+            <button type="button" @click="addNewTag">Add</button>
+          </div>
+        </div>
+        <div class="sep"></div>
+        <div class="overlay-actions">
+          <button type="button" @click="closeThis"><i class="fa fa-times"></i> Close</button>
+        </div>
+      </div>
+    </div>
+  `
+});
