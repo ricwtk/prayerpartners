@@ -19,6 +19,30 @@ Vue.component("user-details-actions", {
     addUser: function () {
       sendRequest(this.user.userId);
       showToast("Sent friend request to " + this.user.name);
+    },
+    acceptRequest: function () {
+      if (DEBUG) console.log("acceptRequest");
+      // send notification to accept
+      sendAccept(this.user.userId);
+      // check if friend is already in friend list
+      if (!globalStore.savedData.friends.map(fri => fri.userId).includes(this.user.userId)) {
+        // add friend to my friend list
+        globalStore.savedData.friends.push(newFriend(this.user.userId, this.user.name));
+      }
+      // remove request from my friendrequests list
+      this.removeRequest();
+      updateToDatabase();
+    },
+    rejectRequest: function () {
+      if (DEBUG) console.log("rejectRequest");
+      this.removeRequest();
+      updateToDatabase();
+    },
+    removeRequest: function () {
+      if (DEBUG) console.log("removeRequest");
+      // remove request from my friendrequests list
+      let indexOfRequest = globalStore.savedData.friendRequests.findIndex(friend => friend.userId == this.user.userId);
+      globalStore.savedData.friendRequests.splice(indexOfRequest, 1);
     }
   },
   template: `
@@ -47,11 +71,11 @@ Vue.component("user-details-actions", {
               title="Send friend request"></div>
             <div v-if="action == 'c'" 
               class="uda-button fa fa-plus" 
-              @click=""
+              @click="acceptRequest"
               title="Accept friend request"></div>
             <div v-if="action == 'r'" 
               class="uda-button fa fa-times" 
-              @click=""
+              @click="rejectRequest"
               title="Reject friend request"></div>
             <div v-if="action == 'o'" 
               class="uda-button fa fa-sign-out" 
