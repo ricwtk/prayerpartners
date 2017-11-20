@@ -64,6 +64,13 @@ function actOnStatus() {
     // afterFbLogin();
   } else if (loginStatus.google.status) {
     afterGoogleLogin();
-  } else {}
+  } else {
+    removeLoadingScreen();
+  }
+}
+
+function removeLoadingScreen(msg) {
   globalStore.showLoading = false;
+  if (msg) console.log(msg);
+  if (DEBUG) console.log("close loading screen");
 }

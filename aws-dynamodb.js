@@ -80,7 +80,7 @@ function afterLogIn() {
       }
     });
     resolve(true);
-  }).then(readData, console.log);
+  }).then(readData, removeLoadingScreen);
 }
 
 function readData() {
@@ -97,6 +97,7 @@ function readData() {
   docClient.get(params, function (err, data) {
     if (err) {
       if (DEBUG) console.log("Unable to read item: ", err);
+      removeLoadingScreen(err);
     } else {
       if (DEBUG) console.log("GetItem succeeded: ", copyObj(data));
       if (Object.keys(data).length === 0 && data.constructor === Object) {
@@ -274,6 +275,7 @@ function retrieveRequests() {
     if (DEBUG) console.log("retrieveRequests", err, data);
     if (err) {
       if (DEBUG) console.log(err);
+      removeLoadingScreen(err);
     } else {
       let requestAdded = false;
       data.Items.forEach((item) => {
@@ -295,6 +297,7 @@ function retrieveAccepts() {
     if (DEBUG) console.log("retrieveAccepts", err, data);
     if (err) {
       if (DEBUG) console.log(err);
+      removeLoadingScreen(err);
     } else {
       let allFriendIds = globalStore.savedData.friends.map(fr => fr.userId);
       let friendToAdd = data.Items.filter(item => !allFriendIds.includes(item.from)).map(it => it.from);
@@ -322,6 +325,7 @@ function retrieveUpdates() {
     if (DEBUG) console.log("retrieveUpdates", err, data);
     if (err) {
       if (DEBUG) console.log(err);
+      removeLoadingScreen(err);
     } else {
       data.Items.map(updates => {
         let friend = globalStore.savedData.friends.find(fr => fr.userId == updates.from);
@@ -358,6 +362,7 @@ function retrieveUpdates() {
         }
       });
       removeUpdates(data.Items);
+      removeLoadingScreen();
     }
   });
 }
