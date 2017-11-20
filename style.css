@@ -364,13 +364,11 @@ button {
   font-size: 90%;
 }
 
-.share-list-in-text {
-  display: flex;
-  color: #009688;
-}
-
+.share-list-in-text,
 .tag-list-in-text {
   display: flex;
+  color: #009688;
+  padding: 3px 0px;
 }
 
 .user-in-text, .tag-in-text {
@@ -381,6 +379,10 @@ button {
   margin: 0px 5px;
 }
 
+.addShareTags {
+  margin-left: 5px;
+  width: 100px;
+}
 
 /*.item-head:hover + .item-long-desc {
   visibility: visible;

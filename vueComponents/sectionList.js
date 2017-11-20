@@ -624,18 +624,29 @@ Vue.component('single-item', {
       </div>
       <div v-if="showDesc" class="item-long-desc">
         {{ item.desc }}
-        <div v-if="item.sharedWith && item.sharedWith.length > 0" class="share-list-in-text">
-          Shared with 
-          <div v-for="userId in item.sharedWith" 
-            class="user-in-text" 
-            v-html="getUserInText(userId)">
+        <template v-if="editActions.includes('s')">
+          <div v-if="edit || (item.sharedWith && item.sharedWith.length > 0)" class="share-list-in-text">
+            Shared with<template v-if="edit">:</template>
+            <div v-for="userId in item.sharedWith" 
+              class="user-in-text" 
+              v-html="getUserInText(userId)">
+            </div>
+            <div v-if="edit">
+              <input type="text" class="addShareTags">
+            </div>
           </div>
-        </div>
-        <div v-if="item.tags && item.tags.length > 0" class="tag-list-in-text">
-          <div v-for="tag in item.tags" class="tag-in-text">
-            {{ tag }}
+        </template>
+        <template v-if="editActions.includes('t')">
+          <div v-if="edit || (item.tags && item.tags.length > 0)" class="tag-list-in-text">
+            <template v-if="edit">Tags: </template>
+            <div v-for="tag in item.tags" class="tag-in-text">
+              {{ tag }}
+            </div>
+            <div v-if="edit">
+              <input type="text" class="addShareTags">
+            </div>
           </div>
-        </div>
+        </template>
       </div>
       <edit-item-overlay 
         v-if="showEdit" 
