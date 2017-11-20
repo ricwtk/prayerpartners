@@ -65,10 +65,16 @@ Vue.component("user-details-actions", {
               class="uda-button fa fa-external-link" 
               @click="directToSocial"
               title="Open social profile"></div>
-            <div v-if="action == 'a'" 
-              class="uda-button fa fa-plus" 
-              @click="addUser"
-              title="Send friend request"></div>
+            <template v-if="action == 'a'">
+              <div v-if="globalStore.connectedFriends.includes(user.userId) || user.userId == globalStore.savedData.userId" 
+                class="uda-button-disabled fa fa-users" 
+                @click=""
+                title="You are connected"></div>
+              <div v-else
+                class="uda-button fa fa-plus" 
+                @click="addUser"
+                title="Send friend request"></div>
+            </template>
             <div v-if="action == 'c'" 
               class="uda-button fa fa-plus" 
               @click="acceptRequest"

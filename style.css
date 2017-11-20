@@ -297,8 +297,13 @@ button {
 .uda-button {
   cursor: pointer;
   padding: 5px;
-  /* border: 0.5px solid #e0f2f1; */
-  /* border-radius: 3px; */
+  justify-content: center;
+  display: flex;
+  flex-grow: 1;
+}
+
+.uda-button-disabled {
+  padding: 5px;
   justify-content: center;
   display: flex;
   flex-grow: 1;
