@@ -659,7 +659,7 @@ Vue.component('single-item', {
         {{ item.desc }}
         <template v-if="editActions.includes('s')">
           <div v-if="edit || (item.sharedWith && item.sharedWith.length > 0)" class="share-list-in-text">
-            Shared with<template v-if="edit">:</template>
+            <i class="fa fa-share-alt"></i>
             <div v-for="userId in item.sharedWith" class="user-in-text">
               {{ getUserInText(userId) }}
               <i :class="getUserIdpClass(userId)"></i>
@@ -672,7 +672,7 @@ Vue.component('single-item', {
         </template>
         <template v-if="editActions.includes('t')">
           <div v-if="edit || (item.tags && item.tags.length > 0)" class="tag-list-in-text">
-            <template v-if="edit">Tags: </template>
+            <i class="fa fa-tags"></i>
             <div v-for="tag in item.tags" class="tag-in-text">
               {{ tag }}
               <i v-if="edit" class="fa fa-times" @click="removeTag(tag)"></i>

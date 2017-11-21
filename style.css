@@ -369,6 +369,7 @@ button {
   display: flex;
   color: #009688;
   padding: 3px 0px;
+  align-items: center;
 }
 
 .user-in-text, .tag-in-text {
