@@ -607,6 +607,7 @@ Vue.component('single-item', {
       if (!this.item.tags.includes(newTag)) {
         // if not add tag to this item
         this.item.tags.push(newTag);
+        if (DEBUG) console.log("Added \"" + newTag + "\" tag to \"" + this.item.item + "\"");
         // tag item as editted
         this.item.edit = true;
       }
@@ -616,6 +617,7 @@ Vue.component('single-item', {
     removeTag: function (tagname) {
       let idx = this.item.tags.findIndex(x => (x == tagname));
       this.item.tags.splice(idx, 1);
+      if (DEBUG) console.log("Removed \"" + tagname + "\" tag from \"" + this.item.item + "\"");
       this.item.edit = true;
     }
   },
