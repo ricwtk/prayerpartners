@@ -600,6 +600,23 @@ Vue.component('single-item', {
         "fa-google-plus-official": userId.startsWith("g"),
         "fa-facebook-official": userId.startsWith("fb"),
       }
+    },
+    addNewTag: function (evt) {
+      let newTag = evt.target.value;
+      // check if tag is already added
+      if (!this.item.tags.includes(newTag)) {
+        // if not add tag to this item
+        this.item.tags.push(newTag);
+        // tag item as editted
+        this.item.edit = true;
+      }
+      // set text box to blank
+      evt.target.value = "";
+    },
+    removeTag: function (tagname) {
+      let idx = this.item.tags.findIndex(x => (x == tagname));
+      this.item.tags.splice(idx, 1);
+      this.item.edit = true;
     }
   },
   watch: {
@@ -656,10 +673,10 @@ Vue.component('single-item', {
             <template v-if="edit">Tags: </template>
             <div v-for="tag in item.tags" class="tag-in-text">
               {{ tag }}
-              <i v-if="edit" class="fa fa-times"></i>
+              <i v-if="edit" class="fa fa-times" @click="removeTag(tag)"></i>
             </div>
             <div v-if="edit">
-              <input list="tags" class="addShareTags">
+              <input list="tags" class="addShareTags" @keyup.enter="addNewTag">
               <datalist id="tags">
                 <option v-for="singleTag in allTags" :value="singleTag">
               </datalist>
