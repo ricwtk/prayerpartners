@@ -271,10 +271,12 @@ Vue.component('section-list', {
               saveToItemList.splice(saveToItemList.findIndex(it => it.itemId == item.itemId), 1);
               friendsToUpdate.push(...item.sharedWith);
             } else {
+              console.log(itemToEdit['sharedWith'], item['sharedWith']);
               for (k in itemToEdit) {
                 if (k == "sharedWith") {
                   friendsToUpdate.push(...itemToEdit[k]);
                   friendsToUpdate.push(...item[k]);
+                  console.log(itemToEdit[k], item[k], friendsToUpdate);
                 }
                 this.$set(itemToEdit, k, item[k]);
               }
@@ -529,7 +531,8 @@ Vue.component('single-item', {
       showDesc: false,
       showShareWith: false,
       showEdit: false,
-      showTagList: false
+      showTagList: false,
+      searchToShare: ""
     }
   },
   computed: {
@@ -619,6 +622,21 @@ Vue.component('single-item', {
       this.item.tags.splice(idx, 1);
       if (DEBUG) console.log("Removed \"" + tagname + "\" tag from \"" + this.item.item + "\"");
       this.item.edit = true;
+    },
+    shareToNewFriend: function (userId) {
+      if (!this.item.sharedWith.includes(userId)) {
+        // if not add tag to this item
+        this.item.sharedWith.push(userId);
+        // tag item as editted
+        this.item.edit = true;
+      }
+      // set text box to blank
+      this.searchToShare = "";
+    },
+    removeShared: function (userId) {
+      let idx = this.item.sharedWith.findIndex(x => (x == userId));
+      this.item.sharedWith.splice(idx, 1);
+      this.item.edit = true;
     }
   },
   watch: {
@@ -646,7 +664,6 @@ Vue.component('single-item', {
               <span v-else-if="action === 'r'" class="item-delete item-menu decor-itemmenu" title="Remove from list" @click="removeFromList"><i class="fa fa-outdent"></i></span>
               <span v-else-if="action === 'd'" class="item-delete item-menu decor-itemmenu" title="Delete" @click="deleteItem"><i class="fa fa-times"></i></span>
               <span v-else-if="action === 's'" class="item-share item-menu decor-itemmenu" title="Share" @click="editShareWith"><i class="fa fa-share-alt"></i></span>
-              <span v-else-if="action === 't'" class="item-share item-menu decor-itemmenu" title="Tag" @click="editTags"><i class="fa fa-tags"></i></span>
             </template>
           </template>
           <template v-else-if="allowOrder">
@@ -663,10 +680,11 @@ Vue.component('single-item', {
             <div v-for="userId in item.sharedWith" class="user-in-text">
               {{ getUserInText(userId) }}
               <i :class="getUserIdpClass(userId)"></i>
-              <i v-if="edit" class="fa fa-times"></i>
+              <i v-if="edit" class="fa fa-times" @click="removeShared(userId)"></i>
             </div>
             <div v-if="edit">
-              <input type="text" class="addShareTags">
+              <input class="addShareTags" v-model="searchToShare">
+              <search-list-to-share :searchString="searchToShare" @selected="shareToNewFriend"></search-list-to-share>
             </div>
           </div>
         </template>
@@ -707,89 +725,27 @@ Vue.component('single-item', {
   `
 });
 
-Vue.component('add-tag-overlay', {
-  props: ["item"],
-  data: function () {
-    return {
-      newTags: "",
-      // tagList: []
-    };
-  },
+Vue.component("search-list-to-share", {
+  props: ['searchString'],
   computed: {
-    tagList: function () {
-      let tags = [];
-      globalStore.savedData.items.forEach(item => {
-        tags = tags.concat(item.tags.filter(tag => tags.indexOf(tag) < 0));
-      });
-      tags = tags.concat(this.item.tags.filter(tag => tags.indexOf(tag) < 0));
-      return tags;
-    }
-  },
-  methods: {
-    closeThis: function () {
-      this.$emit('close');
-    },
-    updateTagList: function (detail) {
-      if (detail.isChecked) {
-        if (DEBUG) console.log("tag list: added '" + detail.tag + "'");
-        this.item.tags.push(detail.tag);
+    filteredList: function () {
+      if (this.searchString == "") {
+        return [];
       } else {
-        if (DEBUG) console.log("tag list: removed '" + detail.tag + "'");
-        var idx = this.item.tags.findIndex(x => (x == detail.tag));
-        this.item.tags.splice(idx, 1);
+        return globalStore.connectedFriendsDetails.filter(fd => fd.searchField.includes(this.searchString));
       }
-      this.item.edit = true;
-      if (DEBUG) console.log(copyObj(this.item));
-    },
-    addNewTag: function () {
-      var newTags = this.newTags.split(',');
-      newTags = newTags
-        .filter((tag, idx, arr) => arr.indexOf(tag) == idx)
-        .filter(tag => !this.item.tags.includes(tag));
-      newTags.forEach(tag => {
-        this.updateTagList({
-          isChecked: true,
-          tag: tag
-        });
-      });
     }
   },
-  // created: function() {
-  //   savedData.items.forEach(item => {
-  //     this.tagList = this.tagList.concat(item.tags.filter(tag => this.tagList.indexOf(tag) < 0));
-  //   });
-  //   this.tagList = copyObj(this.tagList);
-  // },
+  methods : {
+    selectUser: function (user) {
+      this.$emit("selected", user.userId);
+    }
+  },
   template: `
-    <div class="overlay decor-overlay">
-      <div class="overlay-wrapper">
-        <div class="overlay-label">Tags:</div>
-        <div v-if="tagList.length == 0">
-          No existing tag available. Add new tag(s) with input below by separating tags with comma (,). 
-          <br>New tags will only be updated after exit edit mode.
-        </div>
-        <div class="tags-content">
-          <template v-for="tag in tagList">
-            <single-tag 
-              :isChecked="item.tags.includes(tag)" 
-              :tag="tag"
-              @change="updateTagList">
-            </single-tag>
-          </template>
-        </div>
-        <div class="overlay-row">
-          <div class="overlay-label" title="Separate multiple tags by comma (,)">New tag(s): &nbsp;</div>
-          <input class="overlay-input" type="text" v-model="newTags" title="Separate multiple tags by comma (,)">
-          <div class="horizontal-sep"></div>
-          <div class="overlay-actions">
-            <button type="button" @click="addNewTag">Add</button>
-          </div>
-        </div>
-        <div class="sep"></div>
-        <div class="overlay-actions">
-          <button type="button" @click="closeThis"><i class="fa fa-times"></i> Close</button>
-        </div>
-      </div>
+    <div v-if="filteredList.length > 0" class="search-list-to-share">
+      <user-details-actions v-for="fl in filteredList"
+        :user="fl" @click="selectUser">
+      </user-details-actions>
     </div>
   `
 });

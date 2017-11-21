@@ -122,29 +122,6 @@ Vue.component('about-overlay', {
   `
 });
 
-Vue.component('single-tag', {
-  props: ["isChecked", "tag"],
-  data: function () {
-    return {}
-  },
-  methods: {
-    toggleState: function () {
-      this.$emit('change', {
-        isChecked: !this.isChecked,
-        tag: this.tag
-      });
-    }
-  },
-  template: `
-    <span class="tag-item" :title="tag">
-      <input type="checkbox" 
-        :checked="isChecked" 
-        @change="toggleState">
-      <span class="tag-item-name">{{ tag }}</span>
-    </span>
-  `
-});
-
 Vue.component("edit-name-overlay", {
   props: ["name"],
   data: function () {

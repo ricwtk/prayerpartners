@@ -189,7 +189,8 @@ function getUsers(userIds, afterGet) {
       "email",
       "#name",
       "profileLink",
-      "profilePicture"
+      "profilePicture",
+      "searchField"
     ],
     ExpressionAttributeNames: {
       "#name": "name"
@@ -229,13 +230,12 @@ function sendAccept(toUserId) {
 function updateAndSendSharedList(friendList) {
   if (DEBUG) console.log("updateAndSendSharedList", friendList);
   let namelist = globalStore.savedData.friends.filter(fr => friendList.includes(fr.userId)).map(fr => {
-    let res = "";
+    let res = fr.name;
     if (fr.userId.startsWith("g")) {
-      res += "<i class='fa fa-google-plus-official'></i> ";
+      res += " <i class='fa fa-google-plus-official'></i> ";
     } else {
-      res += "<i class='fa fa-facebook-official'></i> ";
+      res += " <i class='fa fa-facebook-official'></i> ";
     }
-    res += fr.name;
     return res;
   });
   showToast("send updates of shared items to " + namelist.join(", "));

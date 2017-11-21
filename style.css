@@ -380,6 +380,32 @@ button {
   margin: 0px 5px;
 }
 
+.share-list-in-text:last-child {
+  position: relative;
+}
+
+.search-list-to-share {
+  position: absolute;
+  background-color: #009688;
+  color: #e0f2f1;
+  margin-left: 5px;
+  border: 0.5px solid #009688;
+}
+
+.search-list-to-share > div {
+  padding: 5px;
+  cursor: default;
+}
+
+.search-list-to-share > div:hover {
+  background-color: #e0f2f1;
+  color: #009688;
+}
+
+.search-list-to-share > div:not(:last-child) {
+  border-bottom: 0.5px solid #e0f2f1;
+}
+
 .addShareTags {
   margin-left: 5px;
   width: 100px;

@@ -43,10 +43,13 @@ Vue.component("user-details-actions", {
       // remove request from my friendrequests list
       let indexOfRequest = globalStore.savedData.friendRequests.findIndex(friend => friend.userId == this.user.userId);
       globalStore.savedData.friendRequests.splice(indexOfRequest, 1);
+    },
+    onClick: function () {
+      this.$emit('click', this.user);
     }
   },
   template: `
-  <div class="uda-container">
+  <div class="uda-container" @click="onClick">
     <div class="uda-img" :style="pPicStyle">
       <img :src="user.profilePicture"></img>
       <div class="uda-idp-overlay"><i :class="idpClass"></i></div>
