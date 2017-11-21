@@ -540,6 +540,14 @@ Vue.component('single-item', {
         "fa-plus-square": !this.showDesc,
         "item-indicator": true
       }
+    },
+    allTags: function () {
+      let tags = [];
+      globalStore.savedData.items.forEach(item => {
+        tags = tags.concat(item.tags.filter(tag => tags.indexOf(tag) < 0));
+      });
+      tags = tags.concat(this.item.tags.filter(tag => tags.indexOf(tag) < 0));
+      return tags;
     }
   },
   methods: {
@@ -583,8 +591,14 @@ Vue.component('single-item', {
     getUserInText: function (userId) {
       if (globalStore.connectedFriendsDetails.length > 0) {
         let thisFriend = globalStore.connectedFriendsDetails.find(fr => fr.userId == userId);
-        let idp = userId.startsWith("g") ? "<i class='fa fa-google-plus-official'></i>" : "<i class='fa fa-facebook-official'></i>"
-        return thisFriend.name + " " + idp;
+        return thisFriend.name;
+      }
+    },
+    getUserIdpClass: function (userId) {
+      return {
+        fa: true,
+        "fa-google-plus-official": userId.startsWith("g"),
+        "fa-facebook-official": userId.startsWith("fb"),
       }
     }
   },
@@ -627,9 +641,10 @@ Vue.component('single-item', {
         <template v-if="editActions.includes('s')">
           <div v-if="edit || (item.sharedWith && item.sharedWith.length > 0)" class="share-list-in-text">
             Shared with<template v-if="edit">:</template>
-            <div v-for="userId in item.sharedWith" 
-              class="user-in-text" 
-              v-html="getUserInText(userId)">
+            <div v-for="userId in item.sharedWith" class="user-in-text">
+              {{ getUserInText(userId) }}
+              <i :class="getUserIdpClass(userId)"></i>
+              <i v-if="edit" class="fa fa-times"></i>
             </div>
             <div v-if="edit">
               <input type="text" class="addShareTags">
@@ -641,9 +656,13 @@ Vue.component('single-item', {
             <template v-if="edit">Tags: </template>
             <div v-for="tag in item.tags" class="tag-in-text">
               {{ tag }}
+              <i v-if="edit" class="fa fa-times"></i>
             </div>
             <div v-if="edit">
-              <input type="text" class="addShareTags">
+              <input list="tags" class="addShareTags">
+              <datalist id="tags">
+                <option v-for="singleTag in allTags" :value="singleTag">
+              </datalist>
             </div>
           </div>
         </template>
