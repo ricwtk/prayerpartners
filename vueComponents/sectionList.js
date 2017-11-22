@@ -554,7 +554,7 @@ Vue.component('single-item', {
     addNewTag: function (evt) {
       let newTag = evt.target.value;
       // check if tag is already added
-      if (!this.item.tags.includes(newTag)) {
+      if (!this.item.tags.includes(newTag) && newTag != "") {
         // if not add tag to this item
         this.item.tags.push(newTag);
         if (DEBUG) console.log("Added \"" + newTag + "\" tag to \"" + this.item.item + "\"");
