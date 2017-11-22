@@ -437,35 +437,6 @@ Vue.component('edit-item-overlay', {
   `
 });
 
-Vue.component('single-friend-to-share', {
-  props: ["isChecked", "friend"],
-  data: function () {
-    return {}
-  },
-  computed: {
-    idpClass: function () {
-      return {
-        fa: true,
-        "fa-google-plus-official": this.friend.userId.startsWith("g"),
-        "fa-facebook-official": this.friend.userId.startsWith("fb")
-      };
-    },
-  },
-  methods: {
-    toggleState: function () {
-      this.$emit('change', {
-        isChecked: !this.isChecked,
-        userId: this.friend.userId
-      });
-    }
-  },
-  template: `
-    <span class="friend-item" :title="friend.userId">
-      <input type="checkbox" :checked="isChecked" @change="toggleState"><span class="friend-item-name">{{ friend.name }} <i :class="idpClass"></i></span>
-    </span>
-  `
-});
-
 Vue.component('single-item', {
   props: ["item", "edit", "allowOrder", "editActions"],
   data: function () {
