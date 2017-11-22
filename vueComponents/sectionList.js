@@ -655,6 +655,9 @@ Vue.component('single-item', {
     },
     showTagList: function () {
       if (!this.showTagList) this.remindSave("Tag edit");
+    },
+    edit: function () {
+      if (!this.edit) this.searchToShare = "";
     }
   },
   template: `
