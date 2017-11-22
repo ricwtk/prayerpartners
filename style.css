@@ -225,8 +225,7 @@ button {
   overflow: hidden;
 }
 
-.uda-container,
-.sd-container {
+.uda-container {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -235,10 +234,6 @@ button {
 .menu-item .uda-container,
 .user-search-wrapper .uda-container {
   width: 100%;
-}
-
-.sd-img>img {
-  width: 70px;
 }
 
 .uda-img {
@@ -257,8 +252,7 @@ button {
   color: #009688;
 }
 
-.uda-list,
-.sd-list {
+.uda-list {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -266,8 +260,7 @@ button {
   padding-left: 10px;
 }
 
-.uda-list-container,
-.sd-list-container {
+.uda-list-container {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -282,16 +275,6 @@ button {
   display: flex;
   flex-direction: row;
   width: 100%;
-}
-
-.sd-button {
-  cursor: pointer;
-  width: 100%;
-  padding: 5px;
-  border: 0.5px solid #e0f2f1;
-  border-radius: 3px;
-  justify-content: center;
-  display: flex;
 }
 
 .uda-button {
@@ -309,8 +292,7 @@ button {
   flex-grow: 1;
 }
 
-.uda-button:hover,
-.sd-button:hover {
+.uda-button:hover {
   color: #009688;
   background-color: #e0f2f1;
 }

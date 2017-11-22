@@ -248,6 +248,7 @@ Vue.component('section-list', {
         default:
           saveToItemList = this.itemList;
       }
+      console.log("original list", copyObj(saveToItemList));
       var friendsToUpdate = [];
       this.clonedItemList.forEach((item) => {
         if (item.edit) {
@@ -271,12 +272,10 @@ Vue.component('section-list', {
               saveToItemList.splice(saveToItemList.findIndex(it => it.itemId == item.itemId), 1);
               friendsToUpdate.push(...item.sharedWith);
             } else {
-              console.log(itemToEdit['sharedWith'], item['sharedWith']);
               for (k in itemToEdit) {
                 if (k == "sharedWith") {
                   friendsToUpdate.push(...itemToEdit[k]);
                   friendsToUpdate.push(...item[k]);
-                  console.log(itemToEdit[k], item[k], friendsToUpdate);
                 }
                 this.$set(itemToEdit, k, item[k]);
               }
@@ -305,6 +304,7 @@ Vue.component('section-list', {
         updateAndSendSharedList(friendsToUpdate);
       }
       this.edit = false;
+      console.log("Check saved data", copyObj(globalStore.savedData));
     },
     cancelEdit: function () {
       this.edit = false;
@@ -342,18 +342,6 @@ Vue.component('section-list', {
           actions="l"
           p-pic-style="width: 70px">
         </user-details-actions>
-        <!--<div class="sd-container">
-          <div class="sd-img"><img :src="userDetails.profilePicture"></img></div>
-          <div class="sd-list">
-            <div class="sd-list-container">
-              <div :title="userDetails.name">
-                {{ limitStr(userDetails.name, 20) }} <i :class="idpClass"></i></i>
-              </div>
-              <div :title="userDetails.email">{{ limitStr(userDetails.email, 20) }}</div>
-              <div class="sd-button fa fa-external-link" @click="directToSocial"></div>
-            </div>
-          </div>
-        </div>-->
       </div>
       <div class="section-content decor-sectioncontent" :style="sectionStyle">
         <template v-for="item in displayItemList">
@@ -632,7 +620,7 @@ Vue.component('single-item', {
               <i v-if="edit" class="fa fa-times" @click="removeShared(userId)"></i>
             </div>
             <div v-if="edit">
-              <input class="addShareTags" v-model="searchToShare" @focus="focusAddShare" @blur="blurAddShare">
+              <input class="addShareTags" v-model="searchToShare" @focus="focusAddShare"><!-- @blur="blurAddShare">-->
               <search-list-to-share v-if="isShareFocus" :searchString="searchToShare" @selected="shareToNewFriend"></search-list-to-share>
             </div>
           </div>
