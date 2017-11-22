@@ -532,7 +532,8 @@ Vue.component('single-item', {
       showShareWith: false,
       showEdit: false,
       showTagList: false,
-      searchToShare: ""
+      searchToShare: "",
+      isShareFocus: false
     }
   },
   computed: {
@@ -637,6 +638,12 @@ Vue.component('single-item', {
       let idx = this.item.sharedWith.findIndex(x => (x == userId));
       this.item.sharedWith.splice(idx, 1);
       this.item.edit = true;
+    },
+    focusAddShare: function () {
+      this.isShareFocus = true;
+    },
+    blurAddShare: function () {
+      this.isShareFocus = false;
     }
   },
   watch: {
@@ -683,8 +690,8 @@ Vue.component('single-item', {
               <i v-if="edit" class="fa fa-times" @click="removeShared(userId)"></i>
             </div>
             <div v-if="edit">
-              <input class="addShareTags" v-model="searchToShare">
-              <search-list-to-share :searchString="searchToShare" @selected="shareToNewFriend"></search-list-to-share>
+              <input class="addShareTags" v-model="searchToShare" @focus="focusAddShare" @blur="blurAddShare">
+              <search-list-to-share v-if="isShareFocus" :searchString="searchToShare" @selected="shareToNewFriend"></search-list-to-share>
             </div>
           </div>
         </template>
