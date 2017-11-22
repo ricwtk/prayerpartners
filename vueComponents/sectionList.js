@@ -449,52 +449,6 @@ Vue.component('edit-item-overlay', {
   `
 });
 
-Vue.component('share-with-overlay', {
-  props: ["item"],
-  computed: {
-    friendList: function () {
-      return globalStore.savedData.friends.filter(friend => (! friend.userId.startsWith("pri")));
-    }
-  },
-  methods: {
-    closeThis: function () {
-      this.$emit('close');
-    },
-    updateShareWithList: function (detail) {
-      if (detail.isChecked) {
-        if (DEBUG) console.log("sharedWith list: added '" + detail.userId + "'");
-        this.item.sharedWith.push(detail.userId);
-      } else {
-        if (DEBUG) console.log("sharedWith list: removed '" + detail.userId + "'");
-        var idx = this.item.sharedWith.findIndex(x => (x == detail.userId));
-        this.item.sharedWith.splice(idx, 1);
-      }
-      this.item.edit = true;
-    }
-  },
-  template: `
-    <div class="overlay decor-overlay">
-      <div class="overlay-wrapper">
-        <div class="overlay-label">Friends:</div>
-        <div v-if="friendList.length == 0">Invite friends using emails to share prayer items.</div>
-        <div class="share-with-content">
-          <template v-for="friend in friendList">
-            <single-friend-to-share 
-              :isChecked="item.sharedWith.includes(friend.userId)" 
-              :friend="friend"
-              @change="updateShareWithList">
-            </single-friend-to-share>
-          </template>
-        </div>
-        <div class="overlay-actions">
-          <button type="button" @click="closeThis"><i class="fa fa-times"></i> Close</button>
-        </div>
-      </div>
-    </div>
-  `
-});
-
-
 Vue.component('single-friend-to-share', {
   props: ["isChecked", "friend"],
   data: function () {
@@ -529,9 +483,7 @@ Vue.component('single-item', {
   data: function () {
     return {
       showDesc: false,
-      showShareWith: false,
       showEdit: false,
-      showTagList: false,
       searchToShare: "",
       isShareFocus: false
     }
@@ -582,12 +534,6 @@ Vue.component('single-item', {
     removeFromList: function () {
       this.$emit('removeFromList', this.item.itemId);
       this.remindSave("Remove from list");
-    },
-    editShareWith: function () {
-      this.showShareWith = true;
-    },
-    editTags: function () {
-      this.showTagList = true;
     },
     remindSave: function (action) {
       showToast(action + " is temporary until saved");
@@ -650,12 +596,6 @@ Vue.component('single-item', {
     showEdit: function () {
       if (!this.showEdit) this.remindSave("Edit");
     },
-    showShareWith: function () {
-      if (!this.showShareWith) this.remindSave("Sharing edit");
-    },
-    showTagList: function () {
-      if (!this.showTagList) this.remindSave("Tag edit");
-    },
     edit: function () {
       if (!this.edit) this.searchToShare = "";
     }
@@ -663,7 +603,7 @@ Vue.component('single-item', {
   template: `
     <div class="item">
       <div class="item-head">
-        <span :class="caret"></span>
+        <span :class="caret" @click="toggleDesc"></span>
         <span class="item-short-desc" @click="toggleDesc">{{ item.item }}</span>
         <span class="item-actions">
           <template v-if="edit">
@@ -673,7 +613,6 @@ Vue.component('single-item', {
               <span v-else-if="action === 'a'" class="item-archive item-menu decor-itemmenu" title="Archive" @click="setArchived"><i class="fa fa-download"></i></span> <!--fa-angle-double-right-->
               <span v-else-if="action === 'r'" class="item-delete item-menu decor-itemmenu" title="Remove from list" @click="removeFromList"><i class="fa fa-outdent"></i></span>
               <span v-else-if="action === 'd'" class="item-delete item-menu decor-itemmenu" title="Delete" @click="deleteItem"><i class="fa fa-times"></i></span>
-              <span v-else-if="action === 's'" class="item-share item-menu decor-itemmenu" title="Share" @click="editShareWith"><i class="fa fa-share-alt"></i></span>
             </template>
           </template>
           <template v-else-if="allowOrder">
@@ -721,16 +660,6 @@ Vue.component('single-item', {
         sectionType=""
         @close="showEdit=false">
       </edit-item-overlay>
-      <share-with-overlay 
-        v-if="showShareWith" 
-        @close="showShareWith=false"
-        :item="item">
-      </share-with-overlay>
-      <add-tag-overlay 
-        v-if="showTagList" 
-        @close="showTagList=false"
-        :item="item">
-      </add-tag-overlay>
     </div>
   `
 });
