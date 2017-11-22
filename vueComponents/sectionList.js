@@ -236,7 +236,6 @@ Vue.component('section-list', {
       this.clonedItemList.splice(this.clonedItemList.length, 1, newItem);
     },
     saveEdit: function () {
-      if (DEBUG) console.log("update list", copyObj(this.clonedItemList));
       var saveToItemList;
       switch (this.sectionTypeData.sType) {
         case "mine":
@@ -248,7 +247,6 @@ Vue.component('section-list', {
         default:
           saveToItemList = this.itemList;
       }
-      console.log("original list", copyObj(saveToItemList));
       var friendsToUpdate = [];
       this.clonedItemList.forEach((item) => {
         if (item.edit) {
@@ -304,7 +302,6 @@ Vue.component('section-list', {
         updateAndSendSharedList(friendsToUpdate);
       }
       this.edit = false;
-      console.log("Check saved data", copyObj(globalStore.savedData));
     },
     cancelEdit: function () {
       this.edit = false;
@@ -369,69 +366,6 @@ Vue.component('section-list', {
           :sectionType="sectionTypeData.sType"
           :item="[]">
         </edit-item-overlay>
-      </div>
-    </div>
-  `
-});
-
-Vue.component('edit-item-overlay', {
-  props: ["item", "action", "sectionType"], // action = [new, edit]
-  data: function () {
-    return {
-      newItem: null,
-      newItemTitle: "",
-      newItemDesc: "",
-      edited: false
-    }
-  },
-  created: function () {
-    if (this.action == "new") {
-      if (this.sectionType == "mine") {
-        this.newItem = newMineItem();
-      } else { // if (this.sectionType == "friend")
-        this.newItem = newFriendItem();
-      }
-      this.newItem = Object.assign({}, this.newItem, {
-        edit: false,
-        deleted: false
-      });
-    } else {
-      this.newItemTitle = this.item.item;
-      this.newItemDesc = this.item.desc;
-    }
-  },
-  methods: {
-    saveThis: function () {
-      if (this.action == "new") {
-        this.newItem.item = this.newItemTitle;
-        this.newItem.desc = this.newItemDesc;
-        this.newItem.edit = true;
-        this.$emit('createNew', this.newItem);
-      } else {
-        this.item.item = this.newItemTitle;
-        this.item.desc = this.newItemDesc;
-        this.item.edit = true;
-      }
-      this.closeThis();
-      if (DEBUG) console.log(copyObj(globalStore.savedData));
-    },
-    closeThis: function () {
-      this.$emit('close');
-    }
-  },
-  template: `
-    <div class="edit-item-overlay decor-edititemoverlay">
-      <div class="edit-item-wrapper">
-        <div class="edit-item-overlay-label">Prayer item:</div>
-        <input class="overlay-input" type="text" v-bind:value="item.item ? item.item:''" v-model="newItemTitle">
-        <div class="sep"></div>
-        <div class="edit-item-overlay-label">Long description:</div>
-        <textarea class="edit-item-content" rows="10" v-model="newItemDesc">{{ item.desc ? item.desc:'' }}</textarea>
-        <div class="sep"></div>
-        <div class="edit-item-overlay-actions">
-          <button type="button" @click="saveThis"><i class="fa fa-save"></i> Save</button>
-          <button type="button" @click="closeThis"><i class="fa fa-undo"></i> Cancel</button>
-        </div>
       </div>
     </div>
   `
@@ -535,6 +469,7 @@ Vue.component('single-item', {
         this.item.sharedWith.push(userId);
         // tag item as editted
         this.item.edit = true;
+        console.log(copyObj(globalStore.savedData));
       }
       // set text box to blank
       this.searchToShare = "";
@@ -543,6 +478,7 @@ Vue.component('single-item', {
       let idx = this.item.sharedWith.findIndex(x => (x == userId));
       this.item.sharedWith.splice(idx, 1);
       this.item.edit = true;
+      console.log(copyObj(globalStore.savedData));
     },
     focusAddShare: function () {
       this.isShareFocus = true;
@@ -644,6 +580,68 @@ Vue.component("search-list-to-share", {
       <user-details-actions v-for="fl in filteredList"
         :user="fl" @click="selectUser">
       </user-details-actions>
+    </div>
+  `
+});
+
+Vue.component('edit-item-overlay', {
+  props: ["item", "action", "sectionType"], // action = [new, edit]
+  data: function () {
+    return {
+      newItem: null,
+      newItemTitle: "",
+      newItemDesc: "",
+      edited: false
+    }
+  },
+  created: function () {
+    if (this.action == "new") {
+      if (this.sectionType == "mine") {
+        this.newItem = newMineItem();
+      } else { // if (this.sectionType == "friend")
+        this.newItem = newFriendItem();
+      }
+      this.newItem = Object.assign({}, this.newItem, {
+        edit: false,
+        deleted: false
+      });
+    } else {
+      this.newItemTitle = this.item.item;
+      this.newItemDesc = this.item.desc;
+    }
+  },
+  methods: {
+    saveThis: function () {
+      if (this.action == "new") {
+        this.newItem.item = this.newItemTitle;
+        this.newItem.desc = this.newItemDesc;
+        this.newItem.edit = true;
+        this.$emit('createNew', this.newItem);
+      } else {
+        this.item.item = this.newItemTitle;
+        this.item.desc = this.newItemDesc;
+        this.item.edit = true;
+      }
+      this.closeThis();
+    },
+    closeThis: function () {
+      this.$emit('close');
+    }
+  },
+  template: `
+    <div class="edit-item-overlay decor-edititemoverlay">
+      <div class="edit-item-wrapper">
+        <div class="edit-item-overlay-label">Prayer item:</div>
+        <input class="overlay-input" type="text" v-bind:value="item.item ? item.item:''" v-model="newItemTitle">
+        <div class="sep"></div>
+        <div class="edit-item-overlay-label">Long description:</div>
+        <textarea class="edit-item-content" rows="10" v-model="newItemDesc">{{ item.desc ? item.desc:'' }}</textarea>
+        <div class="sep"></div>
+        <div class="edit-item-overlay-actions">
+          <button type="button" @click="saveThis"><i class="fa fa-save"></i> Save</button>
+          <button type="button" @click="closeThis"><i class="fa fa-undo"></i> Cancel</button>
+        </div>
+      </div>
     </div>
   `
 });
