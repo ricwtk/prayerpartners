@@ -262,7 +262,11 @@ Vue.component('section-list', {
               if (k == "sharedWith") {
                 friendsToUpdate.push(...item[k]);
               }
-              this.$set(newItem, k, item[k]);
+              if (["sharedWith","tags"].includes(k)) {
+                this.$set(newItem, k, Vue.util.extend([], item[k]));
+              } else {
+                this.$set(newItem, k, item[k]);              
+              }
             }
             saveToItemList.splice(saveToItemList.length, 1, newItem);
           } else {
@@ -274,8 +278,12 @@ Vue.component('section-list', {
                 if (k == "sharedWith") {
                   friendsToUpdate.push(...itemToEdit[k]);
                   friendsToUpdate.push(...item[k]);
+                }  
+                if (["sharedWith","tags"].includes(k)) {
+                  this.$set(itemToEdit, k, Vue.util.extend([], item[k]));
+                } else {
+                  this.$set(itemToEdit, k, item[k]);              
                 }
-                this.$set(itemToEdit, k, item[k]);
               }
             }
           }
@@ -469,7 +477,6 @@ Vue.component('single-item', {
         this.item.sharedWith.push(userId);
         // tag item as editted
         this.item.edit = true;
-        console.log(copyObj(globalStore.savedData));
       }
       // set text box to blank
       this.searchToShare = "";
@@ -478,7 +485,6 @@ Vue.component('single-item', {
       let idx = this.item.sharedWith.findIndex(x => (x == userId));
       this.item.sharedWith.splice(idx, 1);
       this.item.edit = true;
-      console.log(copyObj(globalStore.savedData));
     },
     focusAddShare: function () {
       this.isShareFocus = true;
