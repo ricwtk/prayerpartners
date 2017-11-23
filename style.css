@@ -352,6 +352,7 @@ button {
   color: #009688;
   padding: 3px 0px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .user-in-text, .tag-in-text {
