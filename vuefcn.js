@@ -335,9 +335,7 @@ var app = new Vue({
 
 var app_head = new Vue({
   el: '#sitehead',
-  data: {
-    siteMenu: null
-  },
+  data: {},
   computed: {
     showMenu: () => {
       return globalStore.showMenu;
@@ -351,13 +349,12 @@ var app_head = new Vue({
         globalStore.showMenu = true;
         Vue.nextTick(() => {
           window.addEventListener("click", this.checkCloseMenu);
-          this.siteMenu = this.$refs.siteMenu;
         });
       }
     },
     checkCloseMenu: function (evt) {
-      if (this.siteMenu) {
-        if (!this.siteMenu.$el.contains(evt.target) && !evt.target.isSameNode(this.$refs.siteHead.$refs.menuToggle)) {
+      if (this.$refs.siteMenu) {
+        if (!this.$refs.siteMenu.$el.contains(evt.target) && !evt.target.isSameNode(this.$refs.siteHead.$refs.menuToggle)) {
           this.closeMenu();
         }
       }
