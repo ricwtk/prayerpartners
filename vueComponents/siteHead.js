@@ -9,7 +9,8 @@ Vue.component("site-head", {
       <span id="pagetitle">Prayer Partners</span>
       <span id="menutoggle" 
         class="decor-menuitem"
-        @click="toggleMenu"><i class="fa fa-bars"></i></span>
+        @click="toggleMenu"
+        ref="menuToggle"><i class="fa fa-bars"></i></span>
     </div>
   `
 });

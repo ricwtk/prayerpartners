@@ -17,8 +17,8 @@
 
 <body>
   <div id="sitehead">
-    <site-head @toggle="toggleMenu"></site-head>
-    <site-menu v-if="showMenu"></site-menu>
+    <site-head @toggle="toggleMenu" ref="siteHead"></site-head>
+    <site-menu v-if="showMenu" ref="siteMenu"></site-menu>
   </div>
 
   <div id="main">
