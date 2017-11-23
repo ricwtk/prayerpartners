@@ -488,6 +488,17 @@ Vue.component('single-item', {
     },
     focusAddShare: function () {
       this.isShareFocus = true;
+      Vue.nextTick(() => {
+        window.addEventListener("click", this.checkAddShareFocus);
+      });
+    },
+    checkAddShareFocus: function (evt) {
+      if (this.$refs.searchList) {
+        if (!this.$refs.searchList.$el.contains(evt.target) && !evt.target.isSameNode(this.$refs.searchInput)) {
+          this.isShareFocus = false;
+          window.removeEventListener("click", this.checkAddShareFocus);
+        }
+      }
     },
     blurAddShare: function () {
       this.isShareFocus = false;
@@ -533,8 +544,12 @@ Vue.component('single-item', {
               <i v-if="edit" class="fa fa-times" @click="removeShared(userId)"></i>
             </div>
             <div v-if="edit">
-              <input class="addShareTags" v-model="searchToShare" @focus="focusAddShare"><!-- @blur="blurAddShare">-->
-              <search-list-to-share v-if="isShareFocus" :searchString="searchToShare" @selected="shareToNewFriend"></search-list-to-share>
+              <input class="addShareTags" v-model="searchToShare" @focus="focusAddShare" ref="searchInput"><!-- @blur="blurAddShare">-->
+              <search-list-to-share v-if="isShareFocus" 
+                :searchString="searchToShare" 
+                @selected="shareToNewFriend"
+                ref="searchList">
+              </search-list-to-share>
             </div>
           </div>
         </template>
