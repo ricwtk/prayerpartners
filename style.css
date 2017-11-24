@@ -599,6 +599,7 @@ a:hover {
   background-color: rgba(255, 255, 255, 1);
   border: 1px solid #b2dfdb;
   padding: 10px;
+  max-width: 100%;
 }
 
 #about-content div {
@@ -607,6 +608,11 @@ a:hover {
 
 #about-appname {
   font-size: 150%;
+}
+
+.about-subtitle {
+  background-color: #009688;
+  color: #e0f2f1;
 }
 
 button {
