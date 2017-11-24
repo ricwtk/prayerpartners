@@ -100,22 +100,23 @@ Vue.component('about-overlay', {
       <div class="overlay-content" id="about-content">
         <div id="about-appname">Prayer Partners</div>
         <div class="sep"></div><div class="sep"></div>
-        <div>Developer: Richard Wong <a href="mailto:ricwtk@gmail.com" target="_blank">ricwtk@gmail.com</a></div>
-        <div>Use <a href="https://github.com/ricwtk/prayerpartners/issues"  target="_blank">Github issue tracker <i class="fa fa-link"></i></a> or email me to report any issue or suggest any enhancement</div>
+        <div class="about-subtitle">Developer</div>
+        <div>Richard Wong <a href="mailto:ricwtk@gmail.com" target="_blank">ricwtk@gmail.com</a></div>
+        <div class="sep"></div>
+        <div class="about-subtitle">Source and issue tracker</div>
         <div>
           <a href="https://github.com/ricwtk/prayerpartners"  target="_blank">Source code on Github <i class="fa fa-link"></i></a>
-          <a href="./privacypolicy.html" target="_blank">Privacy policy <i class="fa fa-link"></i></a>
-          <a href="./permissionsexplained.html" target="_blank">Permissions explained <i class="fa fa-link"></i></a>
         </div>
+        <div style="font-size: 85%">Use <a href="https://github.com/ricwtk/prayerpartners/issues"  target="_blank">Github issue tracker <i class="fa fa-link"></i></a> or <a href="mailto:ricwtk@gmail.com" target="_blank">email me</a> to report any issue or suggest any enhancement</div>
         <div class="sep"></div>
+        <div class="about-subtitle">Credits</div>
         <div>
           This project is developed with 
           <a href="https://vuejs.org/" target="_blank">vue.js</a>, 
-          <a href="https://github.com/dankogai/js-base64" target="_blank">base64.js</a>, 
-          <a href="" target="_blank">MimeMessage.js</a>, 
-          <a href="https://github.com/showdownjs/showdown" target="_blank">Showdown.js</a>,
-          <a href="http://fontawesome.io/" target="_blank">FontAwesome</a>
+          <a href="https://github.com/showdownjs/showdown" target="_blank">Showdown.js</a>, and
+          <a href="http://fontawesome.io/" target="_blank">FontAwesome</a>.
         </div>
+        <div class="sep"></div>
         <button type="button" @click="closeThis">Close</button>
       </div>
     </div>
