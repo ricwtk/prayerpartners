@@ -85,11 +85,11 @@ Vue.component("site-menu", {
       <span class="menu-item-section">UI settings</span>
       <span class="menu-item" id="section-width">
         Width of list ({{ widthOfSectionWithUnit }})<br>
-        <input id="input-section-width" type="range" min="300" max="1000" v-model="widthOfSection" @mouseup="saveUi">
+        <input id="input-section-width" type="range" min="300" max="1000" v-model="widthOfSection" @change="saveUi">
       </span>
       <span class="menu-item" id="section-height">
         Height of list ({{ heightOfSectionWithUnit }})<br>
-        <input id="input-section-height" type="range" min="200" max="500" v-model="heightOfSection" @mouseup="saveUi">
+        <input id="input-section-height" type="range" min="200" max="500" v-model="heightOfSection" @change="saveUi">
       </span>
       <span class="menu-item-section">Links</span>
       <span class="menu-item decor-menuitem" id="go-to-guide" @click="goToGuide">Guide</span>
