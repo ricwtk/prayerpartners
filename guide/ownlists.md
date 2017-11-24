@@ -18,14 +18,12 @@ After signing in, you will see two lists under "Mine" section: <span class="list
 
 3. Provide the prayer item and the description in the popup form. Click <button type="button"><i class="fa fa-save"></i> Save</button> to create the new prayer item or <button type="button"><i class="fa fa-undo"></i> Cancel</button> to cancel the entry.
 
-4. Next to each prayer item, there are five different actions that can be performed:
+4. Next to each prayer item, there are three different actions that can be performed:
 | Buttons   | Actions    |
 |:---------:|:----------:|
 | <i class="fa fa-pencil"></i> | [Edit](#activeeditmodeedit)       |
-| <i class="fa fa-angle-double-right"></i>  | [Archive](#activeeditmodearchive)    |
+| <i class="fa fa-download"></i>  | [Archive](#activeeditmodearchive)    |
 | <i class="fa fa-times"></i> | [Delete](#activeeditmodedelete)     |
-| <i class="fa fa-share-alt"></i>  | [Share with](#activeeditmodesharewith) |
-| <i class="fa fa-tags"></i> | [Add tags](#activeeditmodeaddtags)   |
 
 5. After performing the action(s), you can save <span class="listhead"><i class="fa fa-save"></i></span> or discard <span class="listhead"><i class="fa fa-undo"></i></span> the changes.
 
@@ -36,33 +34,27 @@ After signing in, you will see two lists under "Mine" section: <span class="list
 
 2. Click <button type="button"><i class="fa fa-save"></i> Save</button> to update the prayer item or <button type="button"><i class="fa fa-undo"></i> Cancel</button> to discard the changes.
 
-#### <i class="fa fa-angle-double-right"></i> Archive {activeeditmodearchive}
+#### <i class="fa fa-download"></i> Archive {activeeditmodearchive}
 
-1. Click <span class="actions"><i class="fa fa-angle-double-right"></i></span> to move the prayer item to the [archive list](#archivelist).
+1. Click <span class="actions"><i class="fa fa-download"></i></span> to move the prayer item to the [archive list](#archivelist).
 
 #### <i class="fa fa-times"></i> Delete {activeeditmodedelete}
 
 1. Click <span class="actions"><i class="fa fa-times"></i></span> to remove the prayer item from all lists.
 
-#### <i class="fa fa-share-alt"></i> Share with {activeeditmodesharewith}
+#### Other edits (Share with and Tags)
 
-1. Click <span class="actions"><i class="fa fa-share-alt"></i></span> to share the prayer item with a friend (See [friends' list](?f=friendlists#friendslist) to add a friend).
+1. Display the description for the item in edit mode. (The description can be toggled by clicking on the item title).
 
-2. A list of friends whom you can share the prayer item with will popup. Select the email of the friends with which the item will be shared. Deselect if you want to unshare the item with the friend.
+2. There are two inputs at the bottom of the description. 
+<i class="fa fa-share-alt"></i> <input disabled> is used to add friend to share the current item, and
+<i class="fa fa-tags"></i> <input disabled> is used to add tag to the current item.
 
-3. Click <button type="button"><i class="fa fa-times"></i> Close</button> to close the popup list.
+3. Entry to <i class="fa fa-share-alt"></i> <input disabled> is used to search in your friend list (See [friends' list](?f=friendlists#friendslist) to add a friend). The search result will pop up just beneath the entry. Click on the friend to share the item to the friend.
 
-#### <i class="fa fa-tags"></i> Add tags {activeeditmodeaddtags}
+4. Enter a new tag to <i class="fa fa-tags"></i> <input disabled>. Press <span class="key">Enter</span> to add the tag to the list.
 
-1. Click <span class="actions"><i class="fa fa-tags"></i></span> to add or remove tag(s) from the item (See [tag list](#taglist) in [display modes](#displaymodes)).
-
-2. Existing tags will be displayed as a list in the popup. Use the checkboxes to add or remove tag of the prayer item.
-
-3. To add a new tag, input it in the text box next to "New tag(s)". Multiple tags can be added by separating tags with commas. Click <button type="button">Add</button> to add new tags for the prayer item. 
-
-4. Click <button type="button"><i class="fa fa-times"></i> Close</button> to close the popup.
-
-5. Newly added tags will only be added to the existing tags list after exit the edit mode.
+5. Reminder: These edits are only saved to the database when you exit edit mode by saving.
 
 ## Archive list
 
@@ -75,14 +67,14 @@ After signing in, you will see two lists under "Mine" section: <span class="list
 1. Next to each prayer item, there are two different actions that can be performed:
 | Buttons   | Actions    |
 |:---------:|:----------:|
-| <i class="fa fa-angle-double-left"></i>  | [Unarchive](#archiveeditmodeunarchive)    |
+| <i class="fa fa-upload"></i>  | [Unarchive](#archiveeditmodeunarchive)    |
 | <i class="fa fa-times"></i> | [Delete](#archiveeditmodedelete)     |
 
 2. Exit [edit mode](#archivededitmode) by saving <span class="listhead"><i class="fa fa-save"></i></span> or discarding <span class="listhead"><i class="fa fa-undo"></i></span> the changes.
 
-#### <i class="fa fa-angle-double-left"></i> Unarchive {archiveeditmodeunarchive}
+#### <i class="fa fa-upload"></i> Unarchive {archiveeditmodeunarchive}
 
-1. Click <span class="actions"><i class="fa fa-angle-double-left"></i></span> to move the prayer item to the [active list](#activelist) and place it as the last item of the list.
+1. Click <span class="actions"><i class="fa fa-upload"></i></span> to move the prayer item to the [active list](#activelist) and place it as the last item of the list.
 
 #### <i class="fa fa-times"></i> Delete {archiveeditmodedelete}
 
@@ -112,4 +104,4 @@ There are three display modes:
 
 1. Each friend is displayed as a list. The prayer items that are shared with the friend is listed in the list. Two additional lists, <span class="listhead">Unshared</span> and <span class="listhead">Archive</span>, are also provided.
 
-2. In edit mode, remove from list <span class="actions"><i class="fa fa-outdent"></i></span> is available. Click this to remove the prayer item from the shared list with the friend.
+2. In edit mode, remove from list <span class="actions"><i class="fa fa-outdent"></i></span> is available. Click <span class="actions"><i class="fa fa-outdent"></i></span> to remove the prayer item from the shared list with the friend.

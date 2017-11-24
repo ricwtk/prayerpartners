@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto+Slab');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Slab|Share+Tech+Mono');
 html {
   font-family: "Roboto Slab", serif;
   color: #009688;
@@ -142,4 +142,12 @@ th,
 td {
   border: 1px solid #e0f2f1;
   padding: 5px;
+}
+
+.key {
+  font-family: "Share Tech Mono", monospace;
+  border: 1px solid;
+  border-radius: 3px;
+  padding: 3px;
+  box-shadow: 1px 1px 1px #009688;
 }
