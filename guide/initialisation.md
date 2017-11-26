@@ -4,7 +4,7 @@ Prayer Partners uses Amazon Web Service (AWS) Identity and Access Management (IA
 
 ## Sign in with Google
 
-1. Go to the homepage of [Prayer Partners](../).
+1. Go to the homepage of [Prayer Partners](./).
 
 2. If you have not logged in before, you will be greeted with the sign in page with two login options.
 
