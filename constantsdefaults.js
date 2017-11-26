@@ -1,4 +1,4 @@
-const DEBUG = true;
+const DEBUG = false;
 
 var USERDATATABLE = "pp-userdata";
 var USERREQUESTTABLE = "pp-request";
