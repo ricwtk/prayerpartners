@@ -38,17 +38,14 @@
   "name": "Menu",
   "file": "menu",
   "children": [{
-    "name": "Profile settings",
-    "location": "profilesettings"
-  }, {
-    "name": "Guide",
-    "location": "guide"
-  }, {
-    "name": "About",
-    "location": "about"
+    "name": "Signed in as",
+    "location": "signedinas"
   }, {
     "name": "UI settings",
     "location": "uisettings"
+  }, {
+    "name": "Links",
+    "location": "links"
   }, {
     "name": "Friend requests",
     "location": "friendrequests"
