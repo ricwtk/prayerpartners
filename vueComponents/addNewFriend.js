@@ -52,18 +52,12 @@ Vue.component('add-new-friend-section', {
     addPrivate: function () {
       let friendList = globalStore.savedData.friends.map(friend => friend.name);
       let friendId = globalStore.savedData.friends.map(friend => friend.userId);
-      if (friendList.includes(this.searchFriendString)) {
-        // this.addPrivateError = true;
-        if (DEBUG) console.log(this.searchFriendString + " is in existing friend list");
-        showToast(this.searchFriendString + " is in existing friend list");
-      } else {
-        addToFriend(generateId(friendId, "pri_"), this.searchFriendString);
-        if (DEBUG) console.log("Save '" + this.searchFriendString + "' to friend list");
-        showToast("added " + this.searchFriendString + " as friend");
-        this.searchFriendString = "";
-        this.exitOverlay();
-        updateToDatabase();
-      }
+      addToFriend(generateId(friendId, "pri_"), this.searchFriendString);
+      if (DEBUG) console.log("Save '" + this.searchFriendString + "' to friend list");
+      showToast("added " + this.searchFriendString + " as a list");
+      this.searchFriendString = "";
+      this.exitOverlay();
+      updateToDatabase();
     },
     addEmail: function () {
       let friendEmailList = globalStore.savedData.friends.map(friend => friend.email);
