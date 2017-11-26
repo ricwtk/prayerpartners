@@ -22,14 +22,17 @@
   "name": "Friends' list",
   "file": "friendlists",
   "children": [{
-    "name": "Add new friend with email",
-    "location": "addemail"
+    "name": "Add user as friend",
+    "location": "adduserasfriend"
   }, {
-    "name": "Add new friend (local)",
-    "location": "addlocal"
+    "name": "Local list",
+    "location": "locallist"
   }, {
     "name": "Edit mode",
     "location": "edit"
+  }, {
+    "name": "Friend's detail",
+    "location": "friendsdetail"
   }]
 }, {
   "name": "Menu",

@@ -2,29 +2,27 @@
 
 1. The "Friends" section is located beneath the "Mine" section. This section shows the list of prayer items for your friends.
 
-2. You can add new friend with either one of the two methods: [with email](#addnewfriendwithemail) or [with name](#addnewfriendlocal).
+2. You can either [add a user as a friend](#adduserasfriend) or [add a local list](#locallist) by clicking on the <span class="actions"><i class="fa fa-plus"></i></span> which is located after all the lists in the "Friends" section.
 
-3. To add friend, click on the <span class="actions"><i class="fa fa-plus"></i></span> which is located after all the lists.
+3. A popup to add friend will be displayed.
 
-4. There will be a popup to add friend with [email](#addnewfriendwithemail) or [name](#addnewfriendlocal).
+## Add user as friend
 
-5. Click the <button type="button"><i class="fa fa-times"></i> Close</button> to close the popup.
+1. Enter the name or email of a user whom you want to add as friend into the text box.
 
-## Add new friend with email
+2. The user that matches the entry will be displayed in the box underneath the text box.
 
-1. Input the friend's email and click <button type="button">Invite</button> to invite the friend to use Prayer Partners.
+3. The name, email, and the social network the user used for the Prayer Partners account are displayed. You can go to the user's social profile page by clicking on <span class="listhead"><i class="fa fa-external-link"></i></span>.
 
-2. Currently do not support multiple emails invitation at once. Invitations to non-Google accounts will not work.
+4. If the user is not connected with you, <span class="listhead"><i class="fa fa-plus"></i></span> is displayed. You send a friend request to the user by clicking on it.
 
-3. The friend will receive an email invitation from you which consists of the link to Prayer Partners. The friend needs to log in to the site and accepts the [friend request](?f=menu#friendrequests) before you can share prayer items with the friend or vice versa.
+5. If the user is connected with you, <span class="listhead"><i class="fa fa-users"></i></span> is displayed instead. No action will be taken when you click on this.
 
-## Add new friend (local)
+## Local list
 
-1. If you do not want to share prayer items with the friend, instead, you just want to add prayer items for a friend as a local list, you can add the friend with name.
+1. If you do not want to share prayer items with the friend, you can add a friend as a local list.
 
-2. Input the friend's name and click <button type="button">Add</button> to add a new friend with local list.
-
-3. Friend with same name cannot be duplicated.
+2. Enter the name of the local list. Instead of selecting the user in the box beneath, click <button>Add local</button>.
 
 ## Edit mode
 
@@ -47,3 +45,7 @@
 9. Exit edit mode by saving <span class="listhead"><i class="fa fa-save"></i></span> or discarding <span class="listhead"><i class="fa fa-undo"></i></span> the changes.
 
 10. You can click on <span class="listhead"><i class="fa fa-pencil"></i></span> next to the name of the friend to change the name of the friend. This name is only for local reference.
+
+## Friend's detail
+
+1. When you click on the name of a connected friend, the basic detail of the user and the button <span class="listhead"><i class="fa fa-external-link"></i></span> links to the social profile are displayed underneath the name.
