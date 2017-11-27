@@ -6,7 +6,7 @@
 <head>
   <title>Prayer Partners</title>
   <meta name="author" content="Richard Wong">
-  <meta name="description" content="Manage your prayer items and share it with your prayer partners">
+  <meta name="description" content="Manage your prayer items and share them with your prayer partners">
   <meta name="keywords" content="prayer, prayer partners, share, church, social">
   <script src="vue.min.js"></script>
   <script src="loadsdk.js"></script>
@@ -18,6 +18,9 @@
 </head>
 
 <body>
+  <div class="hide">
+    Prayer Partners | Manage your prayer items and share them with your prayer partners
+  </div>
   <div id="sitehead">
     <site-head @toggle="toggleMenu" ref="siteHead"></site-head>
     <site-menu v-if="showMenu" ref="siteMenu"></site-menu>
