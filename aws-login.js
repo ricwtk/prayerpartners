@@ -2,7 +2,7 @@
 var dynamodb, docClient;
 
 function initAWS() {
-  console.log("initAWS");
+  if (DEBUG) console.log("initAWS");
   AWS.config.region = 'us-east-1';
   // AWS.config.credentials = new AWS.CognitoIdentityCredentials({
   //   IdentityPoolId: 'us-east-1:455a20ab-254e-4738-8e6c-cfdcaf54dc79',
@@ -16,7 +16,7 @@ function fblogin() {
   FB.login(function (response) {
     // Check if the user logged in successfully.
     if (response.authResponse) {} else {
-      console.log('There was a problem logging you in.');
+      if (DEBUG) console.log('There was a problem logging you in.');
     }
   }, {
     scope: 'email',
@@ -44,7 +44,7 @@ function googlelogin() {
   authInst.signIn({
     scope: "profile email"
   }).then(googleUser => {}, error => {
-    console.log(error)
+    if (DEBUG) console.log(error)
   });
 }
 
@@ -54,7 +54,7 @@ function googlelogout() {
     authInst.signOut().then(resp => {
       // console.log("Google account is logged out");
     }, error => {
-      console.log(err);
+      if (DEBUG) console.log(err);
     });
   }
 }

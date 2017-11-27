@@ -16,14 +16,14 @@ window.onload = function () {
   // check if facebook is logged in
   var dblcheckFbLogin = function () {
     if (!loginStatus.facebook.checked) {
-      console.log("delayed check");
+      if (DEBUG) console.log("delayed check");
       setTimeout(dblcheckFbLogin, 3000);
       checkFbLogin();
     }
   };
   var checkFbLogin = function () {
     FB.getLoginStatus(function (response) {
-      console.log("facebook log in status:", response.status, response);
+      if (DEBUG) console.log("facebook log in status:", response.status, response);
       if (response.status === 'connected') {
         loginStatus.facebook.status = true;
       } else if (response.status === 'not_authorized') {} else {}
@@ -39,9 +39,9 @@ window.onload = function () {
       setTimeout(checkGoogle, 10);
     } else {
       authInst = gapi.auth2.getAuthInstance();
-      console.log("google log in status:", authInst.isSignedIn.get(), authInst.currentUser.get());
+      if (DEBUG) console.log("google log in status:", authInst.isSignedIn.get(), authInst.currentUser.get());
       loginStatus.google.status = authInst.isSignedIn.get();
-      console.log(loginStatus.google.status);
+      if (DEBUG) console.log(loginStatus.google.status);
       loginStatus.google.checked = true;
     }
   };
@@ -71,6 +71,6 @@ function actOnStatus() {
 
 function removeLoadingScreen(msg) {
   globalStore.showLoading = false;
-  if (msg) console.log(msg);
+  if (msg) if (DEBUG) console.log(msg);
   if (DEBUG) console.log("close loading screen");
 }
