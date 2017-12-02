@@ -151,3 +151,9 @@ td {
   padding: 3px;
   box-shadow: 1px 1px 1px #009688;
 }
+
+code {
+  font-family: inherit;
+  background-color: #e0f2f1;
+  padding: 0px 5px;
+}
