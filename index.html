@@ -4,6 +4,15 @@
 <html>
 
 <head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-38752833-2"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-38752833-2');
+  </script>
   <title>Prayer Partners</title>
   <meta name="author" content="Richard Wong">
   <meta name="description" content="Manage your prayer items and share them with your prayer partners">
@@ -79,11 +88,11 @@
       </div>
       <div class="section-group">
         <template v-for="friend in myFriendList">
-          <section-list 
-            :section-tooltip="(friend.userId.startsWith('g') || friend.userId.startsWith('fb') ? 'Click to toggle details' : null)" 
-            :section-title="friend.name" 
+          <section-list
+            :section-tooltip="(friend.userId.startsWith('g') || friend.userId.startsWith('fb') ? 'Click to toggle details' : null)"
+            :section-title="friend.name"
             :section-type-data="{ sType: 'friend', data: friend }"
-            :item-list="friend.items" 
+            :item-list="friend.items"
             @remove="removeFriend">
           </section-list>
         </template>
